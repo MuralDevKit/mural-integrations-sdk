@@ -46,8 +46,6 @@ auth.get(
     req: Request<any, any, any, { redirectUri?: string; code: string }>,
     res: Response,
   ) => {
-    console.log(req.query.code)
-    
     const tokens = await accessTokenHandler(req, {
       redirectUri: req.query.redirectUri,
       code: req.query.code,

@@ -60,11 +60,7 @@ export function accessToken(buildConfig: ClientAppConfigBuilder<OAuthReq>) {
         redirect_uri: params.redirectUri || config.redirectUri,
       },
       method: 'POST',
-      url: config.accessTokenUri,
-      proxy: {
-        host: 'localhost',
-        port: 18080
-      },
+      url: config.accessTokenUri
     };
 
     const response = await axios.request(payload);
@@ -92,9 +88,6 @@ export function refreshToken(buildConfig: ClientAppConfigBuilder) {
         scope: config.scopes,
       },
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
       url: config.refreshTokenUri,
     };
 

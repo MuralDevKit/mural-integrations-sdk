@@ -2,14 +2,17 @@
   "appName": "",
   "port": 4000,
   "endpoints": {
-    "webapp": "http://localhost:8080"
+    "webapp": "https://app.mural.co"
   },
   "clientApp": {
-    "clientId": "cb07e4cb-7888-4775-b636-cd29dbc6d99f",
-    "clientSecret": "5e1210cfdde5625d856e18afc7402ab03b13db20fc1cdb6eb95893dd8bf378dedd65d639866ac4778014e742c90d809eed403d40a3f2dfb8d7dfb54c5c469c6d",
-    "redirectUri": "http://localhost:3002/auth/callback",
+    "clientId": "f244aa0f-9dbc-41bb-ace5-a3870c260d85",
+    "clientSecret": "0d37a18cf1500e3bece67848fa92ae1ddc19bc01c5b1ebbe4ba0d1b5a4de7551764e22b6f02b8979ab93e76ff4ab21e6539069e1f573fbd46eb3a5a14d3e0501",
+    "redirectUri": "https://mural-hack-mbergeron.ngrok.io/auth/callback",
     "scopes": [
       "murals:read",
+      "murals:write",
+      "rooms:read",
+      "workspaces:read",
       "identity:read"
     ]
   }

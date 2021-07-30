@@ -14,7 +14,7 @@ const tokenHandlerConfig = {
 const authorize = authorizeHandler(tokenHandlerConfig)
 const requestToken = requestTokenHandler(tokenHandlerConfig)
 const clientConfig = buildClientConfig(
-  'http://localhost:8080',
+  'https://app.mural.co',
   tokenHandlerConfig
 )
 
