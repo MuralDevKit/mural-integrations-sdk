@@ -1,0 +1,16 @@
+{
+  "appName": "",
+  "port": 4000,
+  "endpoints": {
+    "webapp": "http://localhost:8080"
+  },
+  "clientApp": {
+    "clientId": "cb07e4cb-7888-4775-b636-cd29dbc6d99f",
+    "clientSecret": "5e1210cfdde5625d856e18afc7402ab03b13db20fc1cdb6eb95893dd8bf378dedd65d639866ac4778014e742c90d809eed403d40a3f2dfb8d7dfb54c5c469c6d",
+    "redirectUri": "http://localhost:3002/auth/callback",
+    "scopes": [
+      "murals:read",
+      "identity:read"
+    ]
+  }
+}
