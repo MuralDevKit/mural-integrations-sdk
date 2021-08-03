@@ -70,6 +70,6 @@ auth.post(
 app.get('/', (_, res) => res.send("Hello world!"))
 app.use('/auth', auth);
 
-app.listen(config.port, () => {
-  console.log(`Example app listening at http://localhost:${config.port}`)
+app.listen(config.serverPort, () => {
+  console.log(`Example app listening at http://localhost:${config.serverPort}`)
 })

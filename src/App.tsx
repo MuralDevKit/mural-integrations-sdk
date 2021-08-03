@@ -1,14 +1,14 @@
 import * as React from 'react';
 import './App.css';
 import MuralPicker, { PropTypes } from 'mural-integrations-mural-picker'
-import buildApiClient, { buildClientConfig, authorizeHandler, requestTokenHandler } from 'mural-integrations-mural-client'
+import buildApiClient, { ApiClient, ClientConfig, buildClientConfig, authorizeHandler, requestTokenHandler } from 'mural-integrations-mural-client'
 
 // --- Configuration ---
 
 const tokenHandlerConfig = {
-  authorizeUri: 'http://localhost:5000/auth',
-  requestTokenUri: 'http://localhost:5000/auth/token',
-  refreshTokenUri: 'http://localhost:5000/auth/refresh',
+  authorizeUri: 'http://localhost:4001/auth',
+  requestTokenUri: 'http://localhost:4001/auth/token',
+  refreshTokenUri: 'http://localhost:4001/auth/refresh',
 }
 
 const authorize = authorizeHandler(tokenHandlerConfig)
@@ -19,7 +19,6 @@ const clientConfig = buildClientConfig(
 )
 
 // --- MURAL API client ---
-
 const apiClient = buildApiClient(clientConfig)
 
 const handleMural = (mural: any) => {
@@ -55,6 +54,8 @@ class App extends React.Component<{}, AppState> {
       await requestToken(
         code, state, { store: true }
       );
+
+      clientConfig.fetchFn('https://app.mural.co/api/public/v1/workspaces').then(async res => console.log(await res.json()));
 
       this.setState({ loaded: true });
     } else {
