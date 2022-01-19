@@ -1,0 +1,184 @@
+{
+  "test0521": {
+    "value": [
+      {
+        "confidential": false,
+        "createdBy": {
+          "email": "ssong@mural.co",
+          "firstName": "Stella",
+          "id": "u57f657e756219cfe96ed9552",
+          "lastName": "Song",
+          "type": "member"
+        },
+        "createdOn": 1619711790628,
+        "description": "",
+        "id": 1619711790628,
+        "name": "Stella's room",
+        "type": "private",
+        "updatedOn": 1619711790534,
+        "workspaceId": "test0521"
+      },
+      {
+        "confidential": false,
+        "createdBy": {
+          "email": "ssong@mural.co",
+          "firstName": "Stella",
+          "id": "u57f657e756219cfe96ed9552",
+          "lastName": "Song",
+          "type": "member"
+        },
+        "createdOn": 1619751854383,
+        "description": "",
+        "id": 1619751854383,
+        "name": "room1",
+        "type": "private",
+        "updatedOn": 1619751854386,
+        "workspaceId": "test0521"
+      },
+      {
+        "confidential": false,
+        "createdBy": {
+          "email": "ssong@mural.co",
+          "firstName": "Stella",
+          "id": "u57f657e756219cfe96ed9552",
+          "lastName": "Song",
+          "type": "member"
+        },
+        "createdOn": 1619751857171,
+        "description": "",
+        "id": 1619751857171,
+        "name": "room2",
+        "type": "private",
+        "updatedOn": 1619751857172,
+        "workspaceId": "test0521"
+      },
+      {
+        "confidential": false,
+        "createdBy": {
+          "email": "ssong@mural.co",
+          "firstName": "Stella",
+          "id": "u57f657e756219cfe96ed9552",
+          "lastName": "Song",
+          "type": "member"
+        },
+        "createdOn": 1619793373494,
+        "description": "",
+        "id": 1619793373494,
+        "name": "open1",
+        "type": "open",
+        "updatedOn": 1620195435443,
+        "workspaceId": "test0521"
+      }
+    ]
+  },
+  "test20357": {
+    "value": [
+      {
+        "confidential": false,
+        "createdBy": {
+          "email": "ssong@mural.co",
+          "firstName": "Stella",
+          "id": "u57f657e756219cfe96ed9552",
+          "lastName": "Song",
+          "type": "member"
+        },
+        "createdOn": 1619750670464,
+        "description": "",
+        "id": 1619750670464,
+        "name": "Stella's room",
+        "type": "private",
+        "updatedOn": 1619750670372,
+        "workspaceId": "test20357"
+      },
+      {
+        "confidential": false,
+        "createdBy": {
+          "email": "ssong@mural.co",
+          "firstName": "Stella",
+          "id": "u57f657e756219cfe96ed9552",
+          "lastName": "Song",
+          "type": "member"
+        },
+        "createdOn": 1619751863644,
+        "description": "",
+        "id": 1619751863644,
+        "name": "room1",
+        "type": "private",
+        "updatedOn": 1619751863645,
+        "workspaceId": "test20357"
+      },
+      {
+        "confidential": false,
+        "createdBy": {
+          "email": "ssong@mural.co",
+          "firstName": "Stella",
+          "id": "u57f657e756219cfe96ed9552",
+          "lastName": "Song",
+          "type": "member"
+        },
+        "createdOn": 1619751866149,
+        "description": "",
+        "id": 1619751866149,
+        "name": "room2",
+        "type": "private",
+        "updatedOn": 1619751866150,
+        "workspaceId": "test20357"
+      }
+    ]
+  },
+  "test35445": {
+    "value": [
+      {
+        "confidential": false,
+        "createdBy": {
+          "email": "ssong@mural.co",
+          "firstName": "Stella",
+          "id": "u57f657e756219cfe96ed9552",
+          "lastName": "Song",
+          "type": "member"
+        },
+        "createdOn": 1619750685553,
+        "description": "",
+        "id": 1619750685553,
+        "name": "Stella's room",
+        "type": "private",
+        "updatedOn": 1619750685457,
+        "workspaceId": "test35445"
+      },
+      {
+        "confidential": false,
+        "createdBy": {
+          "email": "ssong@mural.co",
+          "firstName": "Stella",
+          "id": "u57f657e756219cfe96ed9552",
+          "lastName": "Song",
+          "type": "member"
+        },
+        "createdOn": 1619751873038,
+        "description": "",
+        "id": 1619751873038,
+        "name": "room1",
+        "type": "private",
+        "updatedOn": 1619751873042,
+        "workspaceId": "test35445"
+      },
+      {
+        "confidential": false,
+        "createdBy": {
+          "email": "ssong@mural.co",
+          "firstName": "Stella",
+          "id": "u57f657e756219cfe96ed9552",
+          "lastName": "Song",
+          "type": "member"
+        },
+        "createdOn": 1620418632409,
+        "description": "",
+        "id": 1620418632409,
+        "name": "openroom1",
+        "type": "open",
+        "updatedOn": 1620418632411,
+        "workspaceId": "test35445"
+      }
+    ]
+  }
+}

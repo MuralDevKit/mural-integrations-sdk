@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "ES2015",
+    "moduleResolution": "node",
+    "outDir": "../out/",
+    "declarationDir": "../dist",
+    "jsx": "react",
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noEmitOnError": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "alwaysStrict": true,
+    "declaration": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+		"types": [],
+    "lib": [
+      "es6", "dom", "es2015.promise", "es2016.array.include"
+    ]
+  },
+  "include": [
+    "../src/**/*.ts",
+    "../src/**/*.tsx"
+  ],
+  "exclude": [
+    "../node_modules"
+  ]
+}
