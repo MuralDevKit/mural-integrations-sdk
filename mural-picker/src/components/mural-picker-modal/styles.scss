@@ -1,0 +1,17 @@
+@use '../styles.scss';
+
+.mural-picker-modal {
+  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  margin-top: 2em;
+  .MuiInput-underline, .MuiInput-underline:after {
+    border-color: #FF0066;
+  }
+  .MuiFormLabel-root, .MuiInputBase-root, .MuiInputBase-root {
+    font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 400;
+  }
+  .MuiFormLabel-root {
+    color: #4c4c4c;
+  }
+}
+

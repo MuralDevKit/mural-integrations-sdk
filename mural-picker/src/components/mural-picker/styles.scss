@@ -1,0 +1,91 @@
+@use '../styles.scss';
+
+.mural-picker-body {
+  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  margin: auto;
+  outline: 0;
+
+  &.dark {
+    color: white;
+  }
+
+  .mural-picker-select {
+    font-weight: 400;
+    width: 48%;
+    margin-right: 0.2em;
+    max-width: 350px;
+
+    .MuiTextField-root
+      .MuiOutlinedInput-root.Mui-focused
+      .MuiOutlinedInput-notchedOutline {
+      border: 1px solid #ff0066;
+    }
+
+    .select-label {
+      padding: 0.6em;
+    }
+  }
+
+  .choose-mural-logo {
+    margin-right: 1em;
+  }
+
+  .choose-mural-title {
+    font-weight: 700;
+    vertical-align: top;
+  }
+
+  .mural-search-button {
+    margin-left: 1em;
+  }
+
+  // TODO: How to apply a fade to a scrollable modal?
+  .mural-picker-error {
+    margin-top: 0.6em;
+  }
+
+  .mural-list-spinner {
+    padding-top: 2em;
+    text-align: center;
+  }
+
+  .MuiInput-underline,
+  .MuiInput-underline:after {
+    border-color: #ff0066;
+  }
+
+  .MuiFormLabel-root,
+  .MuiInputBase-root,
+  .MuiInputBase-root {
+    font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    font-weight: 400;
+  }
+}
+
+.MuiButton-root .MuiButton-label {
+  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+#room-select-popup,
+#workspace-select-popup {
+  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  font-weight: 400;
+
+  .MuiListSubheader-root {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+
+  .MuiAutocomplete-groupUl {
+    font-size: 1rem;
+  }
+}
