@@ -1,24 +1,24 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   CircularProgress,
   FormControl,
   InputLabel,
   TextField,
-} from '@material-ui/core';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+} from "@material-ui/core";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import Alert from "@material-ui/lab/Alert";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   ApiClient,
   Mural,
   Room,
   WorkSpace,
-} from 'mural-integrations-mural-client';
+} from "mural-integrations-mural-client";
 // @ts-ignore
-import MuralIcon from '../../../../../public/icon.png';
-import { CardSize } from '../mural-card';
-import MuralList from '../mural-list';
-import './styles.scss';
+import MuralIcon from "mural-integrations-common/assets/icon.png";
+import { CardSize } from "../mural-card";
+import MuralList from "../mural-list";
+import "./styles.scss";
 
 export interface CreateMuralData {
   roomId: string;
@@ -33,14 +33,14 @@ export interface CreateMuralResult {
 export interface PropTypes {
   apiClient: ApiClient;
   onCreateMural: (
-    mural: CreateMuralData,
+    mural: CreateMuralData
   ) => Promise<CreateMuralResult | undefined>;
   onMuralSelect: (mural: Mural) => void;
   handleError: (error: Error, message: string) => void;
   cardSize?: CardSize;
   hideLogo?: boolean;
   hideAddButton?: boolean;
-  theme?: 'light' | 'dark';
+  theme?: "light" | "dark";
 }
 
 interface StateTypes {
@@ -61,7 +61,7 @@ const INITIAL_STATE: StateTypes = {
   workspaces: [],
   rooms: [],
   murals: [],
-  error: '',
+  error: "",
   workspace: null,
   room: null,
 };
@@ -78,14 +78,14 @@ export default class MuralPicker extends React.Component<PropTypes> {
         await this.loadMuralsAndRoomsByWorkspace(workspaces[0]);
       }
     } catch (e) {
-      this.handleError(e, 'Error retrieving workspaces.');
+      this.handleError(e, "Error retrieving workspaces.");
     }
     this.setState({ isLoading: false });
   }
 
   onWorkspaceSelect = async (
     _: React.ChangeEvent<{}>,
-    workspace: WorkSpace | null,
+    workspace: WorkSpace | null
   ) => {
     await this.loadMuralsAndRoomsByWorkspace(workspace);
   };
@@ -97,7 +97,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
         workspace: null,
         murals: [],
         rooms: [],
-        roomId: '',
+        roomId: "",
       });
     }
 
@@ -105,10 +105,10 @@ export default class MuralPicker extends React.Component<PropTypes> {
 
     try {
       const roomPromise = this.props.apiClient.getRoomsByWorkspace(
-        workspace.id,
+        workspace.id
       );
       const muralPromise = this.props.apiClient.getMuralsByWorkspaceId(
-        workspace.id,
+        workspace.id
       );
       const [rooms, murals] = await Promise.all([roomPromise, muralPromise]);
       const sortedRooms = rooms.sort((a, b) => b.type.localeCompare(a.type));
@@ -117,12 +117,12 @@ export default class MuralPicker extends React.Component<PropTypes> {
         workspace,
         rooms: sortedRooms,
         murals,
-        roomId: '',
+        roomId: "",
         room: null,
       });
     } catch (e) {
       this.setState({ isLoading: false });
-      this.handleError(e, 'Error retrieving room and murals.');
+      this.handleError(e, "Error retrieving room and murals.");
     }
   };
 
@@ -133,11 +133,11 @@ export default class MuralPicker extends React.Component<PropTypes> {
         try {
           this.setState({ isLoading: true });
           murals = await this.props.apiClient.getMuralsByWorkspaceId(
-            this.state.workspace.id,
+            this.state.workspace.id
           );
         } catch (e) {
           this.setState({ isLoading: false });
-          this.handleError(e, 'Error retrieving room and murals.');
+          this.handleError(e, "Error retrieving room and murals.");
         }
       }
       return this.setState({
@@ -158,7 +158,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
       });
     } catch (e) {
       this.setState({ isLoading: false });
-      this.props.handleError(e, 'Error retrieving room murals.');
+      this.props.handleError(e, "Error retrieving room murals.");
     }
   };
 
@@ -168,33 +168,33 @@ export default class MuralPicker extends React.Component<PropTypes> {
       this.props.onMuralSelect(mural);
 
       this.setState({
-        error: '',
+        error: "",
         isCreateSelected: false,
         mural,
       });
     } catch (e) {
-      this.handleError(e, 'Error selecting mural.');
+      this.handleError(e, "Error selecting mural.");
     }
   };
 
   onCreateMural = async (_?: string) => {
     // TODO: incorporate template selection when public API is ready
     if (!this.state.workspace) {
-      return this.setState({ error: 'Please select a workspace.' });
+      return this.setState({ error: "Please select a workspace." });
     }
     if (!this.state.room) {
-      return this.setState({ error: 'Please select a room.' });
+      return this.setState({ error: "Please select a room." });
     }
 
     this.setState({
-      error: '',
+      error: "",
       isCreateSelected: true,
       mural: undefined,
     });
 
     const result = await this.props.onCreateMural({
       roomId: this.state.room.id,
-      title: '', // leaving title blank for now
+      title: "", // leaving title blank for now
       workspaceId: this.state.workspace.id,
     });
 
@@ -212,17 +212,17 @@ export default class MuralPicker extends React.Component<PropTypes> {
   };
 
   getRoomGroup = (room?: Room) => {
-    if (!room) return '';
-    return room.type === 'private' ? 'PRIVATE ROOMS' : 'OPEN ROOMS';
+    if (!room) return "";
+    return room.type === "private" ? "PRIVATE ROOMS" : "OPEN ROOMS";
   };
 
   render() {
     const { cardSize, hideLogo, theme } = this.props;
-    const currentTheme = theme || 'light';
+    const currentTheme = theme || "light";
     const muiTheme = createMuiTheme({
       palette: {
         type: currentTheme,
-        text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
+        text: { primary: currentTheme === "light" ? "#585858" : "#a7a7a7" },
       },
     });
 
@@ -250,10 +250,10 @@ export default class MuralPicker extends React.Component<PropTypes> {
               <Autocomplete
                 id="workspace-select"
                 options={this.state.workspaces}
-                getOptionLabel={option => {
-                  return option.name || '';
+                getOptionLabel={(option) => {
+                  return option.name || "";
                 }}
-                renderInput={params => (
+                renderInput={(params) => (
                   <TextField
                     {...params}
                     placeholder="Find a workspace..."
@@ -261,7 +261,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
                   />
                 )}
                 value={this.state.workspace}
-                groupBy={() => 'SWITCH TO'}
+                groupBy={() => "SWITCH TO"}
                 onChange={this.onWorkspaceSelect}
               />
             </div>
@@ -273,10 +273,10 @@ export default class MuralPicker extends React.Component<PropTypes> {
             <Autocomplete
               id="room-select"
               options={this.state.rooms}
-              getOptionLabel={option => {
-                return option?.name || '';
+              getOptionLabel={(option) => {
+                return option?.name || "";
               }}
-              renderInput={params => (
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   placeholder="Find a room..."
@@ -313,7 +313,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
               onMuralSelect={this.onMuralSelect}
               onCreateMural={this.onCreateMural}
               handleError={this.handleError}
-              cardSize={cardSize || 'normal'}
+              cardSize={cardSize || "normal"}
               hideAddButton={!!this.props.hideAddButton}
             />
           )}

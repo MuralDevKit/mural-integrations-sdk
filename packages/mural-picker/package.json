@@ -49,6 +49,7 @@
     "eslint-config-mural": "^1.1.0",
     "eslint-config-prettier": "^8.3.0",
     "moment": "^2.29.1",
+    "mural-integrations-common": "file:../mural-common",
     "mural-integrations-mural-client": "file:../mural-client",
     "prettier": "^2.3.2",
     "react": "16.13.1",
@@ -59,6 +60,7 @@
     "rollup-plugin-scss": "^3.0.0",
     "rollup-plugin-styles": "^3.14.1",
     "rollup-plugin-typescript2": "^0.30.0",
+    "sass": "^1.49.0",
     "typescript": "^4.3.5"
   }
 }
