@@ -17,6 +17,7 @@ TDB
 
 ```
 npm install
+npx lerna bootstrap
 npx lerna run build
 npx lerna run pack
 ls -la dist/
