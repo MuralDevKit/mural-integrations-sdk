@@ -1,12 +1,12 @@
+import { ApiClient } from 'mural-integrations-mural-client';
 import * as React from 'react';
 import { useEffect } from 'react';
-import { ApiClient } from 'mural-integrations-mural-client';
-import { useHistory, useLocation } from 'react-router';
-
-// import './style.scss';
+import { EventHandler } from '../../types';
+import './styles.scss';
 
 interface PropTypes {
   apiClient: ApiClient;
+  onError?: EventHandler;
 }
 
 export async function getMuralSessionClaimUrl(
@@ -14,13 +14,13 @@ export async function getMuralSessionClaimUrl(
   muralUrl: URL | string,
   code: string,
 ) {
-  const _muralUrl = new URL(muralUrl.toString());
+  muralUrl = new URL(muralUrl.toString());
   const claimRequestUrl = new URL(
     `/api/v0/authenticate/oauth2/session/${code}`,
-    apiClient.config.hostname,
+    `https://${apiClient.config.host}`,
   );
 
-  claimRequestUrl.searchParams.set('redirectUrl', _muralUrl.href);
+  claimRequestUrl.searchParams.set('redirectUrl', muralUrl.href);
 
   const res: Response = await apiClient.fetch(claimRequestUrl.href, {
     method: 'PUT',
@@ -34,16 +34,13 @@ export async function getMuralSessionClaimUrl(
   return new URL(claimUrl.replace('"', ''));
 }
 
-const OAuthSessionActivation: React.FC<PropTypes> = ({ apiClient }) => {
-  const history = useHistory();
-  const location = useLocation();
-
-  const params = new URLSearchParams(location.search);
+const SessionActivation: React.FC<PropTypes> = ({ apiClient, onError }) => {
+  const params = new URLSearchParams(window.location.search);
   const code = params.get('code');
   const rawRedirectUrl = params.get('redirectUrl');
 
   if (!code || !rawRedirectUrl) {
-    history.replace('/e/error');
+    onError && onError();
     return null;
   }
 
@@ -56,11 +53,9 @@ const OAuthSessionActivation: React.FC<PropTypes> = ({ apiClient }) => {
         redirectUrl,
         code,
       );
-      console.log('CLAIM URL', claimUrl);
 
       window.location.replace(claimUrl.href);
     } catch (e) {
-      debugger;
       // worst case scenario, send the user on `mural` and let it go
       window.location.replace(redirectUrl.href);
       return null;
@@ -74,4 +69,4 @@ const OAuthSessionActivation: React.FC<PropTypes> = ({ apiClient }) => {
   return <h3 className="session-activation__header">Logging you in...</h3>;
 };
 
-export default OAuthSessionActivation;
+export default SessionActivation;
