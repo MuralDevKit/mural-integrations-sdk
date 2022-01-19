@@ -9,6 +9,7 @@
     "dist/"
   ],
   "scripts": {
+    "pack": "npm pack --pack-destination ../../dist/",
     "build": "npx rollup --config build/rollup.config.js",
     "compile": "npx tsc --project build/tsconfig.json",
     "test": "npm run test",
