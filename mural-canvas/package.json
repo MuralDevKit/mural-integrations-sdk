@@ -19,7 +19,8 @@
     "url": "git+ssh://git@github.com/tactivos/mural-integrations-mural-canvas.git"
   },
   "keywords": [
-    "mural-picker"
+    "mural",
+    "mural-canvas"
   ],
   "author": "mural.co",
   "license": "ISC",
@@ -36,6 +37,7 @@
   "peerDependencies": {
     "react": ">=16.13.0",
     "react-dom": ">=16.13.0",
+    "react-router-dom": "^6.0.0",
     "moment": "=>2.29.1",
     "mural-integrations-mural-client": ">=1.0.0"
   },

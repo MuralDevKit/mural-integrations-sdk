@@ -15,7 +15,7 @@ import {
   WorkSpace,
 } from 'mural-integrations-mural-client';
 // @ts-ignore
-import MuralIcon from '../../../../../public/icon.png';
+import MuralIcon from 'mural-integrations-common/assets/icon.png';
 import { CardSize } from '../mural-card';
 import MuralList from '../mural-list';
 import './styles.scss';

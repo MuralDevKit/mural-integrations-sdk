@@ -1,3 +1,4 @@
-import MuralCanvas from './components/mural-host';
+import Canvas from './components/canvas';
+import SessionActivation from './components/session-activation';
 
-export default MuralCanvas;
+export { Canvas, SessionActivation };
