@@ -31,6 +31,7 @@ jobs:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
       - run: npm ci
+      - run: npx lerna bootstrap
       - run: npx lerna run build
       - run: npx lerna run pack
       - run: npx lerna publish from-package --registry=https://npm.pkg.github.com/
