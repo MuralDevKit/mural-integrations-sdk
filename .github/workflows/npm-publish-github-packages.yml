@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 16
       - run: npm ci
-      - run: npx lerna build
+      - run: npx lerna run build
 
   publish-gpr:
     needs: build
@@ -31,7 +31,8 @@ jobs:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
       - run: npm ci
-      - run: npx lerna pack
-      - run: npx lerna publish premajor --registry=https://npm.pkg.github.com/
+      - run: npx lerna run build
+      - run: npx lerna run pack
+      - run: npx lerna publish from-package --registry=https://npm.pkg.github.com/
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
