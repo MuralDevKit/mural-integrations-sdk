@@ -1,6 +1,6 @@
 {
   "name": "mural-integrations-mural-picker",
-  "version": "0.0.1-alpha",
+  "version": "1.0.0-alpha.0",
   "description": "Mural Picker component for MURAL integrations",
   "main": "dist/mural-picker.bundle.js",
   "module": "dist/mural-picker.esm.js",

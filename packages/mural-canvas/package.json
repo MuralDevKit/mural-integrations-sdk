@@ -1,6 +1,6 @@
 {
   "name": "mural-integrations-mural-canvas",
-  "version": "0.0.1-alpha",
+  "version": "1.0.0-alpha.0",
   "description": "Mural Canvas component for MURAL integrations",
   "main": "dist/mural-canvas.bundle.js",
   "module": "dist/mural-canvas.esm.js",
