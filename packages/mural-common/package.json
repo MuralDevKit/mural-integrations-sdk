@@ -1,6 +1,6 @@
 {
   "name": "mural-integrations-common",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha",
   "description": "MURAL integration basic components and assets.",
   "main": "index.js",
   "files": [
