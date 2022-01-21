@@ -1,8 +1,9 @@
 {
-  "name": "mural-integrations-common",
+  "name": "@tactivos/mural-integrations-common",
   "version": "1.0.0-alpha",
   "description": "MURAL integration basic components and assets.",
   "main": "index.js",
+  "private": true,
   "files": [
     "assets/*"
   ],
@@ -13,5 +14,6 @@
     "assets"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "gitHead": "f04acf1530feca82b1f1b497d19f720254579485"
 }
