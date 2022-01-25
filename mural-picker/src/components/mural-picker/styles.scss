@@ -11,12 +11,15 @@
     color: white;
   }
 
+  .mural-picker-selects {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    column-gap: 10px;
+  }
   .mural-picker-select {
     font-weight: 400;
-    width: 48%;
-    margin-right: 0.2em;
-    max-width: 350px;
-
+    flex: 1;
     .MuiTextField-root
       .MuiOutlinedInput-root.Mui-focused
       .MuiOutlinedInput-notchedOutline {
@@ -63,6 +66,15 @@
       'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     font-weight: 400;
+  }
+
+  .mural-preview {
+    margin-top: 0.75em;
+    margin-bottom: 1.35em;
+  }
+
+  .column-gap {
+    column-gap: 10px;
   }
 }
 

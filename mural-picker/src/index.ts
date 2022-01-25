@@ -4,5 +4,6 @@ import RoomPicker from './components/room-picker';
 
 export * from './components/mural-picker';
 export * from './components/room-picker';
+export * from './common/delays';
 
 export { MuralPicker, RoomPicker, MuralPickerModal };
