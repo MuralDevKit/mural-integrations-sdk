@@ -1,17 +1,16 @@
-import * as React from 'react';
-import { Button, Modal } from '@material-ui/core';
-import { Mural } from 'mural-integrations-mural-client';
-import MuralPicker, { PropTypes as MuralPickerProps } from '../mural-picker';
+import * as React from "react";
+import { Button, Modal } from "@material-ui/core";
+import { Mural } from "@tactivos/mural-integrations-mural-client";
+import MuralPicker, { PropTypes as MuralPickerProps } from "../mural-picker";
 
-import './styles.scss';
+import "./styles.scss";
 
 const MuralPickerModal: React.FC<MuralPickerProps> = ({
   onMuralSelect,
   ...props
 }) => {
-  const [isLaunchButtonDisabled, setIsLaunchButtonDisabled] = React.useState<
-    boolean
-  >(false);
+  const [isLaunchButtonDisabled, setIsLaunchButtonDisabled] =
+    React.useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
 
   const handleSelectMural = (mural: Mural) => {

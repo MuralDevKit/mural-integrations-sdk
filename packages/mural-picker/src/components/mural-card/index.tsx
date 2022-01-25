@@ -1,11 +1,11 @@
-import * as React from 'react';
-import moment from 'moment';
-import classnames from 'classnames';
-import { Grid, Card, CardActionArea, CardMedia } from '@material-ui/core';
-import { Mural } from 'mural-integrations-mural-client';
-import './styles.scss';
+import * as React from "react";
+import moment from "moment";
+import classnames from "classnames";
+import { Grid, Card, CardActionArea, CardMedia } from "@material-ui/core";
+import { Mural } from "@tactivos/mural-integrations-mural-client";
+import "./styles.scss";
 
-export type CardSize = 'small' | 'normal';
+export type CardSize = "small" | "normal";
 
 export interface PropTypes {
   mural: Mural;
@@ -17,16 +17,16 @@ export interface PropTypes {
 export default function MuralCard(props: PropTypes) {
   const { mural, isSelected, onClickSelectMural, cardSize } = props;
   const thumbnailUrl =
-    mural.thumbnailUrl === 'https://app.mural.co/static/images/mural-thumb.svg'
-      ? ''
+    mural.thumbnailUrl === "https://app.mural.co/static/images/mural-thumb.svg"
+      ? ""
       : mural.thumbnailUrl;
 
   return (
     <Grid item className="mural-preview">
       <Card
         variant="outlined"
-        className={classnames('mural-card', `${cardSize}-card`, {
-          'selected-card': isSelected,
+        className={classnames("mural-card", `${cardSize}-card`, {
+          "selected-card": isSelected,
         })}
         onClick={() => onClickSelectMural(mural)}
       >
