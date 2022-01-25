@@ -11,6 +11,14 @@ This repository hosts the MURAL integration SDK
 - mural-client: Mural public API client supporting OAuth 2.0 authentication.
 - mural-common: (internal) Assets and shared code.
 
+### Roadmap
+
+[ ] Use this repository in `mural-integrations/lib`
+[ ] Generalize build configuration and TypeScript configuration for all components
+[ ] Add testing rig
+[ ] Add sample application
+[ ] Add code quality tooling (prettier, eslint)
+
 ### Upstream (mural-integrations)
 
 Pulling changes from `mural-integrations`
