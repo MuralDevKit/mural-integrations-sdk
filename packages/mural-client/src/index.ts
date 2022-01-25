@@ -1,11 +1,11 @@
 import setupAuthenticatedFetch, {
-  authenticated,
   authorizeHandler,
+  FetchError,
   refreshTokenHandler,
   requestTokenHandler,
   TokenHandlerConfig,
 } from './fetch';
-import { Mural, Room, WorkSpace, Template } from './types';
+import { Mural, Room, Template, WorkSpace } from './types';
 
 export * from './fetch';
 export * from './session';
@@ -19,37 +19,46 @@ export type FetchFunction = (
 ) => Promise<Response>;
 
 export type ClientConfig = {
-  appId: string;
-  muralHost: string;
+  webAppUrl: string;
   fetchFn: FetchFunction;
 };
 
-export type BuildClientArgs = {
-  appId: string;
-  muralHost?: string;
-} & TokenHandlerConfig;
+export type ApiError = {
+  code: string;
+  message: string;
+  status: number;
+};
 
-export function buildClientConfig(args: BuildClientArgs): ClientConfig {
+export const getApiError = async (error: Error): Promise<ApiError | null> => {
+  if (!(error instanceof FetchError) || !error.response) return null;
+
+  const { response } = error;
+  const payload = await response.json();
+
+  return {
+    code: payload.code,
+    message: payload.message || error.message,
+    status: response.status,
+  };
+};
+
+export function buildClientConfig(
+  webAppUrl: string,
+  tokenHandlerConfig: TokenHandlerConfig,
+): ClientConfig {
   const fetchFn = setupAuthenticatedFetch({
-    authorizeFn: authorizeHandler(args),
-    requestTokenFn: requestTokenHandler(args),
-    refreshTokenFn: refreshTokenHandler(args),
+    authorizeFn: authorizeHandler(tokenHandlerConfig),
+    requestTokenFn: requestTokenHandler(tokenHandlerConfig),
+    refreshTokenFn: refreshTokenHandler(tokenHandlerConfig),
   });
 
   return {
-    appId: args.appId,
-    muralHost: args.muralHost || 'app.mural.co',
+    webAppUrl,
     fetchFn,
   };
 }
 
 export interface ApiClient {
-  authenticated: () => boolean;
-  config: {
-    appId: string;
-    host: string;
-  };
-  fetch: FetchFunction;
   getMuralsByWorkspaceId: (workspaceId: string) => Promise<Mural[]>;
   getMuralsByRoom: (roomId: string) => Promise<Mural[]>;
   getMural: (
@@ -70,22 +79,21 @@ export interface ApiClient {
   getAllWorkSpaces: () => Promise<WorkSpace[]>;
   getWorkSpaceById: (id: string) => Promise<WorkSpace>;
   getTemplates: () => Promise<Template[]>;
+  searchWorkspaceRooms: (
+    workspaceId: string | null,
+    title: string,
+  ) => Promise<Room[]>;
 }
 
 export default (config: ClientConfig): ApiClient => {
-  const { fetchFn, muralHost, appId } = config;
-  const apiUrl = new URL('/api/public/v1', `https://${muralHost}`);
+  const { fetchFn, webAppUrl } = config;
+  const baseUri = `api/public/v1`;
+  const searchUri = `api/public/v1/search`;
 
   return {
-    authenticated,
-    fetch: fetchFn,
-    config: {
-      host: apiUrl.host,
-      appId,
-    },
     getMuralsByWorkspaceId: async (workspaceId: string): Promise<Mural[]> => {
       const response = await fetchFn(
-        `${apiUrl}/workspaces/${workspaceId}/murals`,
+        `${webAppUrl}/${baseUri}/workspaces/${workspaceId}/murals`,
         {
           method: 'GET',
         },
@@ -93,18 +101,24 @@ export default (config: ClientConfig): ApiClient => {
       return (await response.json()).value;
     },
     getMuralsByRoom: async (roomId: string) => {
-      const response = await fetchFn(`${apiUrl}/rooms/${roomId}/murals`, {
-        method: 'GET',
-      });
+      const response = await fetchFn(
+        `${webAppUrl}/${baseUri}/rooms/${roomId}/murals`,
+        {
+          method: 'GET',
+        },
+      );
       return (await response.json()).value;
     },
     getMural: async (muralId: string, options?: { integration: boolean }) => {
       const params = new URLSearchParams();
       if (options?.integration)
         params.set('integration', options!.integration.toString());
-      const response = await fetchFn(`${apiUrl}/murals/${muralId}?${params}`, {
-        method: 'GET',
-      });
+      const response = await fetchFn(
+        `${webAppUrl}/${baseUri}/murals/${muralId}?${params}`,
+        {
+          method: 'GET',
+        },
+      );
       return (await response.json()).value;
     },
     createMural: async (title: string, workspaceId: string, roomId: string) => {
@@ -113,7 +127,7 @@ export default (config: ClientConfig): ApiClient => {
         workspaceId,
         roomId,
       };
-      const response = await fetchFn(`${apiUrl}/murals`, {
+      const response = await fetchFn(`${webAppUrl}/${baseUri}/murals`, {
         body: JSON.stringify(body),
         headers: { 'content-type': 'application/json' },
         method: 'POST',
@@ -130,7 +144,7 @@ export default (config: ClientConfig): ApiClient => {
         roomId,
       };
       const response = await fetchFn(
-        `${apiUrl}/templates/${templateId}/murals`,
+        `${webAppUrl}/${baseUri}/templates/${templateId}/murals`,
         {
           body: JSON.stringify(body),
           headers: { 'content-type': 'application/json' },
@@ -140,27 +154,45 @@ export default (config: ClientConfig): ApiClient => {
       return response.json();
     },
     getRoomsByWorkspace: async (id: string): Promise<Room[]> => {
-      const response = await fetchFn(`${apiUrl}/workspaces/${id}/rooms`, {
-        method: 'GET',
-      });
+      const response = await fetchFn(
+        `${webAppUrl}/${baseUri}/workspaces/${id}/rooms`,
+        {
+          method: 'GET',
+        },
+      );
       return (await response.json()).value;
     },
     getAllWorkSpaces: async (): Promise<WorkSpace[]> => {
-      const response = await fetchFn(`${apiUrl}/workspaces`, {
+      const response = await fetchFn(`${webAppUrl}/${baseUri}/workspaces`, {
         method: 'GET',
       });
       return (await response.json()).value;
     },
     getWorkSpaceById: async (id: string): Promise<WorkSpace> => {
-      const response = await fetchFn(`${apiUrl}/workspaces/${id}`, {
-        method: 'GET',
-      });
+      const response = await fetchFn(
+        `${webAppUrl}/${baseUri}/workspaces/${id}`,
+        {
+          method: 'GET',
+        },
+      );
       return response.json();
     },
     getTemplates: async (): Promise<Template[]> => {
-      const response = await fetchFn(`${apiUrl}/templates`, {
+      const response = await fetchFn(`${webAppUrl}/${baseUri}/templates`, {
         method: 'GET',
       });
+      return (await response.json()).value;
+    },
+    searchWorkspaceRooms: async (
+      workspaceId: string | null,
+      title: string,
+    ): Promise<Room[]> => {
+      const response = await fetchFn(
+        `${webAppUrl}/${searchUri}/${workspaceId}/rooms?title=${title}`,
+        {
+          method: 'GET',
+        },
+      );
       return (await response.json()).value;
     },
   };

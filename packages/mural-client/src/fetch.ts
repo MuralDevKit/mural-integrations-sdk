@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
 import {
-  Session,
   deleteSession,
-  getSession,
-  setSession,
-  validateState,
   generateState,
+  getSession,
+  Session,
+  setSession,
   storeState,
+  validateState,
 } from './session';
 
 export type TokenHandlerConfig = {
@@ -80,11 +80,15 @@ function isTokenExpired(token: string) {
   return true;
 }
 
+export class FetchError extends Error {
+  response?: Response;
+}
+
 function checkStatus(response: Response) {
   if (response.ok) return response;
 
-  const error = new Error(response.statusText);
-  (error as any).response = response;
+  const error = new FetchError(response.statusText);
+  error.response = response;
   throw error;
 }
 

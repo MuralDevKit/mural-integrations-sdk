@@ -1,14 +1,14 @@
-import * as React from 'react';
-import classnames from 'classnames';
-import { Card, CardActionArea, CardContent, Grid } from '@material-ui/core';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import * as React from "react";
+import classnames from "classnames";
+import { Card, CardActionArea, CardContent, Grid } from "@material-ui/core";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import {
   Mural as MuralType,
   Room,
   WorkSpace,
-} from 'mural-integrations-mural-client';
-import MuralCard, { CardSize } from '../mural-card';
-import './styles.scss';
+} from "@tactivos/mural-integrations-mural-client";
+import MuralCard, { CardSize } from "../mural-card";
+import "./styles.scss";
 
 interface PropTypes {
   workspace: WorkSpace | null;
@@ -35,7 +35,7 @@ export default class MuralList extends React.Component<PropTypes> {
   state: StateTypes = INITIAL_STATE;
 
   componentDidMount() {
-    const favorites = this.props.murals.filter(mural => {
+    const favorites = this.props.murals.filter((mural) => {
       return mural.favorite;
     });
     this.setState({
@@ -53,8 +53,8 @@ export default class MuralList extends React.Component<PropTypes> {
   onClickSelectMural = (mural: MuralType) => {
     if (!mural) {
       return this.props.handleError(
-        new Error('Mural undefined'),
-        'Error creating mural',
+        new Error("Mural undefined"),
+        "Error creating mural"
       );
     }
     this.setState({ isCreateSelected: false });
@@ -70,7 +70,7 @@ export default class MuralList extends React.Component<PropTypes> {
     return (
       <div>
         <h5 className="subsection-header">Your favorite murals</h5>
-        <Grid container direction="row">
+        <Grid container className="column-gap" direction="row">
           {this.state.favorites.map((fave, i) => (
             <MuralCard
               mural={fave}
@@ -117,8 +117,8 @@ export default class MuralList extends React.Component<PropTypes> {
       <Grid item>
         <Card
           variant="outlined"
-          className={classnames('mural-card', `${this.props.cardSize}-card`, {
-            'selected-card': !!this.props.isCreateSelected,
+          className={classnames("mural-card", `${this.props.cardSize}-card`, {
+            "selected-card": !!this.props.isCreateSelected,
           })}
           id="create-a-mural"
         >
@@ -140,14 +140,14 @@ export default class MuralList extends React.Component<PropTypes> {
     ) {
       return (
         <div className="mural-selector-container">
-          <Grid container direction="row">
+          <Grid className="column-gap" container direction="row">
             {this.renderCreateNewMuralButton()}
           </Grid>
           {this.renderFavoriteMurals()}
           {/* TODO: scroll horizontally instead of rendering all */}
           <div>
             <h5 className="subsection-header">All murals</h5>
-            <Grid container direction="row">
+            <Grid className="column-gap" container direction="row">
               {this.renderMurals()}
             </Grid>
           </div>
@@ -156,7 +156,11 @@ export default class MuralList extends React.Component<PropTypes> {
     }
 
     return (
-      <Grid container direction="row" className="mural-selector-container">
+      <Grid
+        container
+        direction="row"
+        className="mural-selector-container column-gap"
+      >
         {this.renderCreateNewMuralButton()}
         {this.renderMurals()}
         {/* TODO: scroll horizontally instead of rendering all */}

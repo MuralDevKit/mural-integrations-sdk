@@ -20,10 +20,10 @@
   ],
   "author": "mural.co",
   "license": "ISC",
-	"repository": "https://github.com/tactivos/mural-integrations-sdk",
-	"publishConfig": {
+  "repository": "https://github.com/tactivos/mural-integrations-sdk",
+  "publishConfig": {
     "access": "public",
-		"registry": "https://npm.pkg.github.com"
+    "registry": "https://npm.pkg.github.com"
   },
   "bugs": {
     "url": "https://github.com/tactivos/mural-integrations-sdk/issues"
@@ -46,11 +46,13 @@
     "@rollup/plugin-commonjs": "^19.0.2",
     "@rollup/plugin-image": "^2.1.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
+    "@types/lodash": "^4.14.178",
     "@types/react": "16.9.43",
     "@types/react-dom": "16.9.8",
     "eslint": "^7.31.0",
     "eslint-config-mural": "^1.1.0",
     "eslint-config-prettier": "^8.3.0",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "prettier": "^2.3.2",
     "react": "16.13.1",
