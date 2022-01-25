@@ -13,11 +13,11 @@ This repository hosts the MURAL integration SDK
 
 ### Roadmap
 
-[ ] Use this repository in `mural-integrations/lib`
-[ ] Generalize build configuration and TypeScript configuration for all components
-[ ] Add testing rig
-[ ] Add sample application
-[ ] Add code quality tooling (prettier, eslint)
+ - [ ] Use this repository in `mural-integrations/lib`
+ - [ ] Generalize build configuration and TypeScript configuration for all components
+ - [ ] Add testing rig
+ - [ ] Add sample application
+ - [ ] Add code quality tooling (prettier, eslint)
 
 ### Upstream (mural-integrations)
 
