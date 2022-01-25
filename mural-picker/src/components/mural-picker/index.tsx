@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { debounce } from 'lodash';
 import {
   CircularProgress,
   FormControl,
@@ -16,11 +15,10 @@ import {
   WorkSpace,
 } from 'mural-integrations-mural-client';
 // @ts-ignore
-import MuralIcon from '../../../../../public/icon.png';
+import MuralIcon from 'mural-integrations-common/assets/icon.png';
 import { CardSize } from '../mural-card';
 import MuralList from '../mural-list';
 import './styles.scss';
-import { DELAYS } from '../../common/delays';
 
 export interface CreateMuralData {
   roomId: string;
@@ -31,6 +29,7 @@ export interface CreateMuralData {
 export interface CreateMuralResult {
   error?: string;
 }
+
 export interface PropTypes {
   apiClient: ApiClient;
   onCreateMural: (
@@ -42,7 +41,6 @@ export interface PropTypes {
   hideLogo?: boolean;
   hideAddButton?: boolean;
   theme?: 'light' | 'dark';
-  ListboxProps?: object | undefined;
 }
 
 interface StateTypes {
@@ -50,14 +48,11 @@ interface StateTypes {
   isLoading: boolean;
   workspaces: WorkSpace[];
   rooms: Room[];
-  workspaceRooms: Room[];
-  searchedRooms: Room[];
   murals: Mural[];
   mural?: Mural;
   error: string;
   workspace: WorkSpace | null;
   room: Room | null;
-  searchingRooms: boolean;
 }
 
 const INITIAL_STATE: StateTypes = {
@@ -65,13 +60,10 @@ const INITIAL_STATE: StateTypes = {
   isLoading: true,
   workspaces: [],
   rooms: [],
-  workspaceRooms: [],
-  searchedRooms: [],
   murals: [],
   error: '',
   workspace: null,
   room: null,
-  searchingRooms: false,
 };
 
 export default class MuralPicker extends React.Component<PropTypes> {
@@ -82,9 +74,8 @@ export default class MuralPicker extends React.Component<PropTypes> {
     try {
       const workspaces = await this.props.apiClient.getAllWorkSpaces();
       if (workspaces?.length) {
-        const workspace = workspaces[0];
-        this.setState({ workspaces, workspace });
-        await this.loadMuralsAndRoomsByWorkspace(workspace);
+        this.setState({ workspaces });
+        await this.loadMuralsAndRoomsByWorkspace(workspaces[0]);
       }
     } catch (e) {
       this.handleError(e, 'Error retrieving workspaces.');
@@ -107,11 +98,10 @@ export default class MuralPicker extends React.Component<PropTypes> {
         murals: [],
         rooms: [],
         roomId: '',
-        error: '',
       });
     }
 
-    this.setState({ isLoading: true, error: '' });
+    this.setState({ isLoading: true });
 
     try {
       const roomPromise = this.props.apiClient.getRoomsByWorkspace(
@@ -121,13 +111,11 @@ export default class MuralPicker extends React.Component<PropTypes> {
         workspace.id,
       );
       const [rooms, murals] = await Promise.all([roomPromise, muralPromise]);
-      const sortedRooms: Room[] = rooms.sort((a, b) =>
-        b.type.localeCompare(a.type),
-      );
+      const sortedRooms = rooms.sort((a, b) => b.type.localeCompare(a.type));
       this.setState({
         isLoading: false,
         workspace,
-        workspaceRooms: sortedRooms,
+        rooms: sortedRooms,
         murals,
         roomId: '',
         room: null,
@@ -143,11 +131,12 @@ export default class MuralPicker extends React.Component<PropTypes> {
       let murals: Mural[] = [];
       if (this.state.workspace) {
         try {
-          this.setState({ isLoading: true, error: '' });
+          this.setState({ isLoading: true });
           murals = await this.props.apiClient.getMuralsByWorkspaceId(
             this.state.workspace.id,
           );
         } catch (e) {
+          this.setState({ isLoading: false });
           this.handleError(e, 'Error retrieving room and murals.');
         }
       }
@@ -158,7 +147,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
       });
     }
     try {
-      this.setState({ isLoading: true, error: '' });
+      this.setState({ isLoading: true });
 
       const murals = await this.props.apiClient.getMuralsByRoom(room.id);
 
@@ -184,27 +173,9 @@ export default class MuralPicker extends React.Component<PropTypes> {
         mural,
       });
     } catch (e) {
-      this.props.handleError(e, 'Error selecting mural.');
+      this.handleError(e, 'Error selecting mural.');
     }
   };
-
-  onRoomSearch = debounce(async (title: string) => {
-    if (this.state.workspace && title.length > 2) {
-      try {
-        this.setState({ searchingRooms: true });
-        const rooms: Room[] = await this.props.apiClient.searchWorkspaceRooms(
-          this.state.workspace.id,
-          title,
-        );
-        this.setState({ searchedRooms: rooms, searchingRooms: false });
-      } catch (e) {
-        this.setState({ searchingRooms: false });
-        this.props.handleError(e, 'Error searching rooms.');
-      }
-    } else {
-      this.setState({ searchedRooms: [] });
-    }
-  }, DELAYS.DEBOUNCE_SEARCH);
 
   onCreateMural = async (_?: string) => {
     // TODO: incorporate template selection when public API is ready
@@ -268,82 +239,57 @@ export default class MuralPicker extends React.Component<PropTypes> {
             )}
             <span className="choose-mural-title">Choose a mural</span>
           </h2>
-          <div className={'mural-picker-selects'}>
-            <FormControl
-              className="mural-picker-select"
-              data-qa="workspace-select"
-            >
-              <div className="select-label">
-                <InputLabel shrink>WORKSPACE</InputLabel>
-              </div>
-              <div className="workspace-list">
-                <Autocomplete
-                  id="workspace-select"
-                  options={this.state.workspaces}
-                  ListboxProps={this.props.ListboxProps}
-                  getOptionLabel={option => {
-                    return option.name || '';
-                  }}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      placeholder="Find a workspace..."
-                      variant="outlined"
-                    />
-                  )}
-                  value={this.state.workspace}
-                  groupBy={() => 'SWITCH TO'}
-                  onChange={this.onWorkspaceSelect}
-                  noOptionsText={'No results'}
-                />
-              </div>
-            </FormControl>
-            <FormControl className="mural-picker-select" data-qa="room-select">
-              <div className="select-label">
-                <InputLabel shrink>ROOM</InputLabel>
-              </div>
+          <FormControl
+            className="mural-picker-select"
+            data-qa="workspace-select"
+          >
+            <div className="select-label">
+              <InputLabel shrink>WORKSPACE</InputLabel>
+            </div>
+            <div className="workspace-list">
               <Autocomplete
-                id="room-select"
-                options={
-                  this.state.searchedRooms.length === 0
-                    ? this.state.workspaceRooms
-                    : this.state.searchedRooms
-                }
-                ListboxProps={this.props.ListboxProps}
+                id="workspace-select"
+                options={this.state.workspaces}
                 getOptionLabel={option => {
-                  return option?.name || '';
+                  return option.name || '';
                 }}
                 renderInput={params => (
                   <TextField
                     {...params}
-                    placeholder="Find a room..."
+                    placeholder="Find a workspace..."
                     variant="outlined"
-                    inputProps={{
-                      ...params.inputProps,
-                      'data-qa': 'input-room-select',
-                    }}
                   />
                 )}
-                value={this.state.room}
-                disabled={!this.state.workspace}
-                groupBy={this.getRoomGroup}
-                onChange={this.onRoomSelect}
-                onInputChange={(event: React.ChangeEvent<{}>, input: string) => {
-                  if (event.type === 'change') {
-                    this.onRoomSearch(input);
-                  }
-                }}
-                onClose={(_event: React.ChangeEvent<{}>, _reason: string) => {
-                  this.setState({ searchedRooms: [] });
-                }}
-                getOptionSelected={(option: Room, value: Room) =>
-                  option.id === value.id
-                }
-                loading={this.state.searchingRooms}
-                noOptionsText={'No results'}
+                value={this.state.workspace}
+                groupBy={() => 'SWITCH TO'}
+                onChange={this.onWorkspaceSelect}
               />
-            </FormControl>
-          </div>
+            </div>
+          </FormControl>
+          <FormControl className="mural-picker-select" data-qa="room-select">
+            <div className="select-label">
+              <InputLabel shrink>ROOM</InputLabel>
+            </div>
+            <Autocomplete
+              id="room-select"
+              options={this.state.rooms}
+              getOptionLabel={option => {
+                return option?.name || '';
+              }}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  placeholder="Find a room..."
+                  variant="outlined"
+                />
+              )}
+              value={this.state.room}
+              disabled={!this.state.workspace}
+              groupBy={this.getRoomGroup}
+              onChange={this.onRoomSelect}
+            />
+          </FormControl>
+          {/* TODO: add search */}
           {this.state.error && (
             <div data-qa="mural-picker-error">
               <Alert severity="error" className="mural-picker-error">

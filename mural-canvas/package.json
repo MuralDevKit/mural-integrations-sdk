@@ -1,9 +1,9 @@
 {
-  "name": "mural-integrations-mural-picker",
+  "name": "mural-integrations-mural-canvas",
   "version": "1.0.0",
-  "description": "Mural Picker component for MURAL integrations",
-  "main": "dist/mural-picker.bundle.js",
-  "module": "dist/mural-picker.esm.js",
+  "description": "Mural Canvas component for MURAL integrations",
+  "main": "dist/mural-canvas.bundle.js",
+  "module": "dist/mural-canvas.esm.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist/"
@@ -16,17 +16,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/tactivos/mural-integrations-mural-picker.git"
+    "url": "git+ssh://git@github.com/tactivos/mural-integrations-mural-canvas.git"
   },
   "keywords": [
-    "mural-picker"
+    "mural",
+    "mural-canvas"
   ],
   "author": "mural.co",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/tactivos/mural-integrations-mural-picker/issues"
+    "url": "https://github.com/tactivos/mural-integrations-mural-canvas/issues"
   },
-  "homepage": "https://github.com/tactivos/mural-integrations-mural-picker#readme",
+  "homepage": "https://github.com/tactivos/mural-integrations-mural-canvas#readme",
   "dependencies": {
     "@material-ui/core": "4.11.4",
     "@material-ui/icons": "4.11.2",
@@ -36,6 +37,7 @@
   "peerDependencies": {
     "react": ">=16.13.0",
     "react-dom": ">=16.13.0",
+    "react-router-dom": "^6.0.0",
     "moment": "=>2.29.1",
     "mural-integrations-mural-client": ">=1.0.0"
   },
