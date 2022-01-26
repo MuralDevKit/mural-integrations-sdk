@@ -1,6 +1,6 @@
 {
   "name": "@tactivos/mural-integrations-mural-client",
-  "version": "1.0.0-alpha",
+  "version": "1.1.0-alpha",
   "description": "",
   "main": "dist/mural-client.bundle.js",
   "module": "dist/mural-client.esm.js",
