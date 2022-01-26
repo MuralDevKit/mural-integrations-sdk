@@ -21,10 +21,10 @@
   ],
   "author": "mural.co",
   "license": "ISC",
-	"repository": "https://github.com/tactivos/mural-integrations-sdk",
-	"publishConfig": {
+  "repository": "https://github.com/tactivos/mural-integrations-sdk",
+  "publishConfig": {
     "access": "public",
-		"registry": "https://npm.pkg.github.com"
+    "registry": "https://npm.pkg.github.com"
   },
   "bugs": {
     "url": "https://github.com/tactivos/mural-integrations-sdk/issues"
