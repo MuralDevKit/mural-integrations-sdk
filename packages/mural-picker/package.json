@@ -1,6 +1,6 @@
 {
   "name": "@tactivos/mural-integrations-mural-picker",
-  "version": "1.1.1-alpha.0",
+  "version": "1.1.2-alpha.0",
   "description": "Mural Picker component for MURAL integrations",
   "main": "dist/mural-picker.bundle.js",
   "module": "dist/mural-picker.esm.js",
@@ -29,7 +29,7 @@
     "@material-ui/core": "4.11.4",
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.58",
-    "@tactivos/mural-integrations-common": "^1.1.1-alpha.0",
+    "@tactivos/mural-integrations-common": "^1.1.2-alpha.0",
     "@tactivos/mural-integrations-mural-client": "^1.1.1-alpha.0",
     "classnames": "^2.3.1"
   },
