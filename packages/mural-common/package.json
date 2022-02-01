@@ -5,7 +5,9 @@
   "main": "index.js",
   "private": true,
   "files": [
-    "assets/*"
+    "assets/*",
+		"fonts/*",
+		"styles/*"
   ],
   "scripts": {},
   "keywords": [
