@@ -1,4 +1,15 @@
-export type WorkSpace = {
+export type User = {
+  avatar: string;
+  createdOn: number;
+  email: string;
+  firstName: string;
+  id: string;
+  lastName: string;
+  type: string;
+  lastActiveWorkspace: string;
+};
+
+export type Workspace = {
   id: string;
   name: string;
 };
@@ -24,9 +35,12 @@ export type Mural = {
 };
 
 export type Template = {
-  id: string;
   description: string;
-  title: string;
+  id: string;
+  name: string;
   publicHash: string;
   thumbUrl: string;
+  type: 'default' | 'custom';
+  updatedOn: number;
+  workspaceId: string;
 };
