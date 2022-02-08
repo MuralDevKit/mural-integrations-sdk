@@ -1,10 +1,8 @@
 import jwt from 'jsonwebtoken';
 import {
-  deleteSession,
   generateState,
-  getSession,
   Session,
-  setSession,
+  setupSessionStore,
   storeState,
   validateState,
 } from './session';
@@ -19,12 +17,14 @@ export type AuthenticatedFetchConfig = {
   authorizeFn: ReturnType<typeof authorizeHandler>;
   requestTokenFn: ReturnType<typeof requestTokenHandler>;
   refreshTokenFn: ReturnType<typeof refreshTokenHandler>;
+  storage?: Storage;
 };
 
 let fetchConfig: AuthenticatedFetchConfig;
+let sessionStore: ReturnType<typeof setupSessionStore>;
 
 export const authenticated = () => {
-  const session = getSession();
+  const session = sessionStore.get();
   return !!(session && !isTokenExpired(session.refreshToken));
 };
 
@@ -49,7 +49,7 @@ const authenticatedFetch = async (
 };
 
 function withAuthenticationToken(headers: HeadersInit) {
-  const session = getSession();
+  const session = sessionStore.get();
   const accessToken = session && session.accessToken;
 
   if (!accessToken) return headers;
@@ -60,10 +60,10 @@ function withAuthenticationToken(headers: HeadersInit) {
 }
 
 async function verifyTokensExpiration() {
-  const session = getSession();
+  const session = sessionStore.get();
   if (session) {
     if (isTokenExpired(session.refreshToken)) {
-      deleteSession();
+      sessionStore.delete();
     } else if (isTokenExpired(session.accessToken)) {
       await fetchConfig.refreshTokenFn({ store: true });
     }
@@ -87,14 +87,18 @@ export class FetchError extends Error {
 function checkStatus(response: Response) {
   if (response.ok) return response;
 
-  const error = new FetchError(response.statusText);
+  const error = new FetchError(
+    `Request to ${new URL(response.url).pathname} failed with status ${
+      response.status
+    }`,
+  );
   error.response = response;
   throw error;
 }
 
 function catchAuthenticationError(input: RequestInfo, init: RequestInit = {}) {
   return async (error: { response: Response }): Promise<Response> => {
-    const session = getSession();
+    const session = sessionStore.get();
     const res = await extractErrorResponse(error.response);
 
     if (
@@ -116,7 +120,7 @@ function catchAuthenticationError(input: RequestInfo, init: RequestInit = {}) {
     */
     const invalidSessionError = res.status === 0 || res.status === 401;
     if (invalidSessionError) {
-      deleteSession();
+      sessionStore.delete();
       window.location.reload();
 
       // resolving here to ensure we aren't retrying forever
@@ -187,7 +191,7 @@ export const requestTokenHandler = (config: TokenHandlerConfig) => async (
     .then(res => res.json());
 
   if (opts.store) {
-    setSession(session);
+    sessionStore.set(session);
   }
 
   return session;
@@ -196,7 +200,7 @@ export const requestTokenHandler = (config: TokenHandlerConfig) => async (
 export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
   opts = { store: false },
 ): Promise<Session> => {
-  const staleSession = getSession();
+  const staleSession = sessionStore.get();
   const options = {
     method: 'POST',
     headers: {
@@ -213,7 +217,7 @@ export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
     .then(res => res.json());
 
   if (opts.store) {
-    setSession(freshSession);
+    sessionStore.set(freshSession);
   }
 
   return freshSession;
@@ -226,6 +230,7 @@ export default function setup(
   config: AuthenticatedFetchConfig,
 ): typeof authenticatedFetch {
   fetchConfig = config;
+  sessionStore = setupSessionStore(config.storage || localStorage);
 
   return authenticatedFetch;
 }
