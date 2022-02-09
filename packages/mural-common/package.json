@@ -4,7 +4,9 @@
   "description": "MURAL integration basic components and assets.",
   "main": "index.js",
   "files": [
-    "assets/*"
+    "assets/*",
+		"fonts/*",
+		"styles/*"
   ],
   "scripts": {},
   "keywords": [
