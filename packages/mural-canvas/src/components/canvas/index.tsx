@@ -24,7 +24,7 @@ export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
   muralId: string;
   state: string;
-  authUrl: URL | string;
+  authUrl?: URL | string;
 }
 
 export function muralSessionActivationUrl(
@@ -74,7 +74,7 @@ export class CanvasHost extends React.Component<PropTypes> {
       `https://${host}`
     );
 
-    if (this.props.apiClient.authenticated()) {
+    if (this.props.authUrl && this.props.apiClient.authenticated()) {
       canvasUrl = muralSessionActivationUrl(
         this.props.apiClient,
         this.props.authUrl,
