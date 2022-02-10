@@ -1,4 +1,14 @@
-declare module 'dos-config' {
+declare global {
+  const APP_ID: string;
+  const SERVICES: ServiceMap;
+}
+
+declare module "dos-config" {
+  export interface ServiceMap {
+    auth: string;
+    mural: string;
+  }
+  
   export interface ClientAppConfig {
     clientId: string;
     clientSecret: string;
@@ -13,9 +23,10 @@ declare module 'dos-config' {
   interface Config {
     appName: string;
     serverPort: number;
-    endpoints: {
-      webapp: string;
-    },
+    services: {
+      auth: string;
+      mural: string;
+    };
     clientApp: ClientAppConfig;
   }
 

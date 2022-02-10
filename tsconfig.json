@@ -25,6 +25,6 @@
     "./server.ts",
     "./lib/**/*.ts",
     "./types/**/*.ts",
-    "./src/**/*.ts"
+    "./src/**/*.ts",
   ]
 }
