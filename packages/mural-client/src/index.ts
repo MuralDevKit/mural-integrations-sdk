@@ -7,6 +7,7 @@ import setupAuthenticatedFetch, {
   TokenHandlerConfig,
 } from './fetch';
 import { Mural, Room, Template, WorkSpace } from './types';
+import { setupSessionStore } from './session'
 
 export * from './fetch';
 export * from './session';
@@ -47,7 +48,7 @@ export const getApiError = async (error: Error): Promise<ApiError | null> => {
 export type BuildClientArgs = {
   appId: string;
   muralHost?: string;
-  storage: Storage;
+  storage?: Storage;
 } & TokenHandlerConfig;
 
 export function buildClientConfig(args: BuildClientArgs): ClientConfig {
@@ -55,7 +56,7 @@ export function buildClientConfig(args: BuildClientArgs): ClientConfig {
     authorizeFn: authorizeHandler(args),
     requestTokenFn: requestTokenHandler(args),
     refreshTokenFn: refreshTokenHandler(args),
-    storage: args.storage
+    sessionStore: setupSessionStore(args.storage || localStorage)
   });
 
   return {

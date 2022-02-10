@@ -17,14 +17,13 @@ export type AuthenticatedFetchConfig = {
   authorizeFn: ReturnType<typeof authorizeHandler>;
   requestTokenFn: ReturnType<typeof requestTokenHandler>;
   refreshTokenFn: ReturnType<typeof refreshTokenHandler>;
-  storage?: Storage;
+  sessionStore: ReturnType<typeof setupSessionStore>;
 };
 
 let fetchConfig: AuthenticatedFetchConfig;
-let sessionStore: ReturnType<typeof setupSessionStore>;
 
 export const authenticated = () => {
-  const session = sessionStore.get();
+  const session = fetchConfig.sessionStore.get();
   return !!(session && !isTokenExpired(session.refreshToken));
 };
 
@@ -49,7 +48,7 @@ const authenticatedFetch = async (
 };
 
 function withAuthenticationToken(headers: HeadersInit) {
-  const session = sessionStore.get();
+  const session = fetchConfig.sessionStore.get();
   const accessToken = session && session.accessToken;
 
   if (!accessToken) return headers;
@@ -60,10 +59,10 @@ function withAuthenticationToken(headers: HeadersInit) {
 }
 
 async function verifyTokensExpiration() {
-  const session = sessionStore.get();
+  const session = fetchConfig.sessionStore.get();
   if (session) {
     if (isTokenExpired(session.refreshToken)) {
-      sessionStore.delete();
+      fetchConfig.sessionStore.delete();
     } else if (isTokenExpired(session.accessToken)) {
       await fetchConfig.refreshTokenFn({ store: true });
     }
@@ -98,7 +97,7 @@ function checkStatus(response: Response) {
 
 function catchAuthenticationError(input: RequestInfo, init: RequestInit = {}) {
   return async (error: { response: Response }): Promise<Response> => {
-    const session = sessionStore.get();
+    const session = fetchConfig.sessionStore.get();
     const res = await extractErrorResponse(error.response);
 
     if (
@@ -120,7 +119,7 @@ function catchAuthenticationError(input: RequestInfo, init: RequestInit = {}) {
     */
     const invalidSessionError = res.status === 0 || res.status === 401;
     if (invalidSessionError) {
-      sessionStore.delete();
+      fetchConfig.sessionStore.delete();
       window.location.reload();
 
       // resolving here to ensure we aren't retrying forever
@@ -191,7 +190,7 @@ export const requestTokenHandler = (config: TokenHandlerConfig) => async (
     .then(res => res.json());
 
   if (opts.store) {
-    sessionStore.set(session);
+    fetchConfig.sessionStore.set(session);
   }
 
   return session;
@@ -200,7 +199,7 @@ export const requestTokenHandler = (config: TokenHandlerConfig) => async (
 export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
   opts = { store: false },
 ): Promise<Session> => {
-  const staleSession = sessionStore.get();
+  const staleSession = fetchConfig.sessionStore.get();
   const options = {
     method: 'POST',
     headers: {
@@ -217,7 +216,7 @@ export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
     .then(res => res.json());
 
   if (opts.store) {
-    sessionStore.set(freshSession);
+    fetchConfig.sessionStore.set(freshSession);
   }
 
   return freshSession;
@@ -230,7 +229,6 @@ export default function setup(
   config: AuthenticatedFetchConfig,
 ): typeof authenticatedFetch {
   fetchConfig = config;
-  sessionStore = setupSessionStore(config.storage || localStorage);
 
   return authenticatedFetch;
 }
