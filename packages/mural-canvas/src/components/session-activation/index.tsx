@@ -1,8 +1,8 @@
-import { ApiClient } from "@tactivos/mural-integrations-mural-client";
-import * as React from "react";
-import { useEffect } from "react";
-import { EventHandler } from "../../types";
-import "./styles.scss";
+import { ApiClient } from '@tactivos/mural-integrations-mural-client';
+import * as React from 'react';
+import { useEffect } from 'react';
+import { EventHandler } from '../../types';
+import './styles.scss';
 
 interface PropTypes {
   apiClient: ApiClient;
@@ -12,18 +12,18 @@ interface PropTypes {
 export async function getMuralSessionClaimUrl(
   apiClient: ApiClient,
   muralUrl: URL | string,
-  code: string
+  code: string,
 ) {
   muralUrl = new URL(muralUrl.toString());
   const claimRequestUrl = new URL(
     `/api/v0/authenticate/oauth2/session/${code}`,
-    `https://${apiClient.config.host}`
+    `https://${apiClient.config.host}`,
   );
 
-  claimRequestUrl.searchParams.set("redirectUrl", muralUrl.href);
+  claimRequestUrl.searchParams.set('redirectUrl', muralUrl.href);
 
   const res: Response = await apiClient.fetch(claimRequestUrl.href, {
-    method: "PUT",
+    method: 'PUT',
   });
 
   // Workaround for the wrong content-type
@@ -31,13 +31,13 @@ export async function getMuralSessionClaimUrl(
   const buf = await res.arrayBuffer();
   const claimUrl = decoder.decode(buf);
 
-  return new URL(claimUrl.replace('"', ""));
+  return new URL(claimUrl.replace('"', ''));
 }
 
 const SessionActivation: React.FC<PropTypes> = ({ apiClient, onError }) => {
   const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-  const rawRedirectUrl = params.get("redirectUrl");
+  const code = params.get('code');
+  const rawRedirectUrl = params.get('redirectUrl');
 
   if (!code || !rawRedirectUrl) {
     onError && onError();
@@ -51,7 +51,7 @@ const SessionActivation: React.FC<PropTypes> = ({ apiClient, onError }) => {
       const claimUrl = await getMuralSessionClaimUrl(
         apiClient,
         redirectUrl,
-        code
+        code,
       );
 
       window.location.replace(claimUrl.href);

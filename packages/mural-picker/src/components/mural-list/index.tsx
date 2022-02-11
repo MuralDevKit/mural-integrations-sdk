@@ -1,14 +1,14 @@
-import * as React from "react";
-import classnames from "classnames";
-import { Card, CardActionArea, CardContent, Grid } from "@material-ui/core";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
+import * as React from 'react';
+import classnames from 'classnames';
+import { Card, CardActionArea, CardContent, Grid } from '@material-ui/core';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import {
   Mural as MuralType,
   Room,
   Workspace,
-} from "@tactivos/mural-integrations-mural-client";
-import MuralCard, { CardSize } from "../mural-card";
-import "./styles.scss";
+} from '@tactivos/mural-integrations-mural-client';
+import MuralCard, { CardSize } from '../mural-card';
+import './styles.scss';
 
 interface PropTypes {
   workspace: Workspace | null;
@@ -35,7 +35,7 @@ export default class MuralList extends React.Component<PropTypes> {
   state: StateTypes = INITIAL_STATE;
 
   componentDidMount() {
-    const favorites = this.props.murals.filter((mural) => {
+    const favorites = this.props.murals.filter(mural => {
       return mural.favorite;
     });
     this.setState({
@@ -53,8 +53,8 @@ export default class MuralList extends React.Component<PropTypes> {
   onClickSelectMural = (mural: MuralType) => {
     if (!mural) {
       return this.props.handleError(
-        new Error("Mural undefined"),
-        "Error creating mural"
+        new Error('Mural undefined'),
+        'Error creating mural',
       );
     }
     this.setState({ isCreateSelected: false });
@@ -117,8 +117,8 @@ export default class MuralList extends React.Component<PropTypes> {
       <Grid item className="mural-preview">
         <Card
           variant="outlined"
-          className={classnames("mural-card", `${this.props.cardSize}-card`, {
-            "selected-card": !!this.props.isCreateSelected,
+          className={classnames('mural-card', `${this.props.cardSize}-card`, {
+            'selected-card': !!this.props.isCreateSelected,
           })}
           id="create-a-mural"
         >

@@ -1,9 +1,9 @@
-import * as React from "react";
-import { Button, Modal } from "@material-ui/core";
-import { Mural } from "@tactivos/mural-integrations-mural-client";
-import MuralPicker, { PropTypes as MuralPickerProps } from "../mural-picker";
+import * as React from 'react';
+import { Button, Modal } from '@material-ui/core';
+import { Mural } from '@tactivos/mural-integrations-mural-client';
+import MuralPicker, { PropTypes as MuralPickerProps } from '../mural-picker';
 
-import "./styles.scss";
+import './styles.scss';
 
 const MuralPickerModal: React.FC<MuralPickerProps> = ({
   onMuralSelect,
