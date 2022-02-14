@@ -18,6 +18,7 @@ This repository hosts the MURAL integration SDK
  - [ ] Add testing rig
  - [ ] Add sample application
  - [x] Add code quality tooling (prettier, eslint)
+ - [ ] Changelog
 
 ### Upstream (mural-integrations)
 
@@ -50,7 +51,10 @@ ls -la dist/
 
 ### Versioning
 
-TBD
+```
+npx lerna version <(pre)patch|minor|major>
+```
 
 ### Publishing
 
+[Create a new release](https://github.com/tactivos/mural-integrations-sdk/releases/new) from the latest tag.
