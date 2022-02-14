@@ -17,7 +17,7 @@ This repository hosts the MURAL integration SDK
  - [ ] Generalize build configuration and TypeScript configuration for all components
  - [ ] Add testing rig
  - [ ] Add sample application
- - [ ] Add code quality tooling (prettier, eslint)
+ - [x] Add code quality tooling (prettier, eslint)
 
 ### Upstream (mural-integrations)
 
