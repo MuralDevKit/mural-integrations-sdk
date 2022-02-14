@@ -17,7 +17,7 @@ This repository hosts the MURAL integration SDK
  - [ ] Generalize build configuration and TypeScript configuration for all components
  - [ ] Add testing rig
  - [ ] Add sample application
- - [x] Add code quality tooling (prettier, eslint)
+ - [ ] Add code quality tooling (prettier, eslint) https://github.com/tactivos/mural-integrations-sdk/pull/8
  - [ ] Changelog
 
 ### Upstream (mural-integrations)
