@@ -1,0 +1,48 @@
+{
+  "name": "@tactivos/mural-integrations-mural-server",
+  "version": "1.1.1-alpha.0",
+  "description": "Mural server component for MURAL integrations",
+  "main": "dist/mural-server.bundle.js",
+  "module": "dist/mural-server.esm.js",
+  "types": "dist/server.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "pack": "npm pack",
+    "build": "npx rollup --config build/rollup.config.js",
+    "compile": "npx tsc --project build/tsconfig.json",
+    "test": "npm run test",
+    "clean": "rm -rf dist out   --pack-destination ../../dist/"
+  },
+  "keywords": [
+    "mural-server"
+  ],
+  "author": "mural.co",
+  "license": "ISC",
+  "repository": "https://github.com/tactivos/mural-integrations-sdk",
+  "bugs": {
+    "url": "https://github.com/tactivos/mural-integrations-sdk/issues"
+  },
+  "homepage": "https://github.com/tactivos/mural-integrations-sdk/tree/packages/mural-server",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "body-parser": "^1.19.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^11.0.0",
+    "express": "^4.17.1"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@types/body-parser": "^1.19.2",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/express": "^4.17.13",
+    "rollup-plugin-copy": "^3.4.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.31.2",
+    "typescript": "^4.3.5"
+  }
+}
