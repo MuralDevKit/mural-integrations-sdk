@@ -1,0 +1,60 @@
+@use '../styles.scss';
+
+.template-card {
+  width: 188px;
+  height: 160px;
+  border-radius: 0;
+  margin: 0.75em 0 1.35em 0;
+
+  .MuiButtonBase-root {
+    font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  }
+
+  .template-thumbnail {
+    width: 188px;
+    height: 120px;
+  }
+
+  .template-info {
+    height: 40px;
+    padding: 0.6em;
+
+    * {
+      // prevents click event from happening on button children
+      pointer-events: none;
+    }
+
+    .template-title {
+      font-weight: 700;
+      font-size: 0.8rem;
+
+      // ellipsis
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .template-description {
+      font-size: 0.6rem;
+    }
+  }
+
+  // &.small-card {
+  //   width: 141px;
+  //   height: 120px;
+
+  //   .mural-thumbnail {
+  //     width: 141px;
+  //     height: 85px;
+  //   }
+
+  //   .mural-info {
+  //     padding-top: 0.3em;
+  //   }
+  // }
+
+  // &.selected-card {
+  //   border: 0.15em solid #ff0066;
+  //   margin: 0.6em 1.2em 1.2em 0;
+  // }
+}
