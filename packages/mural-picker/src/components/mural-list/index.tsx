@@ -17,7 +17,7 @@ interface PropTypes {
   murals: MuralType[];
   selectedMural?: MuralType;
   onMuralSelect: (mural: MuralType) => void;
-  onCreateMural: () => void;
+  onCreateMuralButtonHandler: () => void;
   handleError: (e: Error, displayMsg: string) => void;
   cardSize: CardSize;
   hideAddButton: boolean;
@@ -62,8 +62,7 @@ export default class MuralList extends React.Component<PropTypes> {
   };
 
   onCreateMural = () => {
-    this.setState({ isCreateSelected: true });
-    this.props.onCreateMural();
+    this.props.onCreateMuralButtonHandler();
   };
 
   renderFavoriteMurals = () => {

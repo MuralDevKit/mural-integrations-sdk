@@ -26,7 +26,7 @@ export type Mural = {
 export type Template = {
   id: string;
   description: string;
-  title: string;
+  name: string;
   publicHash: string;
   thumbUrl: string;
 };

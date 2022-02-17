@@ -14,6 +14,7 @@ import {
   Mural,
   Room,
   WorkSpace,
+  Template,
 } from "@tactivos/mural-integrations-mural-client";
 // @ts-ignore
 import MuralIcon from "@tactivos/mural-integrations-common/assets/icon.png";
@@ -21,6 +22,7 @@ import { CardSize } from "../mural-card";
 import MuralList from "../mural-list";
 import { DELAYS } from "../../common/delays";
 import "./styles.scss";
+import CreateNewMural from "../create-new-mural";
 
 export interface CreateMuralData {
   roomId: string;
@@ -33,9 +35,7 @@ export interface CreateMuralResult {
 }
 export interface PropTypes {
   apiClient: ApiClient;
-  onCreateMural: (
-    mural: CreateMuralData
-  ) => Promise<CreateMuralResult | undefined>;
+  onCreateMural: (mural: Mural) => void;
   onMuralSelect: (mural: Mural) => void;
   handleError: (error: Error, message: string) => void;
   cardSize?: CardSize;
@@ -58,6 +58,7 @@ interface StateTypes {
   workspace: WorkSpace | null;
   room: Room | null;
   searchingRooms: boolean;
+  templates: Template[];
 }
 
 const INITIAL_STATE: StateTypes = {
@@ -72,6 +73,7 @@ const INITIAL_STATE: StateTypes = {
   workspace: null,
   room: null,
   searchingRooms: false,
+  templates: [],
 };
 
 export default class MuralPicker extends React.Component<PropTypes> {
@@ -206,13 +208,55 @@ export default class MuralPicker extends React.Component<PropTypes> {
     }
   }, DELAYS.DEBOUNCE_SEARCH);
 
-  onCreateMural = async (_?: string) => {
-    // TODO: incorporate template selection when public API is ready
+  loadTemplates = async () => {
+    try {
+      const templates: Template[] = await this.props.apiClient.getTemplates();
+      this.setState({ templates });
+    } catch (e) {
+      this.props.handleError(e, "Error getting templates.");
+    }
+  };
+
+  onCreateMural = async (title: string, template: Template) => {
+    try {
+      if (!title) {
+        return this.setState({ error: "Please enter a title for a new Mural." });
+      }
+
+      if (!template) {
+        return this.setState({ error: "Please select a template." }); 
+      }
+      const newMural = await this.props.apiClient.createMuralFromTemplate(
+        title,
+        this.state!.room!.id,
+        template.id
+      );
+      console.log("==== New Mural =====", newMural);
+      console.log("====== State ======", this.state);
+
+      // todo Need to pass a new mural in to a callback for use it in the outer app.
+
+      this.props.onCreateMural(newMural.value);
+    } catch (e) {
+      this.props.handleError(e, "Error creating a new mural.");
+    }
+
+    // if (result?.error) {
+    //   this.setState({
+    //     error: result.error,
+    //   });
+    // }
+  };
+
+  onCreateMuralButtonHandler = async () => {
     if (!this.state.workspace) {
       return this.setState({ error: "Please select a workspace." });
     }
     if (!this.state.room) {
       return this.setState({ error: "Please select a room." });
+    }
+    if (!this.state.templates.length) {
+      await this.loadTemplates();
     }
 
     this.setState({
@@ -220,19 +264,13 @@ export default class MuralPicker extends React.Component<PropTypes> {
       isCreateSelected: true,
       mural: undefined,
     });
-
-    const result = await this.props.onCreateMural({
-      roomId: this.state.room.id,
-      title: "", // leaving title blank for now
-      workspaceId: this.state.workspace.id,
-    });
-
-    if (result?.error) {
-      this.setState({
-        error: result.error,
-      });
-    }
   };
+
+  onCancelAndGoBack() {
+    this.setState((state) => {
+      return { ...state, isCreateSelected: false };
+    });
+  }
 
   handleError = (e: Error, displayMsg: string) => {
     // display error and send back error data to caller
@@ -332,7 +370,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
                   event: React.ChangeEvent<{}>,
                   input: string
                 ) => {
-                  if (event.type === "change") {
+                  if (event && event.type === "change") {
                     this.onRoomSearch(input);
                   }
                 }}
@@ -360,7 +398,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
               <CircularProgress />
             </div>
           )}
-          {!this.state.isLoading && (
+          {!this.state.isCreateSelected && !this.state.isLoading && (
             <MuralList
               workspace={this.state.workspace}
               room={this.state.room}
@@ -368,7 +406,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
               murals={this.state.murals}
               selectedMural={this.state.mural}
               onMuralSelect={this.onMuralSelect}
-              onCreateMural={this.onCreateMural}
+              onCreateMuralButtonHandler={this.onCreateMuralButtonHandler}
               handleError={this.handleError}
               cardSize={cardSize || "normal"}
               hideAddButton={!!this.props.hideAddButton}
@@ -376,6 +414,17 @@ export default class MuralPicker extends React.Component<PropTypes> {
           )}
 
           {/* TODO: add create-new-mural flow */}
+          {this.state.isCreateSelected && this.state.room && (
+            <React.Fragment>
+              <CreateNewMural
+                templates={this.state.templates}
+                token=""
+                onCancelAndGoBack={this.onCancelAndGoBack.bind(this)}
+                onCreateMural={this.onCreateMural}
+                room={this.state.room.id}
+              />
+            </React.Fragment>
+          )}
         </div>
       </ThemeProvider>
     );
