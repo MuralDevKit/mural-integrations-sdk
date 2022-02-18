@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>oauth</title>
+</head>
+<body>
+<script>
+    const queryString = new URLSearchParams(window.location.search);
+    accessToken = queryString.get("accessToken");
+    refreshToken = queryString.get("refreshToken");
+    localStorage.setItem('mural.oauth.session', JSON.stringify({
+        accessToken,
+        refreshToken
+    }))
+    window.close()
+</script>
+</body>
+</html>
