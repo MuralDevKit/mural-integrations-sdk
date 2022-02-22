@@ -97,6 +97,7 @@ export interface ApiClient {
     workspaceId: string | null,
     title: string,
   ) => Promise<Room[]>;
+  getLastActiveWorkspaceId: () => Promise<string | undefined>
 }
 
 export default (config: ClientConfig): ApiClient => {
@@ -202,5 +203,11 @@ export default (config: ClientConfig): ApiClient => {
       );
       return (await response.json()).value;
     },
+    getLastActiveWorkspaceId: async (): Promise<string | undefined> => {
+      const response = await fetchFn(`${apiUrl}/users/me`, {
+        method: 'GET',
+      });
+      return (await response.json()).value.lastActiveWorkspace;
+    }
   };
 };
