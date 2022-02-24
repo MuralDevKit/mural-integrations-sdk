@@ -1,4 +1,5 @@
-import * as jwt from 'jsonwebtoken';
+import * as qs from "qs";
+import * as jwt from "jsonwebtoken";
 import {
   generateState,
   Session,
@@ -153,27 +154,55 @@ async function extractErrorResponse(res?: Response) {
   };
 }
 
+const encodeAutoParam = (auto: boolean | AutomaticOptions): string => {
+  if (typeof auto === 'boolean') {
+    return auto.toString();
+  }
+
+  const payload = Buffer.from(JSON.stringify(auto)).toString('base64');
+  return `json:${payload}`;
+};
+
+interface AutomaticOptions {
+  email: string;
+  signup?: boolean;
+  consentSso?: boolean;
+}
+
+export interface AuthorizeOptions {
+  auto?: boolean | AutomaticOptions;
+  storeState: boolean;
+  forward?: {
+    [key: string]: unknown;
+  };
+}
+
 export const authorizeHandler =
   (config: TokenHandlerConfig) =>
-  async (redirectUri?: string, opts = { store: false }): Promise<string> => {
+  async (redirectUri?: string, opts: AuthorizeOptions = { storeState: false }): Promise<string> => {
     const state = generateState();
 
-    // validate that the state hasn't been tampered
-    const params = new URLSearchParams();
-    if (redirectUri) params.set('redirectUri', redirectUri);
-    params.set('state', state);
+    const params = qs.stringify(
+        {
+          state,
+          redirectUri,
+          auto: opts.auto ? encodeAutoParam(opts.auto) : undefined,
+          ...opts.forward,
+        },
+        { encode: true },
+    );
 
     const url = `${config.authorizeUri}?${params}`;
 
-    const authorizeUrl = await fetch(url, { method: 'GET' })
+    const authorizeUrl: { url: string } = await fetch(url, { method: 'GET' })
       .then(checkStatus)
-      .then(res => res.text());
+      .then(res => res.json());
 
-    if (opts.store) {
+    if (opts.storeState) {
       storeState(state);
     }
 
-    return authorizeUrl;
+    return authorizeUrl.url;
   };
 
 export const requestTokenHandler =
