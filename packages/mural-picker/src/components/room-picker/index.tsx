@@ -11,9 +11,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   ApiClient,
   Room,
-  WorkSpace,
+  Workspace,
 } from "@tactivos/mural-integrations-mural-client";
-// @ts-ignore
 import "./styles.scss";
 
 export interface RoomPickerData {
@@ -36,10 +35,10 @@ export interface RoomPickerPropTypes {
 
 interface StateTypes {
   isLoading: boolean;
-  workspaces: WorkSpace[];
+  workspaces: Workspace[];
   rooms: Room[];
   error: string;
-  workspace: WorkSpace | null;
+  workspace: Workspace | null;
   room: Room | null;
 }
 
@@ -62,7 +61,7 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
   loadWorkspaces = async () => {
     this.setState({ isLoading: true });
     try {
-      const workspaces = await this.props.apiClient.getAllWorkSpaces();
+      const workspaces = await this.props.apiClient.getWorkspaces();
       if (workspaces?.length) {
         this.setState({ workspaces, isLoading: false });
       }
@@ -74,13 +73,13 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
 
   onWorkspaceSelect = async (
     _: React.ChangeEvent<{}>,
-    workspace: WorkSpace | null
+    workspace: Workspace | null
   ) => {
     this.setState({ workspace, error: "" });
     await this.loadRoomsByWorkspace(workspace);
   };
 
-  loadRoomsByWorkspace = async (workspace: WorkSpace | null) => {
+  loadRoomsByWorkspace = async (workspace: Workspace | null) => {
     if (!workspace) {
       return this.setState({
         workspace: null,

@@ -1,4 +1,4 @@
-import { FetchFunction } from '../src/api';
+import { FetchFunction } from '../../mural-client';
 
 const allMuralsData = require('./data/getAllMurals.json');
 const allWorkspacesData = require('./data/getAllWorkspaces.json');
@@ -37,11 +37,11 @@ export async function getRoomsByWorkspace(_fetchFn: FetchFunction, id: string) {
   return allRoomsData[id].value;
 }
 
-export async function getAllWorkSpaces(_fetchFn: FetchFunction) {
+export async function getWorkspaces(_fetchFn: FetchFunction) {
   return allWorkspacesData.value;
 }
 
-export async function getWorkSpaceById(_fetchFn: FetchFunction, id: string) {
+export async function getWorkspace(_fetchFn: FetchFunction, id: string) {
   return allWorkspacesData.value.find((v: { id: string }) => {
     return v.id === id;
   });
