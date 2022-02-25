@@ -15,11 +15,12 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    column-gap: 10px;
+    column-gap: 0.5em;
+    flex-wrap: wrap;
   }
   .mural-picker-select {
     font-weight: 400;
-    flex: 1;
+    flex: 1 1 32%;
     .MuiTextField-root
       .MuiOutlinedInput-root.Mui-focused
       .MuiOutlinedInput-notchedOutline {
@@ -49,6 +50,10 @@
     margin-top: 0.6em;
   }
 
+  .mural-select-button {
+    margin-top: 1em;
+  }
+
   .mural-list-spinner {
     padding-top: 2em;
     text-align: center;
@@ -74,7 +79,7 @@
   }
 
   .column-gap {
-    column-gap: 10px;
+    column-gap: 0.5em;
   }
 }
 

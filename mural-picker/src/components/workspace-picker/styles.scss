@@ -1,25 +1,33 @@
 @use '../styles.scss';
 
-.mural-picker-body {
+.workspace-picker-body {
   font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   margin: auto;
+  padding-top: 2rem;
   outline: 0;
-
+  width: 100%;
+  max-width: 700px;
+  max-height: 240px;
+  justify-content: center;
+  align-items: center;
   &.dark {
     color: white;
   }
 
-  .mural-picker-selects {
-    display: flex;
-    justify-content: space-between;
-    align-items: stretch;
-    column-gap: 10px;
+  .mural-picker-error {
+    margin: 0.2rem 0.8rem;
   }
-  .mural-picker-select {
+  .select-row {
+    display: flex;
+    width: 100%;
+  }
+  .workspace-picker-select {
     font-weight: 400;
-    flex: 1;
+    flex-grow: 3;
+    margin: 0.2rem 0.9375rem;
+
     .MuiTextField-root
       .MuiOutlinedInput-root.Mui-focused
       .MuiOutlinedInput-notchedOutline {
@@ -31,22 +39,30 @@
     }
   }
 
-  .choose-mural-logo {
-    margin-right: 1em;
+  .workspace-picker-button-control {
+    flex-grow: 1;
+    padding-top: 1.2rem;
+    margin: 0.2rem 0.9375rem;
   }
 
-  .choose-mural-title {
-    font-weight: 700;
-    vertical-align: top;
-  }
+  .workspace-picker-button {
+    flex: auto;
+    background-color: #ff0066;
+    border: none;
+    border-radius: 5px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 400;
+    text-align: center;
+    transition: background 0.1s linear;
+    cursor: pointer;
+    outline-style: none;
 
-  .mural-search-button {
-    margin-left: 1em;
-  }
-
-  // TODO: How to apply a fade to a scrollable modal?
-  .mural-picker-error {
-    margin-top: 0.6em;
+    &:active,
+    &:focus,
+    &:hover {
+      background-color: #d60057;
+    }
   }
 
   .mural-list-spinner {
@@ -67,15 +83,6 @@
       sans-serif;
     font-weight: 400;
   }
-
-  .mural-preview {
-    margin-top: 0.75em;
-    margin-bottom: 1.35em;
-  }
-
-  .column-gap {
-    column-gap: 10px;
-  }
 }
 
 .MuiButton-root .MuiButton-label {
@@ -84,12 +91,12 @@
     sans-serif;
 }
 
-#room-select-popup,
 #workspace-select-popup {
   font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   font-weight: 400;
+  max-height: 200px;
 
   .MuiListSubheader-root {
     font-family: inherit;

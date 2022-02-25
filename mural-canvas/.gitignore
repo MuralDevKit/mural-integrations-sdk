@@ -1,7 +1,0 @@
-dist/
-out/
-node_modules/
-mural-integrations-mural-canvas-*.tgz
-
-# IDE specifics
-.projectile
