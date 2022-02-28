@@ -1,17 +1,18 @@
-import * as React from 'react';
 import {
   CircularProgress,
   FormControl,
   InputLabel,
   TextField,
-} from '@material-ui/core';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { ApiClient, Workspace } from 'mural-integrations-mural-client';
-// @ts-ignore
-import MuralIcon from '../../../../../public/icon.png';
-import './styles.scss';
+} from "@material-ui/core";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import Alert from "@material-ui/lab/Alert";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import {
+  ApiClient,
+  Workspace,
+} from "@tactivos/mural-integrations-mural-client";
+import * as React from "react";
+import "./styles.scss";
 
 export interface WorkspacePickerData {
   workspaceId: string;
@@ -24,7 +25,7 @@ export interface WorkspacePickerPropTypes {
   hideLogo?: boolean;
   initialWorkspaceId?: string;
   onWorkspaceSelect: (workspace: Workspace) => void;
-  theme?: 'light' | 'dark';
+  theme?: "light" | "dark";
 }
 
 interface StateTypes {
@@ -35,15 +36,13 @@ interface StateTypes {
 }
 
 const INITIAL_STATE: StateTypes = {
-  error: '',
+  error: "",
   isLoading: true,
   workspace: null,
   workspaces: [],
 };
 
-export default class WorkspacePicker extends React.Component<
-  WorkspacePickerPropTypes
-> {
+export default class WorkspacePicker extends React.Component<WorkspacePickerPropTypes> {
   state: StateTypes = INITIAL_STATE;
 
   async componentDidMount() {
@@ -58,26 +57,26 @@ export default class WorkspacePicker extends React.Component<
         let workspace;
         if (this.props.initialWorkspaceId) {
           workspace = workspaces.find(
-            w => w.id === this.props.initialWorkspaceId,
+            (w) => w.id === this.props.initialWorkspaceId
           );
         }
 
         this.setState({ workspace, workspaces, isLoading: false });
       }
     } catch (e) {
-      this.handleError(e, 'Error retrieving workspaces.');
+      this.handleError(e, "Error retrieving workspaces.");
       this.setState({
         isLoading: false,
-        error: 'Error retrieving workspaces.',
+        error: "Error retrieving workspaces.",
       });
     }
   };
 
   onWorkspaceSelect = async (
     _: React.ChangeEvent<{}>,
-    workspace: Workspace | null,
+    workspace: Workspace | null
   ) => {
-    this.setState({ workspace, error: '' });
+    this.setState({ workspace, error: "" });
   };
 
   handleError = (e: Error, displayMsg: string) => {
@@ -87,18 +86,18 @@ export default class WorkspacePicker extends React.Component<
 
   onSubmit = async () => {
     if (!this.state.workspace)
-      return this.setState({ error: 'Please select a workspace.' });
+      return this.setState({ error: "Please select a workspace." });
     this.props.onWorkspaceSelect(this.state.workspace);
   };
 
   render() {
     const { theme, buttonTitle } = this.props;
     const { error, isLoading } = this.state;
-    const currentTheme = theme || 'light';
+    const currentTheme = theme || "light";
     const muiTheme = createMuiTheme({
       palette: {
         type: currentTheme,
-        text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
+        text: { primary: currentTheme === "light" ? "#585858" : "#a7a7a7" },
       },
     });
 
@@ -129,11 +128,11 @@ export default class WorkspacePicker extends React.Component<
                 <Autocomplete
                   id="workspace-select"
                   options={this.state.workspaces}
-                  getOptionLabel={option => {
-                    return option.name || '';
+                  getOptionLabel={(option) => {
+                    return option.name || "";
                   }}
                   fullWidth
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       placeholder="Find a workspace..."
@@ -141,7 +140,7 @@ export default class WorkspacePicker extends React.Component<
                     />
                   )}
                   value={this.state.workspace}
-                  groupBy={() => 'SWITCH TO'}
+                  groupBy={() => "SWITCH TO"}
                   onChange={this.onWorkspaceSelect}
                 />
               </div>

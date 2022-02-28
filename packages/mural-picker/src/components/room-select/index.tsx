@@ -1,28 +1,28 @@
-import * as React from 'react';
-import { debounce } from 'lodash';
-import { FormControl, InputLabel, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { FormControl, InputLabel, TextField } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   ApiClient,
   Mural,
   Room,
   Workspace,
-} from 'mural-integrations-mural-client';
-import { DELAYS } from '../../common/delays';
+} from "@tactivos/mural-integrations-mural-client";
+import { debounce } from "lodash";
+import * as React from "react";
+import { DELAYS } from "../../common/delays";
 
 // TODO: move to common file
 // eslint-disable-next-line no-shadow
 enum ERRORS {
-  ERR_RETRIEVING_MURALS = 'Error retrieving murals.',
-  ERR_RETRIEVING_WORKSPACES = 'Error retrieving workspaces.',
-  ERR_RETRIEVING_ROOM_AND_MURALS = 'Error retrieving room and murals.',
-  ERR_RETRIEVING_ROOM_MURALS = 'Error retrieving room murals.',
-  ERR_SELECTING_MURAL = 'Error selecting mural.',
-  ERR_SELECT_WORKSPACE = 'Please select a workspace.',
-  ERR_SELECT_ROOM = 'Please select a room.',
-  ERR_SELECT_MURAL = 'Please select a mural.',
-  ERR_SEARCH_NO_MURALS_FOUND = 'No murals found.',
-  ERR_SEARCH_MURALS = 'Error searching for murals.',
+  ERR_RETRIEVING_MURALS = "Error retrieving murals.",
+  ERR_RETRIEVING_WORKSPACES = "Error retrieving workspaces.",
+  ERR_RETRIEVING_ROOM_AND_MURALS = "Error retrieving room and murals.",
+  ERR_RETRIEVING_ROOM_MURALS = "Error retrieving room murals.",
+  ERR_SELECTING_MURAL = "Error selecting mural.",
+  ERR_SELECT_WORKSPACE = "Please select a workspace.",
+  ERR_SELECT_ROOM = "Please select a room.",
+  ERR_SELECT_MURAL = "Please select a mural.",
+  ERR_SEARCH_NO_MURALS_FOUND = "No murals found.",
+  ERR_SEARCH_MURALS = "Error searching for murals.",
 }
 
 interface PropTypes {
@@ -32,7 +32,7 @@ interface PropTypes {
   room: Room | null;
   workspaceRooms: Room[];
   searchedRooms: Room[];
-  searchingRooms: boolean;
+  isSearchingRooms: boolean;
   ListboxProps?: object | undefined;
   onRoomSelect: (room: Room | null, murals: Mural[]) => void;
   onRoomSearch: (searchedRooms: Room[]) => void;
@@ -42,22 +42,22 @@ interface PropTypes {
 
 export default class RoomSelect extends React.Component<PropTypes> {
   state = {
-    searchingRooms: false,
+    isSearchingRooms: false,
   };
 
   onRoomSearch = debounce(async (title: string) => {
     if (this.props.workspace && title.length > 2) {
       try {
-        this.setState({ searchingRooms: true });
-        const rooms: Room[] = await this.props.apiClient.searchWorkspaceRooms(
+        this.setState({ isSearchingRooms: true });
+        const rooms: Room[] = await this.props.apiClient.searchRoomsByWorkspace(
           this.props.workspace.id,
-          title,
+          title
         );
-        this.setState({ searchingRooms: false });
+        this.setState({ isSearchingRooms: false });
         this.props.onRoomSearch(rooms);
       } catch (e) {
-        this.setState({ searchingRooms: false });
-        this.props.handleError(e, 'Error searching rooms.');
+        this.setState({ isSearchingRooms: false });
+        this.props.handleError(e, "Error searching rooms.");
       }
     } else {
       this.props.onRoomSearch([]);
@@ -71,7 +71,7 @@ export default class RoomSelect extends React.Component<PropTypes> {
         try {
           this.props.onLoading();
           murals = await this.props.apiClient.getMuralsByWorkspace(
-            this.props.workspace.id,
+            this.props.workspace.id
           );
         } catch (e) {
           this.props.handleError(e, ERRORS.ERR_RETRIEVING_ROOM_AND_MURALS);
@@ -95,8 +95,8 @@ export default class RoomSelect extends React.Component<PropTypes> {
   };
 
   getRoomGroup = (room?: Room) => {
-    if (!room) return '';
-    return room.type === 'private' ? 'PRIVATE ROOMS' : 'OPEN ROOMS';
+    if (!room) return "";
+    return room.type === "private" ? "PRIVATE ROOMS" : "OPEN ROOMS";
   };
 
   render() {
@@ -114,17 +114,17 @@ export default class RoomSelect extends React.Component<PropTypes> {
                 : this.props.searchedRooms
             }
             ListboxProps={this.props.ListboxProps}
-            getOptionLabel={option => {
-              return option?.name || '';
+            getOptionLabel={(option) => {
+              return option?.name || "";
             }}
-            renderInput={params => (
+            renderInput={(params) => (
               <TextField
                 {...params}
                 placeholder="Find a room..."
                 variant="outlined"
                 inputProps={{
                   ...params.inputProps,
-                  'data-qa': 'input-room-select',
+                  "data-qa": "input-room-select",
                 }}
               />
             )}
@@ -133,7 +133,7 @@ export default class RoomSelect extends React.Component<PropTypes> {
             groupBy={this.getRoomGroup}
             onChange={this.onRoomSelect}
             onInputChange={(event: React.ChangeEvent<{}>, input: string) => {
-              if (event?.type === 'change') {
+              if (event?.type === "change") {
                 this.onRoomSearch(input);
               }
             }}
@@ -144,8 +144,8 @@ export default class RoomSelect extends React.Component<PropTypes> {
             getOptionSelected={(option: Room, value: Room) =>
               option.id === value.id
             }
-            loading={this.state.searchingRooms}
-            noOptionsText={'No results'}
+            loading={this.state.isSearchingRooms}
+            noOptionsText={"No results"}
           />
         </FormControl>
       </React.Fragment>

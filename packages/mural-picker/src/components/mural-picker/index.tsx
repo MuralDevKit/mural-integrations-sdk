@@ -1,15 +1,11 @@
 import * as React from "react";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-// @ts-ignore
-import MuralIcon from "@tactivos/mural-integrations-common/assets/icon.png";
 import {
   ApiClient,
   Mural,
   Room,
   Workspace,
 } from "@tactivos/mural-integrations-mural-client";
-import { debounce } from "lodash";
-import { DELAYS } from "../../common/delays";
 import { MURAL_PICKER_ERRORS } from "../../common/errors";
 import MuralPickerError from "../error";
 import Loading from "../loading";
@@ -29,6 +25,7 @@ export interface CreateMuralData {
 export interface CreateMuralResult {
   error?: string;
 }
+
 export interface PropTypes {
   apiClient: ApiClient;
   handleError: (error: Error, message: string) => void;
@@ -47,6 +44,8 @@ export interface PropTypes {
 interface StateTypes {
   isCreateSelected: boolean;
   isLoading: boolean;
+  isSearchingRooms: boolean;
+
   workspaces: Workspace[];
   rooms: Room[];
   workspaceRooms: Room[];
@@ -56,12 +55,13 @@ interface StateTypes {
   error: string;
   workspace: Workspace | null;
   room: Room | null;
-  searchingRooms: boolean;
 }
 
 const INITIAL_STATE: StateTypes = {
   isCreateSelected: false,
   isLoading: true,
+  isSearchingRooms: false,
+
   workspaces: [],
   rooms: [],
   workspaceRooms: [],
@@ -70,7 +70,6 @@ const INITIAL_STATE: StateTypes = {
   error: "",
   workspace: null,
   room: null,
-  searchingRooms: false,
 };
 
 export default class MuralPicker extends React.Component<PropTypes> {
@@ -163,7 +162,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
    * Passed to child components to get room search results
    */
   onRoomSearch = (searchedRooms: Room[]) => {
-    this.setState({ searchedRooms, searchingRooms: false });
+    this.setState({ searchedRooms, isSearchingRooms: false });
   };
 
   /**
@@ -197,24 +196,6 @@ export default class MuralPicker extends React.Component<PropTypes> {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL);
     }
   };
-
-  onRoomSearch = debounce(async (title: string) => {
-    if (this.state.workspace && title.length > 2) {
-      try {
-        this.setState({ searchingRooms: true });
-        const rooms: Room[] = await this.props.apiClient.searchRoomsByWorkspace(
-          this.state.workspace.id,
-          title
-        );
-        this.setState({ searchedRooms: rooms, searchingRooms: false });
-      } catch (e) {
-        this.setState({ searchingRooms: false });
-        this.props.handleError(e, "Error searching rooms.");
-      }
-    } else {
-      this.setState({ searchedRooms: [] });
-    }
-  }, DELAYS.DEBOUNCE_SEARCH);
 
   onCreateMural = async (_?: string) => {
     /*
@@ -294,11 +275,11 @@ export default class MuralPicker extends React.Component<PropTypes> {
             <RoomSelect
               apiClient={this.props.apiClient}
               handleError={this.props.handleError}
+              isSearchingRooms={this.state.isSearchingRooms}
               workspace={this.state.workspace}
               room={this.state.room}
               workspaceRooms={this.state.workspaceRooms}
               searchedRooms={this.state.searchedRooms}
-              searchingRooms={this.state.searchingRooms}
               onRoomSelect={this.onRoomSelect}
               onRoomSearch={this.onRoomSearch}
               onLoading={this.onLoading}
