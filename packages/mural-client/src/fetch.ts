@@ -169,41 +169,52 @@ interface AutomaticOptions {
   consentSso?: boolean;
 }
 
-export interface AuthorizeOptions {
+export interface AuthorizeParams {
   auto?: boolean | AutomaticOptions;
-  storeState: boolean;
+  signup?: boolean;
+  reauthenticate?: boolean;
   forward?: {
     [key: string]: unknown;
   };
 }
 
-export const authorizeHandler =
-  (config: TokenHandlerConfig) =>
-  async (redirectUri?: string, opts: AuthorizeOptions = { storeState: false }): Promise<string> => {
-    const state = generateState();
+export interface AuthorizeHandlerOptions {
+  authorizeParams?: AuthorizeParams;
+  storeState: boolean;
+}
 
-    const params = qs.stringify(
-        {
-          state,
-          redirectUri,
-          auto: opts.auto ? encodeAutoParam(opts.auto) : undefined,
-          ...opts.forward,
-        },
-        { encode: true },
-    );
+export const authorizeHandler = (config: TokenHandlerConfig) => async (
+    redirectUri?: string,
+    opts: AuthorizeHandlerOptions = { storeState: false },
+): Promise<string> => {
+  const state = generateState();
 
-    const url = `${config.authorizeUri}?${params}`;
+  const params = qs.stringify(
+      {
+        state,
+        redirectUri,
+        auto: opts.authorizeParams?.auto
+            ? encodeAutoParam(opts.authorizeParams.auto)
+            : undefined,
+        signup: opts.authorizeParams?.signup || undefined,
+        reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
+        ...opts.authorizeParams?.forward,
+      },
+      { encode: true },
+  );
 
-    const authorizeUrl: { url: string } = await fetch(url, { method: 'GET' })
+  const url = `${config.authorizeUri}?${params}`;
+
+  const authorizeUrl = await fetch(url, { method: 'GET' })
       .then(checkStatus)
-      .then(res => res.json());
+      .then(res => res.text());
 
-    if (opts.storeState) {
-      storeState(state);
-    }
+  if (opts.storeState) {
+    storeState(state);
+  }
 
-    return authorizeUrl.url;
-  };
+  return authorizeUrl;
+};
 
 export const requestTokenHandler =
   (config: TokenHandlerConfig) =>

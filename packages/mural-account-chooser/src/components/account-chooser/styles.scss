@@ -1,0 +1,265 @@
+@import "@tactivos/mural-integrations-common/styles/fonts.css";
+
+$font-family: Proxima Nova, sans-serif;
+
+$secondary-text-color: #757575;
+$separator-color: #e5e5e5;
+$mural-color: #E8005A;
+
+$text-color: #2f2f2f;
+$text-color-dark-mode: #d0d0d0;
+
+$background: #FFFFFF;
+$background-dark-mode: #1F1F1F;
+
+.account-chooser {
+  text-align: center;
+  color: $text-color;
+
+  .title {
+    font-family: $font-family;
+    line-height: 100%;
+    width: 290px;
+    margin: 78px auto 36px;
+  }
+
+  .notice {
+    font-family: $font-family;
+    margin-top: 36px;
+    margin-bottom: 36px;
+  }
+
+  .account-choice {
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+
+    width: 270px;
+    height: 48px;
+    margin: 8px auto;
+
+    background: $background;
+    border: 2px solid darken($background, 4%);
+    box-shadow: 0 2px 2px darken($background, 6%);
+    border-radius: 16px;
+
+    &:active,
+    &:hover {
+      border: 2px solid darken($background, 10%);;
+    }
+
+    .avatar {
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .email {
+      font-family: $font-family;
+      position: absolute;
+
+      width: 80%;
+      top: 8px;
+      left: 52px;
+
+      text-align: left;
+      font-weight: bold;
+      font-size: 15px;
+      line-height: 16px;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .status {
+      font-family: $font-family;
+      position: absolute;
+
+      top: 25px;
+      left: 52px;
+
+      font-weight: 600;
+      font-size: 11px;
+      line-height: 16px;
+
+      color: $secondary-text-color;
+    }
+  }
+
+  .sign-up-with {
+    cursor: pointer;
+    background: $background;
+    position: relative;
+
+    width: 196px;
+    height: 40px;
+    margin: 8px auto;
+
+    border: none;
+    box-shadow: 0 1px 2px darken($background, 30%);
+    border-radius: 2px;
+
+    &:active,
+    &:hover {
+      box-shadow: 0 1px 2px darken($background, 50%);
+    }
+
+    .logo {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+
+      width: 20px;
+      height: 20px;
+    }
+
+    .text {
+      font-family: $font-family;
+      color: $secondary-text-color;
+      padding-left: 25px;
+
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 16px;
+      letter-spacing: 0.4px;
+    }
+  }
+
+  .link {
+    font-family: $font-family;
+    cursor: pointer;
+    background: none;
+    border: none;
+
+    padding: 0;
+    margin-top: 36px;
+
+    color: $text-color;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 120%;
+
+    border-bottom: 1px dashed $text-color;
+
+    &:active,
+    &:hover {
+      color: black;
+    }
+  }
+
+  .separator {
+    position: relative;
+    margin: auto;
+    width: 260px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+
+    &:after {
+      content: "";
+      height: 2px;
+      width: 260px;
+      background: $separator-color;
+
+      position: absolute;
+      top: 49%;
+      left: 0;
+      z-index: -1;
+    }
+
+    span {
+      font-family: $font-family;
+      color: #919191;
+
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 18px;
+
+      background: $background;
+      padding-left: 5px;
+      padding-right: 5px;
+      border-radius: 4px;
+    }
+  }
+
+  .mural-color-button {
+    font-family: $font-family;
+    cursor: pointer;
+    background: $mural-color;
+
+    margin: 8px auto;
+    width: 260px;
+    height: 44px;
+
+    border: none;
+    border-radius: 8px;
+
+    font-weight: bold;
+    font-size: 16px;
+    color: $background;
+
+    &:active,
+    &:hover {
+      background: darken($mural-color, 10%);
+    }
+  }
+
+  .light-color-button {
+    font-family: $font-family;
+    background: $background;
+    cursor: pointer;
+    margin: 8px auto;
+
+    width: 260px;
+    height: 44px;
+
+    border: 1px solid black;
+    border-radius: 8px;
+
+    font-weight: bold;
+    font-size: 16px;
+
+    &:active,
+    &:hover {
+      background: darken($background, 10%);
+    }
+  }
+
+  .mural-logo {
+    margin-top: 130px;
+    width: 130px;
+  }
+
+  &.dark {
+    color: $text-color-dark-mode;
+
+    .account-choice {
+      background: $background-dark-mode;
+      border: 2px solid lighten($background-dark-mode, 8%);
+      box-shadow: 0 2px 2px lighten($background-dark-mode, 10%);
+
+      &:active,
+      &:hover {
+        border: 2px solid lighten($background-dark-mode, 14%);
+      }
+
+      .email {
+        color: $text-color-dark-mode;
+      }
+    }
+
+    .link {
+      color: $text-color-dark-mode;
+      border-color: $text-color-dark-mode;
+    }
+
+    .separator {
+      span {
+        background: $background-dark-mode;
+      }
+    }
+  }
+}
