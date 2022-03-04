@@ -149,7 +149,13 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
       palette: {
         type: currentTheme,
         text: { primary: currentTheme === "light" ? "#585858" : "#a7a7a7" },
+        primary: {
+          main: '#FF0066',
+        },
       },
+      typography: {
+        fontFamily: 'Proxima Nova'
+      }
     });
 
     return (

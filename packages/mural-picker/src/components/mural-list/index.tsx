@@ -69,7 +69,7 @@ export default class MuralList extends React.Component<PropTypes> {
     return (
       <div>
         <h5 className="subsection-header">Your favorite murals</h5>
-        <Grid container className="column-gap" direction="row">
+        <Grid container className="column-gap" direction="row" wrap="nowrap">
           {this.state.favorites.map((fave, i) => (
             <MuralCard
               mural={fave}
@@ -113,7 +113,7 @@ export default class MuralList extends React.Component<PropTypes> {
     }
 
     return (
-      <Grid item>
+      <Grid item className="mural-preview">
         <Card
           variant="outlined"
           className={classnames("mural-card", `${this.props.cardSize}-card`, {
@@ -139,17 +139,14 @@ export default class MuralList extends React.Component<PropTypes> {
     ) {
       return (
         <div className="mural-selector-container">
-          <Grid className="column-gap" container direction="row">
-            {this.renderCreateNewMuralButton()}
-          </Grid>
-          {this.renderFavoriteMurals()}
-          {/* TODO: scroll horizontally instead of rendering all */}
           <div>
             <h5 className="subsection-header">All murals</h5>
-            <Grid className="column-gap" container direction="row">
+            <Grid className="column-gap" container direction="row" wrap="nowrap">
+              {this.renderCreateNewMuralButton()}
               {this.renderMurals()}
             </Grid>
           </div>
+          {this.renderFavoriteMurals()}
         </div>
       );
     }
@@ -160,9 +157,10 @@ export default class MuralList extends React.Component<PropTypes> {
         direction="row"
         className="mural-selector-container column-gap"
       >
-        {this.renderCreateNewMuralButton()}
-        {this.renderMurals()}
-        {/* TODO: scroll horizontally instead of rendering all */}
+        <Grid className="column-gap" container direction="row" wrap="nowrap">
+          {this.renderCreateNewMuralButton()}
+          {this.renderMurals()}
+        </Grid>
       </Grid>
     );
   }
