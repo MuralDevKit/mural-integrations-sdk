@@ -17,7 +17,7 @@ export { default as setupAuthenticatedFetch } from "./fetch";
 
 export type FetchFunction = (
   input: RequestInfo,
-  init?: RequestInit,
+  init?: RequestInit
 ) => Promise<Response>;
 
 export type ClientConfig = {
@@ -106,12 +106,13 @@ export interface ApiClient {
     workspaceId: string | null,
     title: string
   ) => Promise<Room[]>;
+  getLastActiveWorkspaceId: () => Promise<string | undefined>;
 }
 
 export default (config: ClientConfig): ApiClient => {
   const { fetchFn } = config;
 
-  const baseUrl = new URL('/api/public/v1/', `https://${config.host}`);
+  const baseUrl = new URL("/api/public/v1/", `https://${config.host}`);
   const api = (path: string) => new URL(path, baseUrl).href;
 
   return {
@@ -257,6 +258,19 @@ export default (config: ClientConfig): ApiClient => {
         }
       );
       return (await response.json()).value;
+    },
+    /**
+     * @deprecated
+     * We should keep the client interface closely bound to the
+     * public API definition.
+     *
+     * This function will probably be removed in the future
+     */
+    getLastActiveWorkspaceId: async (): Promise<string | undefined> => {
+      const response = await fetchFn(api(`users/me`), {
+        method: "GET",
+      });
+      return (await response.json()).value.lastActiveWorkspace;
     },
   };
 };

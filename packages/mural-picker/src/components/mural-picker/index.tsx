@@ -79,8 +79,18 @@ export default class MuralPicker extends React.Component<PropTypes> {
     this.setState({ isLoading: true });
     try {
       const workspaces = await this.props.apiClient.getWorkspaces();
+      const lastActiveWorkspaceId =
+        await this.props.apiClient.getLastActiveWorkspaceId();
       if (workspaces?.length) {
-        const workspace = workspaces[0];
+        let workspace;
+        if (lastActiveWorkspaceId) {
+          workspace =
+            workspaces.find(
+              (workspace) => workspace.id === lastActiveWorkspaceId
+            ) || workspaces[0];
+        } else {
+          workspace = workspaces[0];
+        }
         this.setState({ workspaces, workspace });
         await this.loadMuralsAndRoomsByWorkspace(workspace);
       }
