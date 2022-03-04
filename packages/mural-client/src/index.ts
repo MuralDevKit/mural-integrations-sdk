@@ -16,8 +16,8 @@ export * from "./types";
 export { default as setupAuthenticatedFetch } from "./fetch";
 
 export type FetchFunction = (
-  input: RequestInfo | URL,
-  init?: RequestInit
+  input: RequestInfo,
+  init?: RequestInit,
 ) => Promise<Response>;
 
 export type ClientConfig = {
@@ -111,8 +111,8 @@ export interface ApiClient {
 export default (config: ClientConfig): ApiClient => {
   const { fetchFn } = config;
 
-  const baseUrl = new URL("/api/public/v1/", `https://${config.host}`);
-  const api = (path: string) => new URL(path, baseUrl);
+  const baseUrl = new URL('/api/public/v1/', `https://${config.host}`);
+  const api = (path: string) => new URL(path, baseUrl).href;
 
   return {
     authenticated,
