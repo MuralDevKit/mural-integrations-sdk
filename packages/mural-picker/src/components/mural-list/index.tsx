@@ -5,13 +5,13 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import {
   Mural as MuralType,
   Room,
-  WorkSpace,
+  Workspace,
 } from "@tactivos/mural-integrations-mural-client";
 import MuralCard, { CardSize } from "../mural-card";
 import "./styles.scss";
 
 interface PropTypes {
-  workspace: WorkSpace | null;
+  workspace: Workspace | null;
   room: Room | null;
   isCreateSelected?: boolean;
   murals: MuralType[];
@@ -114,7 +114,7 @@ export default class MuralList extends React.Component<PropTypes> {
     }
 
     return (
-      <Grid item>
+      <Grid item className="mural-preview">
         <Card
           variant="outlined"
           className={classnames("mural-card", `${this.props.cardSize}-card`, {

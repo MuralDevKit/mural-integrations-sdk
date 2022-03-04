@@ -11,6 +11,7 @@
   "scripts": {
     "pack": "npm pack --pack-destination ../../dist/",
     "build": "npx rollup --config build/rollup.config.js",
+    "build:watch": "npx rollup --config build/rollup.config.js --watch",
     "compile": "npx tsc --project build/tsconfig.json",
     "test": "npm run test",
     "clean": "rm -rf dist out"
@@ -45,6 +46,7 @@
     "@types/lodash": "^4.14.178",
     "@types/react": "16.9.43",
     "@types/react-dom": "16.9.8",
+    "classnames": "^2.3.1",
     "eslint": "^7.31.0",
     "eslint-config-mural": "^1.1.0",
     "eslint-config-prettier": "^8.3.0",

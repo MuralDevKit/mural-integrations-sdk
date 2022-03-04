@@ -39,7 +39,7 @@ export default function MuralCard(props: PropTypes) {
           />
           <div className="mural-info">
             <div className="mural-title" data-qa="mural-title">
-              {mural.title}
+              {mural.title ? mural.title : 'Untitled mural'}
             </div>
             <div className="mural-details" data-qa="mural-details">
               Modified {moment(mural.updatedOn).fromNow()}
