@@ -223,7 +223,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
     });
   };
 
-  setInitialState() {
+  setInitialState = () => {
     this.setState((state) => {
       return { ...state, isCreateSelected: false, title: INITIAL_STATE.title };
     });
