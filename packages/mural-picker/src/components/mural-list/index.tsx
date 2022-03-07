@@ -69,7 +69,7 @@ export default class MuralList extends React.Component<PropTypes> {
     return (
       <div>
         <h5 className="subsection-header">Your favorite murals</h5>
-        <Grid container className="column-gap" direction="row" wrap="nowrap">
+        <Grid container className="column-gap" direction="row">
           {this.state.favorites.map((fave, i) => (
             <MuralCard
               mural={fave}
@@ -141,7 +141,7 @@ export default class MuralList extends React.Component<PropTypes> {
         <div className="mural-selector-container">
           <div>
             <h5 className="subsection-header">All murals</h5>
-            <Grid className="column-gap" container direction="row" wrap="nowrap">
+            <Grid className="column-gap" container direction="row">
               {this.renderCreateNewMuralButton()}
               {this.renderMurals()}
             </Grid>
@@ -157,7 +157,7 @@ export default class MuralList extends React.Component<PropTypes> {
         direction="row"
         className="mural-selector-container column-gap"
       >
-        <Grid className="column-gap" container direction="row" wrap="nowrap">
+        <Grid className="column-gap" container direction="row">
           {this.renderCreateNewMuralButton()}
           {this.renderMurals()}
         </Grid>
