@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { CircularProgress } from '@material-ui/core';
-import { AccountStatus, AuthMode, getAuthMode, getMuralRealm } from '../../common/realm';
-import { AuthorizeParams } from "./types";
+import {CircularProgress} from '@material-ui/core';
+import {AccountStatus, AuthMode, getAuthMode, getMuralRealm} from '../../common/realm';
+import {AuthorizeParams} from "./types";
 import AccountChoice from './account-choice';
 import './styles.scss';
 
@@ -11,7 +11,6 @@ import MuralLogo from '../../images/mural-logo.png';
 import GoogleIcon from '../../images/google-icon.png';
 // @ts-ignore
 import MicrosoftIcon from '../../images/microsoft-icon.png';
-
 
 const AUTH_MODE_ICONS = {
   [AuthMode.GOOGLE]: GoogleIcon,
@@ -25,7 +24,7 @@ export interface AccountChooserPropTypes {
   getAuthUrl: (options?: AuthorizeParams) => Promise<string>;
   hint?: string;
   onError: (e: Error) => void;
-  onSelection?: (url: string) => void;
+  onSelection: (url: string) => void;
   silent?: boolean;
   theme?: 'light' | 'dark';
   visitor?: { onSelect: () => void };
@@ -111,11 +110,7 @@ export default class AccountChooser extends React.Component<
   };
 
   onSelection = (url: string) => {
-    if (this.props.onSelection) {
-      this.props.onSelection(url);
-    } else {
-      window.location.href = url;
-    }
+    this.props.onSelection(url);
   };
 
   hintEmailSignIn = async () =>
