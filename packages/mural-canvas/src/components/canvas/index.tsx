@@ -32,17 +32,17 @@ export function muralSessionActivationUrl(
   authUrl: URL | string,
   muralUrl: URL | string,
 ) {
-  authUrl = new URL(authUrl.toString());
-  muralUrl = new URL(muralUrl.toString());
+  const authURL = new URL(authUrl.toString());
+  const muralURL = new URL(muralUrl.toString());
 
-  const activateUrl = new URL('/signin-code/authenticate', muralUrl);
+  const activateURL = new URL('/signin-code/authenticate', muralURL);
 
-  activateUrl.searchParams.set('redirectUrl', muralUrl.href);
-  activateUrl.searchParams.set('authUrl', authUrl.href);
-  activateUrl.searchParams.set('clientId', apiClient.config.appId);
-  activateUrl.searchParams.set('t', new Date().getTime().toString()); // disable any caching
+  activateURL.searchParams.set('redirectUrl', muralURL.href);
+  activateURL.searchParams.set('authUrl', authURL.href);
+  activateURL.searchParams.set('clientId', apiClient.config.appId);
+  activateURL.searchParams.set('t', new Date().getTime().toString()); // disable any caching
 
-  return activateUrl.href;
+  return activateURL.href;
 }
 
 export class CanvasHost extends React.Component<PropTypes> {
@@ -85,7 +85,7 @@ export class CanvasHost extends React.Component<PropTypes> {
       canvasUrl = muralUrl.href;
     }
 
-    return <iframe className="mural-canvas" src={canvasUrl} seamless></iframe>;
+    return <iframe className="mural-canvas" src={canvasUrl} seamless/>;
   }
 }
 

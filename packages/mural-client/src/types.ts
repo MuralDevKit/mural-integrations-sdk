@@ -42,7 +42,7 @@ export type Template = {
   name: string;
   publicHash: string;
   thumbUrl: string;
-  type: "default" | "custom";
+  type: 'default' | 'custom';
   updatedOn: number;
   workspaceId: string;
   viewLink: string;

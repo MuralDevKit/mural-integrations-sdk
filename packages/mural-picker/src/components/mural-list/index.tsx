@@ -1,5 +1,3 @@
-import * as React from 'react';
-import classnames from 'classnames';
 import { Card, CardActionArea, CardContent, Grid } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import {
@@ -7,6 +5,8 @@ import {
   Room,
   Workspace,
 } from '@tactivos/mural-integrations-mural-client';
+import classnames from 'classnames';
+import * as React from 'react';
 import MuralCard, { CardSize } from '../mural-card';
 import './styles.scss';
 

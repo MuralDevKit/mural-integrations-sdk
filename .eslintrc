@@ -1,24 +1,37 @@
 {
   "root": true,
   "env": {
-		"es6": true
-	},
+    "es6": true
+  },
   "extends": [
-		"eslint:recommended",
-    "plugin:prettier/recommended",
-    "prettier/@typescript-eslint"
+    "eslint:recommended",
+    "plugin:muralco/recommended",
+    "prettier/@typescript-eslint",
+    "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 2018, // Allows for the parsing of modern ECMAScript features
-    "sourceType": "module" // Allows for the use of imports,
+    "ecmaVersion": 2018,
+    // Allows for the parsing of modern ECMAScript features
+    "sourceType": "module"
+    // Allows for the use of imports,
   },
   "rules": {
     "node/no-unpublished-require": 0,
     "function-paren-newline": 0,
+    "no-param-reassign": "error",
     "no-prototype-builtins": 0,
     "no-underscore-dangle": 0,
-    "no-shadow": ["error", { "allow": ["done", "err", "cb"] }],
+    "no-shadow": [
+      "error",
+      {
+        "allow": [
+          "done",
+          "err",
+          "cb"
+        ]
+      }
+    ],
     "no-unused-vars": "off",
     "import/prefer-default-export": "off",
     "no-use-before-define": "off",
@@ -28,32 +41,16 @@
   },
   "overrides": [
     {
-      "files": ["./src/**/*.ts","./src/**/*.tsx"],
+      "files": [
+        "./src/**/*.ts",
+        "./src/**/*.tsx"
+      ],
       "rules": {
         "node/no-unsupported-features": "off",
         "import/no-unresolved": "off",
         "import/extensions": "off",
         "no-nested-ternary": "off",
         "no-useless-constructor": "off"
-      }
-    },
-    {
-      "files": ["./lib/**"],
-      "rules": {
-        "node/no-unsupported-features": "off",
-        "import/extensions": "off",
-        "import/no-unresolved": "off"
-      }
-    },
-    {
-      "files": ["./src/test/**", "./src/test/**"],
-      "rules": {
-        "import/no-extraneous-dependencies": "off",
-        "import/extensions": "off",
-        "import/no-unresolved": "off",
-        "node/no-unsupported-features": "off",
-        "no-param-reassign": "off",
-        "no-console": "off"
       }
     }
   ]

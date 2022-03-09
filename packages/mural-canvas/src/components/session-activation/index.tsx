@@ -13,14 +13,14 @@ export async function getMuralSessionClaimUrl(
   apiClient: ApiClient,
   muralUrl: URL | string,
   code: string,
-) {
-  muralUrl = new URL(muralUrl.toString());
+): Promise<URL> {
+  const redirectUrl = new URL(muralUrl.toString());
   const claimRequestUrl = new URL(
     `/api/v0/authenticate/oauth2/session/${code}`,
     `https://${apiClient.config.host}`,
   );
 
-  claimRequestUrl.searchParams.set('redirectUrl', muralUrl.href);
+  claimRequestUrl.searchParams.set('redirectUrl', redirectUrl.href);
 
   const res: Response = await apiClient.fetch(claimRequestUrl.href, {
     method: 'PUT',
@@ -40,7 +40,7 @@ const SessionActivation: React.FC<PropTypes> = ({ apiClient, onError }) => {
   const rawRedirectUrl = params.get('redirectUrl');
 
   if (!code || !rawRedirectUrl) {
-    onError && onError();
+    if (onError) onError();
     return null;
   }
 
@@ -58,7 +58,6 @@ const SessionActivation: React.FC<PropTypes> = ({ apiClient, onError }) => {
     } catch (e) {
       // worst case scenario, send the user on `mural` and let it go
       window.location.replace(redirectUrl.href);
-      return null;
     }
   };
 

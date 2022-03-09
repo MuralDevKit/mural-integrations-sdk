@@ -1,19 +1,19 @@
-import * as React from "react";
 import {
   CircularProgress,
   FormControl,
   InputLabel,
   TextField,
-} from "@material-ui/core";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import Alert from "@material-ui/lab/Alert";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+} from '@material-ui/core';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import Alert from '@material-ui/lab/Alert';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   ApiClient,
   Room,
   Workspace,
-} from "@tactivos/mural-integrations-mural-client";
-import "./styles.scss";
+} from '@tactivos/mural-integrations-mural-client';
+import * as React from 'react';
+import './styles.scss';
 
 export interface RoomPickerData {
   roomId: string;
@@ -29,7 +29,7 @@ export interface RoomPickerPropTypes {
   onRoomSelect: (data: RoomPickerData) => Promise<RoomSelectResult | undefined>;
   handleError: (error: Error, message: string) => void;
   hideLogo?: boolean;
-  theme?: "light" | "dark";
+  theme?: 'light' | 'dark';
   buttonTitle: string;
 }
 
@@ -46,7 +46,7 @@ const INITIAL_STATE: StateTypes = {
   isLoading: true,
   workspaces: [],
   rooms: [],
-  error: "",
+  error: '',
   workspace: null,
   room: null,
 };
@@ -66,16 +66,16 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
         this.setState({ workspaces, isLoading: false });
       }
     } catch (e) {
-      this.handleError(e, "Error retrieving workspaces.");
+      this.handleError(e, 'Error retrieving workspaces.');
       this.setState({ isLoading: false });
     }
   };
 
   onWorkspaceSelect = async (
     _: React.ChangeEvent<{}>,
-    workspace: Workspace | null
+    workspace: Workspace | null,
   ) => {
-    this.setState({ workspace, error: "" });
+    this.setState({ workspace, error: '' });
     await this.loadRoomsByWorkspace(workspace);
   };
 
@@ -84,25 +84,25 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
       return this.setState({
         workspace: null,
         rooms: [],
-        roomId: "",
+        roomId: '',
       });
     }
     try {
       this.setState({ isLoading: true });
       const rooms = await this.props.apiClient.getRoomsByWorkspace(
-        workspace.id
+        workspace.id,
       );
       const sortedRooms = rooms.sort((a, b) => b.type.localeCompare(a.type));
       this.setState({
         isLoading: false,
         workspace,
         rooms: sortedRooms,
-        roomId: "",
+        roomId: '',
         room: null,
       });
     } catch (e) {
       this.setState({ isLoading: false });
-      this.handleError(e, "Error retrieving rooms.");
+      this.handleError(e, 'Error retrieving rooms.');
     }
   };
 
@@ -112,20 +112,20 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
   };
 
   getRoomGroup = (room?: Room) => {
-    if (!room) return "";
-    return room.type === "private" ? "PRIVATE ROOMS" : "OPEN ROOMS";
+    if (!room) return '';
+    return room.type === 'private' ? 'PRIVATE ROOMS' : 'OPEN ROOMS';
   };
 
   onRoomSelect = async (_: React.ChangeEvent<{}>, room: Room | null) => {
-    this.setState({ room, error: "" });
+    this.setState({ room, error: '' });
   };
 
   onSubmit = async () => {
     if (!this.state.workspace) {
-      return this.setState({ error: "Please select a workspace." });
+      return this.setState({ error: 'Please select a workspace.' });
     }
     if (!this.state.room) {
-      return this.setState({ error: "Please select a room." });
+      return this.setState({ error: 'Please select a room.' });
     }
 
     const result = await this.props.onRoomSelect({
@@ -143,11 +143,11 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
   render() {
     const { theme, buttonTitle } = this.props;
     const { error, isLoading } = this.state;
-    const currentTheme = theme || "light";
+    const currentTheme = theme || 'light';
     const muiTheme = createMuiTheme({
       palette: {
         type: currentTheme,
-        text: { primary: currentTheme === "light" ? "#585858" : "#a7a7a7" },
+        text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
       },
     });
 
@@ -166,10 +166,10 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
                 <Autocomplete
                   id="workspace-select"
                   options={this.state.workspaces}
-                  getOptionLabel={(option) => {
-                    return option.name || "";
+                  getOptionLabel={option => {
+                    return option.name || '';
                   }}
-                  renderInput={(params) => (
+                  renderInput={params => (
                     <TextField
                       {...params}
                       placeholder="Find a workspace..."
@@ -177,7 +177,7 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
                     />
                   )}
                   value={this.state.workspace}
-                  groupBy={() => "SWITCH TO"}
+                  groupBy={() => 'SWITCH TO'}
                   onChange={this.onWorkspaceSelect}
                 />
               </div>
@@ -190,10 +190,10 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
                 <Autocomplete
                   id="room-select"
                   options={this.state.rooms}
-                  getOptionLabel={(option) => {
-                    return option?.name || "";
+                  getOptionLabel={option => {
+                    return option?.name || '';
                   }}
-                  renderInput={(params) => (
+                  renderInput={params => (
                     <TextField
                       {...params}
                       placeholder="Find a room..."

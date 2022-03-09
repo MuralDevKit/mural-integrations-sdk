@@ -1,13 +1,13 @@
-import { FormControl, InputLabel, TextField } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import { FormControl, InputLabel, TextField } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   ApiClient,
   Mural,
   Workspace,
-} from "@tactivos/mural-integrations-mural-client";
-import { debounce } from "lodash";
-import * as React from "react";
-import { DELAYS } from "../../common/delays";
+} from '@tactivos/mural-integrations-mural-client';
+import { debounce } from 'lodash';
+import * as React from 'react';
+import { DELAYS } from '../../common/delays';
 
 interface PropTypes {
   apiClient: ApiClient;
@@ -24,9 +24,9 @@ interface PropTypes {
 
 // eslint-disable-next-line no-shadow
 enum ERRORS {
-  ERR_SEARCH_MURALS = "Error searching for murals.",
-  NO_MURAL_SELECTED = "No mural selected.",
-  ERROR_SELECTING_MURAL = "Error selecting mural.",
+  ERR_SEARCH_MURALS = 'Error searching for murals.',
+  NO_MURAL_SELECTED = 'No mural selected.',
+  ERROR_SELECTING_MURAL = 'Error selecting mural.',
 }
 
 export default class MuralSelect extends React.Component<PropTypes> {
@@ -53,7 +53,7 @@ export default class MuralSelect extends React.Component<PropTypes> {
         const murals: Mural[] =
           await this.props.apiClient.searchMuralsByWorkspace(
             this.props.workspace.id,
-            title
+            title,
           );
         this.setState({ searchedMurals: murals, isSearchingMurals: false });
         this.props.onMuralSearch(murals);
@@ -82,10 +82,10 @@ export default class MuralSelect extends React.Component<PropTypes> {
                   ? this.props.murals
                   : this.props.searchedMurals
               }
-              getOptionLabel={(option) => {
-                return option.title || "Untitled Mural";
+              getOptionLabel={option => {
+                return option.title || 'Untitled Mural';
               }}
-              renderInput={(params) => (
+              renderInput={params => (
                 <TextField
                   {...params}
                   placeholder="Find a mural..."
@@ -96,7 +96,7 @@ export default class MuralSelect extends React.Component<PropTypes> {
               disabled={this.props.disabled}
               onChange={this.onMuralPick}
               onInputChange={(event: React.ChangeEvent<{}>, input: string) => {
-                if (event?.type === "change") {
+                if (event?.type === 'change') {
                   this.onMuralSearch(input);
                 }
               }}
@@ -109,7 +109,7 @@ export default class MuralSelect extends React.Component<PropTypes> {
               }
               loading={this.state.isSearchingMurals}
               clearOnEscape={true}
-              noOptionsText={"No results"}
+              noOptionsText={'No results'}
             />
           </div>
         </FormControl>

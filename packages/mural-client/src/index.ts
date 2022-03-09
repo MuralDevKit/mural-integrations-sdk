@@ -5,19 +5,19 @@ import setupAuthenticatedFetch, {
   refreshTokenHandler,
   requestTokenHandler,
   TokenHandlerConfig,
-} from "./fetch";
-import { Mural, Room, Template, User, Workspace } from "./types";
-import { setupSessionStore } from "./session";
+} from './fetch';
+import { setupSessionStore } from './session';
+import { Mural, Room, Template, User, Workspace } from './types';
 
-export * from "./fetch";
-export * from "./session";
-export * from "./types";
+export * from './fetch';
+export * from './session';
+export * from './types';
 
-export { default as setupAuthenticatedFetch } from "./fetch";
+export { default as setupAuthenticatedFetch } from './fetch';
 
 export type FetchFunction = (
   input: RequestInfo,
-  init?: RequestInit
+  init?: RequestInit,
 ) => Promise<Response>;
 
 export type ClientConfig = {
@@ -61,7 +61,7 @@ export function buildClientConfig(args: BuildClientArgs): ClientConfig {
 
   return {
     appId: args.appId,
-    host: args.muralHost || "app.mural.co",
+    host: args.muralHost || 'app.mural.co',
     fetchFn,
   };
 }
@@ -76,17 +76,17 @@ export interface ApiClient {
   createMural: (
     title: string,
     workspaceId: string,
-    roomId: string
+    roomId: string,
   ) => Promise<{ value: Mural }>;
   createMuralFromTemplate: (
     title: string,
     roomId: string,
-    templateId: string
+    templateId: string,
   ) => Promise<{ value: Mural }>;
   getCurrentUser: () => Promise<User>;
   getMural: (
     muralId: string,
-    options?: { integration: boolean }
+    options?: { integration: boolean },
   ) => Promise<Mural>;
   getMuralsByRoom: (roomId: string) => Promise<Mural[]>;
   getMuralsByWorkspace: (workspaceId: string) => Promise<Mural[]>;
@@ -96,15 +96,15 @@ export interface ApiClient {
   getWorkspaces: () => Promise<Workspace[]>;
   getTemplatesByWorkspace: (
     workspaceId: string,
-    options?: { withoutDefault: boolean }
+    options?: { withoutDefault: boolean },
   ) => Promise<Template[]>;
   searchMuralsByWorkspace: (
     workspaceId: string,
-    title: string
+    title: string,
   ) => Promise<Mural[]>;
   searchRoomsByWorkspace: (
     workspaceId: string | null,
-    title: string
+    title: string,
   ) => Promise<Room[]>;
   getLastActiveWorkspaceId: () => Promise<string | undefined>;
 }
@@ -112,7 +112,7 @@ export interface ApiClient {
 export default (config: ClientConfig): ApiClient => {
   const { fetchFn } = config;
 
-  const baseUrl = new URL("/api/public/v1/", `https://${config.host}`);
+  const baseUrl = new URL('/api/public/v1/', `https://${config.host}`);
   const api = (path: string) => new URL(path, baseUrl).href;
 
   return {
@@ -126,10 +126,10 @@ export default (config: ClientConfig): ApiClient => {
         workspaceId,
         roomId,
       };
-      const response = await fetchFn(api("murals"), {
+      const response = await fetchFn(api('murals'), {
         body: JSON.stringify(body),
-        headers: { "content-type": "application/json" },
-        method: "POST",
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
       });
       return response.json();
     },
@@ -137,7 +137,7 @@ export default (config: ClientConfig): ApiClient => {
     createMuralFromTemplate: async (
       title: string,
       roomId: string,
-      templateId: string
+      templateId: string,
     ) => {
       const body = {
         title,
@@ -145,22 +145,22 @@ export default (config: ClientConfig): ApiClient => {
       };
       const response = await fetchFn(api(`templates/${templateId}/murals`), {
         body: JSON.stringify(body),
-        headers: { "content-type": "application/json" },
-        method: "POST",
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
       });
       return response.json();
     },
     // https://developers.mural.co/public/reference/getcurrentmember
     getCurrentUser: async (): Promise<User> => {
-      const response = await fetchFn(api("users/me"), {
-        method: "GET",
+      const response = await fetchFn(api('users/me'), {
+        method: 'GET',
       });
       return (await response.json()).value;
     },
     // https://developers.mural.co/public/reference/getglobaltemplates
     getDefaultTemplates: async (): Promise<Template[]> => {
-      const response = await fetchFn(api("templates"), {
-        method: "GET",
+      const response = await fetchFn(api('templates'), {
+        method: 'GET',
       });
       return (await response.json()).value;
     },
@@ -168,60 +168,60 @@ export default (config: ClientConfig): ApiClient => {
     getMural: async (muralId: string, options?: { integration: boolean }) => {
       const params = new URLSearchParams();
       if (options?.integration)
-        params.set("integration", options!.integration.toString());
+        params.set('integration', options!.integration.toString());
       const response = await fetchFn(api(`murals/${muralId}?${params}`), {
-        method: "GET",
+        method: 'GET',
       });
       return (await response.json()).value;
     },
     // https://developers.mural.co/public/reference/getroommurals
     getMuralsByRoom: async (roomId: string) => {
       const response = await fetchFn(api(`rooms/${roomId}/murals`), {
-        method: "GET",
+        method: 'GET',
       });
       return (await response.json()).value;
     },
     // https://developers.mural.co/public/reference/getworkspacemurals
     getMuralsByWorkspace: async (workspaceId: string): Promise<Mural[]> => {
       const response = await fetchFn(api(`workspaces/${workspaceId}/murals`), {
-        method: "GET",
+        method: 'GET',
       });
       return (await response.json()).value;
     },
     // https://developers.mural.co/public/reference/getworkspacerooms
     getRoomsByWorkspace: async (workspaceId: string): Promise<Room[]> => {
       const response = await fetchFn(api(`workspaces/${workspaceId}/rooms`), {
-        method: "GET",
+        method: 'GET',
       });
       return (await response.json()).value;
     },
     // https://developers.mural.co/public/reference/getworkspace
     getWorkspace: async (id: string): Promise<Workspace> => {
       const response = await fetchFn(api(`workspaces/${id}`), {
-        method: "GET",
+        method: 'GET',
       });
       return response.json();
     },
     // https://developers.mural.co/public/reference/getworkspaces
     getWorkspaces: async (): Promise<Workspace[]> => {
       const response = await fetchFn(api(`workspaces`), {
-        method: "GET",
+        method: 'GET',
       });
       return (await response.json()).value;
     },
     // https://developers.mural.co/public/reference/gettemplatesbyworkspace
     getTemplatesByWorkspace: async (
       workspaceId: string,
-      options?: { withoutDefault: boolean }
+      options?: { withoutDefault: boolean },
     ): Promise<Template[]> => {
       const params = new URLSearchParams();
       if (options)
-        params.set("withoutDefault", options.withoutDefault.toString());
+        params.set('withoutDefault', options.withoutDefault.toString());
       const response = await fetchFn(
         api(`workspaces/${workspaceId}/templates`),
         {
-          method: "GET",
-        }
+          method: 'GET',
+        },
       );
       return (await response.json()).value;
     },
@@ -229,33 +229,33 @@ export default (config: ClientConfig): ApiClient => {
     searchMuralsByWorkspace: async (workspaceId: string, title: string) => {
       // title must be at least 3 characters for a successful search
       if (title.length < 3) {
-        throw new Error("title argument must be at least 3 characters.");
+        throw new Error('title argument must be at least 3 characters.');
       }
       const params = new URLSearchParams();
       // TODO: expand to support optional params: `limit` and `next`
-      params.set("title", title);
+      params.set('title', title);
       const response = await fetchFn(
         api(`search/${workspaceId}/murals?${params}`),
         {
-          method: "GET",
-        }
+          method: 'GET',
+        },
       );
       return (await response.json()).value;
     },
     // https://developers.mural.co/public/reference/searchrooms
     searchRoomsByWorkspace: async (
       workspaceId: string | null,
-      title: string
+      title: string,
     ): Promise<Room[]> => {
       // tile must be at least 3 characters for a successful search
       if (title.length < 3) {
-        throw new Error("title argument must be at least 3 characters.");
+        throw new Error('title argument must be at least 3 characters.');
       }
       const response = await fetchFn(
         api(`search/${workspaceId}/rooms?title=${title}`),
         {
-          method: "GET",
-        }
+          method: 'GET',
+        },
       );
       return (await response.json()).value;
     },
@@ -268,7 +268,7 @@ export default (config: ClientConfig): ApiClient => {
      */
     getLastActiveWorkspaceId: async (): Promise<string | undefined> => {
       const response = await fetchFn(api(`users/me`), {
-        method: "GET",
+        method: 'GET',
       });
       return (await response.json()).value.lastActiveWorkspace;
     },

@@ -1,20 +1,20 @@
-import Button from "@material-ui/core/Button";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import Button from '@material-ui/core/Button';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import {
   ApiClient,
   Mural,
   Room,
   Workspace,
-} from "@tactivos/mural-integrations-mural-client";
-import * as React from "react";
-import { MURAL_PICKER_ERRORS } from "../../common/errors";
-import MuralPickerError from "../error";
-import Header from "../header";
-import Loading from "../loading";
-import MuralSelect from "../mural-select";
-import RoomSelect from "../room-select";
-import WorkspaceSelect from "../workspace-select";
-import "./styles.scss";
+} from '@tactivos/mural-integrations-mural-client';
+import * as React from 'react';
+import { MURAL_PICKER_ERRORS } from '../../common/errors';
+import MuralPickerError from '../error';
+import Header from '../header';
+import Loading from '../loading';
+import MuralSelect from '../mural-select';
+import RoomSelect from '../room-select';
+import WorkspaceSelect from '../workspace-select';
+import './styles.scss';
 
 export interface CreateMuralData {
   roomId: string;
@@ -29,7 +29,7 @@ export interface CreateMuralResult {
 export interface PropTypes {
   apiClient: ApiClient;
   handleError: (error: Error, message: string) => void;
-  theme?: "light" | "dark";
+  theme?: 'light' | 'dark';
   ListboxProps?: object | undefined;
   onMuralSelect: (mural: Mural) => void;
   hideLogo?: boolean;
@@ -60,7 +60,7 @@ const INITIAL_STATE: StateTypes = {
   workspaceRooms: [],
   searchedRooms: [],
   murals: [],
-  error: "",
+  error: '',
   workspace: null,
   room: null,
   searchedMurals: [],
@@ -87,7 +87,7 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
   onLoading = () => {
     this.setState({
       isLoading: true,
-      error: "",
+      error: '',
     });
   };
 
@@ -99,7 +99,7 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
 
   onWorkspaceSelect = async (
     _: React.ChangeEvent<{}>,
-    workspace: Workspace | null
+    workspace: Workspace | null,
   ) => {
     await this.loadMuralsAndRoomsByWorkspace(workspace);
   };
@@ -112,8 +112,8 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
         murals: [],
         mural: null,
         rooms: [],
-        roomId: "",
-        error: "",
+        roomId: '',
+        error: '',
       });
     }
 
@@ -121,21 +121,21 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
 
     try {
       const roomPromise = this.props.apiClient.getRoomsByWorkspace(
-        workspace.id
+        workspace.id,
       );
       const muralPromise = this.props.apiClient.getMuralsByWorkspace(
-        workspace.id
+        workspace.id,
       );
       const [rooms, murals] = await Promise.all([roomPromise, muralPromise]);
       const sortedRooms: Room[] = rooms.sort((a, b) =>
-        b.type.localeCompare(a.type)
+        b.type.localeCompare(a.type),
       );
       this.setState({
         isLoading: false,
         workspace,
         workspaceRooms: sortedRooms,
         murals,
-        roomId: "",
+        roomId: '',
         room: null,
       });
     } catch (e) {
@@ -188,7 +188,7 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
   onMuralPick = (mural: Mural | null) => {
     this.setState({
       mural,
-      error: "",
+      error: '',
     });
   };
 
@@ -200,11 +200,11 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
 
   render() {
     const { hideLogo, theme } = this.props;
-    const currentTheme = theme || "light";
+    const currentTheme = theme || 'light';
     const muiTheme = createMuiTheme({
       palette: {
         type: currentTheme,
-        text: { primary: currentTheme === "light" ? "#585858" : "#a7a7a7" },
+        text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
       },
     });
 
@@ -212,7 +212,7 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
       <ThemeProvider theme={muiTheme}>
         <div className={`mural-picker-body ${theme}`} data-qa="mural-picker">
           <Header hideLogo={hideLogo} />
-          <div className={"mural-picker-selects"}>
+          <div className={'mural-picker-selects'}>
             <WorkspaceSelect
               workspace={this.state.workspace}
               workspaces={this.state.workspaces}

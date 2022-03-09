@@ -1,8 +1,8 @@
-import * as React from 'react';
-import moment from 'moment';
-import classnames from 'classnames';
 import { Grid, Card, CardActionArea, CardMedia } from '@material-ui/core';
 import { Mural } from '@tactivos/mural-integrations-mural-client';
+import classnames from 'classnames';
+import * as moment from 'moment';
+import * as React from 'react';
 import './styles.scss';
 
 export type CardSize = 'small' | 'normal';
