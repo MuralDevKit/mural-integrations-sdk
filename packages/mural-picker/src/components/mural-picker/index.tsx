@@ -1,20 +1,20 @@
-import * as React from "react";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import {
   ApiClient,
   Mural,
   Room,
   Workspace,
-} from "@tactivos/mural-integrations-mural-client";
-import { MURAL_PICKER_ERRORS } from "../../common/errors";
-import MuralPickerError from "../error";
-import Loading from "../loading";
-import Header from "../header";
-import { CardSize } from "../mural-card";
-import MuralList from "../mural-list";
-import RoomSelect from "../room-select";
-import WorkspaceSelect from "../workspace-select";
-import "./styles.scss";
+} from '@tactivos/mural-integrations-mural-client';
+import * as React from 'react';
+import { MURAL_PICKER_ERRORS } from '../../common/errors';
+import MuralPickerError from '../error';
+import Header from '../header';
+import Loading from '../loading';
+import { CardSize } from '../mural-card';
+import MuralList from '../mural-list';
+import RoomSelect from '../room-select';
+import WorkspaceSelect from '../workspace-select';
+import './styles.scss';
 
 export interface CreateMuralData {
   roomId: string;
@@ -32,11 +32,11 @@ export interface PropTypes {
   cardSize?: CardSize;
   hideLogo?: boolean;
   hideAddButton?: boolean;
-  theme?: "light" | "dark";
+  theme?: 'light' | 'dark';
   ListboxProps?: object | undefined;
 
   onCreateMural: (
-    mural: CreateMuralData
+    mural: CreateMuralData,
   ) => Promise<CreateMuralResult | undefined>;
   onMuralSelect: (mural: Mural) => void;
 }
@@ -67,7 +67,7 @@ const INITIAL_STATE: StateTypes = {
   workspaceRooms: [],
   searchedRooms: [],
   murals: [],
-  error: "",
+  error: '',
   workspace: null,
   room: null,
 };
@@ -86,7 +86,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
         if (lastActiveWorkspaceId) {
           workspace =
             workspaces.find(
-              (workspace) => workspace.id === lastActiveWorkspaceId
+              workspace => workspace.id === lastActiveWorkspaceId,
             ) || workspaces[0];
         } else {
           workspace = workspaces[0];
@@ -103,7 +103,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
   onLoading = () => {
     this.setState({
       isLoading: true,
-      error: "",
+      error: '',
     });
   };
 
@@ -115,7 +115,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
 
   onWorkspaceSelect = async (
     _: React.ChangeEvent<{}>,
-    workspace: Workspace | null
+    workspace: Workspace | null,
   ) => {
     await this.loadMuralsAndRoomsByWorkspace(workspace);
   };
@@ -128,30 +128,30 @@ export default class MuralPicker extends React.Component<PropTypes> {
         murals: [],
         mural: null,
         rooms: [],
-        roomId: "",
-        error: "",
+        roomId: '',
+        error: '',
       });
     }
 
-    this.setState({ isLoading: true, error: "" });
+    this.setState({ isLoading: true, error: '' });
 
     try {
       const roomPromise = this.props.apiClient.getRoomsByWorkspace(
-        workspace.id
+        workspace.id,
       );
       const muralPromise = this.props.apiClient.getMuralsByWorkspace(
-        workspace.id
+        workspace.id,
       );
       const [rooms, murals] = await Promise.all([roomPromise, muralPromise]);
       const sortedRooms: Room[] = rooms.sort((a, b) =>
-        b.type.localeCompare(a.type)
+        b.type.localeCompare(a.type),
       );
       this.setState({
         isLoading: false,
         workspace,
         workspaceRooms: sortedRooms,
         murals,
-        roomId: "",
+        roomId: '',
         room: null,
       });
     } catch (e) {
@@ -186,9 +186,9 @@ export default class MuralPicker extends React.Component<PropTypes> {
     if (!this.props.onMuralSelect) {
       this.handleError(
         new Error(
-          "onMuralSelect was invoked when not passed as prop from parent"
+          'onMuralSelect was invoked when not passed as prop from parent',
         ),
-        MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL
+        MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL,
       );
       return;
     }
@@ -198,7 +198,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
       this.props.onMuralSelect(mural);
 
       this.setState({
-        error: "",
+        error: '',
         isCreateSelected: false,
         mural,
       });
@@ -215,9 +215,9 @@ export default class MuralPicker extends React.Component<PropTypes> {
     if (!this.props.onCreateMural) {
       this.handleError(
         new Error(
-          "onCreateMural was invoked when not passed as prop from parent"
+          'onCreateMural was invoked when not passed as prop from parent',
         ),
-        MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL
+        MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL,
       );
       return;
     }
@@ -231,14 +231,14 @@ export default class MuralPicker extends React.Component<PropTypes> {
     }
 
     this.setState({
-      error: "",
+      error: '',
       isCreateSelected: true,
       mural: undefined,
     });
 
     const result = await this.props.onCreateMural({
       roomId: this.state.room.id,
-      title: "", // leaving title blank for now
+      title: '', // leaving title blank for now
       workspaceId: this.state.workspace.id,
     });
 
@@ -256,17 +256,17 @@ export default class MuralPicker extends React.Component<PropTypes> {
   };
 
   getRoomGroup = (room?: Room) => {
-    if (!room) return "";
-    return room.type === "private" ? "PRIVATE ROOMS" : "OPEN ROOMS";
+    if (!room) return '';
+    return room.type === 'private' ? 'PRIVATE ROOMS' : 'OPEN ROOMS';
   };
 
   render() {
     const { cardSize, hideLogo, theme } = this.props;
-    const currentTheme = theme || "light";
+    const currentTheme = theme || 'light';
     const muiTheme = createMuiTheme({
       palette: {
         type: currentTheme,
-        text: { primary: currentTheme === "light" ? "#585858" : "#a7a7a7" },
+        text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
       },
     });
 
@@ -274,7 +274,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
       <ThemeProvider theme={muiTheme}>
         <div className={`mural-picker-body ${theme}`} data-qa="mural-picker">
           <Header hideLogo={hideLogo} />
-          <div className={"mural-picker-selects"}>
+          <div className={'mural-picker-selects'}>
             <WorkspaceSelect
               workspace={this.state.workspace}
               workspaces={this.state.workspaces}
@@ -309,7 +309,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
               onMuralSelect={this.onMuralSelect}
               onCreateMural={this.onCreateMural}
               handleError={this.handleError}
-              cardSize={cardSize || "normal"}
+              cardSize={cardSize || 'normal'}
               hideAddButton={!!this.props.hideAddButton}
             />
           )}

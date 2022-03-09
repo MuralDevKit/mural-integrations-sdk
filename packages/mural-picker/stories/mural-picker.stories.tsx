@@ -4,11 +4,11 @@ import {
   Mural,
   Room,
   Workspace,
-} from "@tactivos/mural-integrations-mural-client";
-import * as React from "react";
+} from '@tactivos/mural-integrations-mural-client';
+import * as React from 'react';
 import MuralPicker, {
   PropTypes as MuralPickerPropTypes,
-} from "../src/components/mural-picker";
+} from '../src/components/mural-picker';
 
 const ctx: Record<string, number> = {
   mural: 1,
@@ -18,33 +18,33 @@ const ctx: Record<string, number> = {
 
 type Builder<T extends {}> = (attrs?: Partial<T>) => T;
 
-const mural: Builder<Mural> = (attrs) => ({
+const mural: Builder<Mural> = attrs => ({
   id: attrs?.id || `mid-${ctx.mural++}`,
   favorite: true,
   workspaceId: `wid-${ctx.workspace}`,
   roomId: `rid-${ctx.room}`,
   visitorsSettings: {
-    link: "nowhere",
-    visitors: "yes",
-    workspaceMembers: "yes",
+    link: 'nowhere',
+    visitors: 'yes',
+    workspaceMembers: 'yes',
   },
-  title: "My mural",
+  title: 'My mural',
   updatedOn: Date.now(),
-  thumbnailUrl: "https://mural.co/",
+  thumbnailUrl: 'https://mural.co/',
   ...attrs,
 });
 
-const room: Builder<Room> = (attrs) => ({
+const room: Builder<Room> = attrs => ({
   id: attrs?.id || `rid-${ctx.room++}`,
   workspaceId: `wid-${ctx.workspace}`,
-  type: "room",
-  name: "room 1",
+  type: 'room',
+  name: 'room 1',
   ...attrs,
 });
 
-const workspace: Builder<Workspace> = (attrs) => ({
+const workspace: Builder<Workspace> = attrs => ({
   id: attrs?.id || `wid-${ctx.workspace++}`,
-  name: "workspace 1",
+  name: 'workspace 1',
   ...attrs,
 });
 
@@ -73,7 +73,7 @@ const noop = () => null;
 
 const defaults: StoryDef<MuralPickerPropTypes> = {
   component: MuralPicker,
-  title: "Mural Picker/Murals",
+  title: 'Mural Picker/Murals',
   args: {
     apiClient: apiStub as any,
     handleError: noop,
@@ -85,7 +85,6 @@ const defaults: StoryDef<MuralPickerPropTypes> = {
 export default defaults;
 
 const Template = (args: MuralPickerPropTypes) => {
-  debugger;
   return <MuralPicker {...args} />;
 };
 

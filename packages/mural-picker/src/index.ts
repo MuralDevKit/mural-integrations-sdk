@@ -1,10 +1,10 @@
 import MuralPicker from './components/mural-picker';
+import MuralPickerForm from './components/mural-picker-form';
 import MuralPickerModal from './components/mural-picker-modal';
 import RoomPicker from './components/room-picker';
 import WorkspacePicker, {
   WorkspacePickerData,
 } from './components/workspace-picker';
-import MuralPickerForm from './components/mural-picker-form';
 
 export * from './components/mural-picker';
 export * from './components/room-picker';

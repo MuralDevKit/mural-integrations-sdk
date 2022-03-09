@@ -1,7 +1,7 @@
-import { FormControl, InputLabel, TextField } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Workspace } from "@tactivos/mural-integrations-mural-client";
-import * as React from "react";
+import { FormControl, InputLabel, TextField } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Workspace } from '@tactivos/mural-integrations-mural-client';
+import * as React from 'react';
 
 interface PropTypes {
   ListboxProps?: object | undefined;
@@ -9,7 +9,7 @@ interface PropTypes {
   workspace: Workspace | null;
   onWorkspaceSelect: (
     _: React.ChangeEvent<{}>,
-    workspace: Workspace | null
+    workspace: Workspace | null,
   ) => void;
 }
 
@@ -26,10 +26,10 @@ export default class WorkspaceSelect extends React.Component<PropTypes> {
               id="workspace-select"
               options={this.props.workspaces}
               ListboxProps={this.props.ListboxProps}
-              getOptionLabel={(option) => {
-                return option.name || "";
+              getOptionLabel={option => {
+                return option.name || '';
               }}
-              renderInput={(params) => (
+              renderInput={params => (
                 <TextField
                   {...params}
                   placeholder="Find a workspace..."
@@ -37,9 +37,9 @@ export default class WorkspaceSelect extends React.Component<PropTypes> {
                 />
               )}
               value={this.props.workspace}
-              groupBy={() => "SWITCH TO"}
+              groupBy={() => 'SWITCH TO'}
               onChange={this.props.onWorkspaceSelect}
-              noOptionsText={"No results"}
+              noOptionsText={'No results'}
             />
           </div>
         </FormControl>

@@ -7,8 +7,8 @@
  * out.
  */
 
-import * as React from 'react';
 import { Button, Card, Divider, Grid, List, ListItem } from '@material-ui/core';
+import * as React from 'react';
 
 export interface PropTypes {
   token: string;
