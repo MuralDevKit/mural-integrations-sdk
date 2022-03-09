@@ -1,9 +1,14 @@
+import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
-import {CircularProgress} from '@material-ui/core';
-import {AccountStatus, AuthMode, getAuthMode, getMuralRealm} from '../../common/realm';
-import {AuthorizeParams} from "./types";
+import {
+  AccountStatus,
+  AuthMode,
+  getAuthMode,
+  getMuralRealm,
+} from '../../common/realm';
 import AccountChoice from './account-choice';
 import './styles.scss';
+import { AuthorizeParams } from './types';
 
 // @ts-ignore
 import MuralLogo from '../../images/mural-logo.png';
@@ -89,7 +94,7 @@ export default class AccountChooser extends React.Component<
     const { webAppUrl } = this.props;
     try {
       return await getMuralRealm(webAppUrl, email);
-    } catch (e) {
+    } catch (e: any) {
       this.props.onError(e);
       return null;
     }
@@ -114,39 +119,41 @@ export default class AccountChooser extends React.Component<
   };
 
   hintEmailSignIn = async () =>
-      this.onSelection(
-          await this.props.getAuthUrl({
-              auto: {
-                  email: this.props.hint!,
-              },
-          }),
-      );
+    this.onSelection(
+      await this.props.getAuthUrl({
+        auto: {
+          email: this.props.hint!,
+        },
+      }),
+    );
 
   hintEmailSignUp = async () =>
-      this.onSelection(
-          await this.props.getAuthUrl({
-              auto: {
-                  email: this.props.hint!,
-                  signup: true,
-                  consentSso: false,
-              },
-          }),
-      );
+    this.onSelection(
+      await this.props.getAuthUrl({
+        auto: {
+          email: this.props.hint!,
+          signup: true,
+          consentSso: false,
+        },
+      }),
+    );
 
   hintSsoSignUp = async () =>
-      this.onSelection(
-          await this.props.getAuthUrl({
-              auto: {
-                  email: this.props.hint!,
-                  signup: true,
-                  consentSso: true,
-              },
-          }),
-      );
+    this.onSelection(
+      await this.props.getAuthUrl({
+        auto: {
+          email: this.props.hint!,
+          signup: true,
+          consentSso: true,
+        },
+      }),
+    );
 
-  useAnotherAccount = async () => this.onSelection(await this.props.getAuthUrl());
+  useAnotherAccount = async () =>
+    this.onSelection(await this.props.getAuthUrl());
 
-  createNewAccount = async () => this.onSelection(await this.props.getAuthUrl({signup: true}));
+  createNewAccount = async () =>
+    this.onSelection(await this.props.getAuthUrl({ signup: true }));
 
   render() {
     const { activeSession, hint, theme, visitor } = this.props;

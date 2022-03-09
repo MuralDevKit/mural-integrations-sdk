@@ -1,13 +1,15 @@
 import axios from 'axios';
 
+// eslint-disable-next-line no-shadow
 export enum AccountStatus {
   UNKNOWN = -1,
   UNKNOWN_SSO,
   UNVERIFIED,
   VALID,
-  UNKNOWN_BLOCKED
+  UNKNOWN_BLOCKED,
 }
 
+// eslint-disable-next-line no-shadow
 export enum AuthMode {
   GOOGLE = 'Google',
   MICROSOFT = 'Microsoft',
@@ -24,10 +26,7 @@ export interface RealmResponse {
   requireConsent: boolean;
 }
 
-export const getMuralRealm = async (
-    webAppUrl: string,
-    email: string,
-) => {
+export const getMuralRealm = async (webAppUrl: string, email: string) => {
   const response = await axios.post(`${webAppUrl}/api/v0/user/realm`, {
     email,
   });
