@@ -77,7 +77,7 @@ const defaults: StoryDef<MuralPickerPropTypes> = {
   args: {
     apiClient: apiStub as any,
     handleError: noop,
-    onCreateMural: noop,
+    onCreateMural: noop as any,
     onMuralSelect: noop,
   },
 };
