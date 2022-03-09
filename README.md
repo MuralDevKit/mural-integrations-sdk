@@ -13,27 +13,13 @@ This repository hosts the MURAL integration SDK
 
 ### Roadmap
 
- - [ ] Use this repository in `mural-integrations/lib`
- - [ ] Generalize build configuration and TypeScript configuration for all components
+ - [x] Use this repository in `mural-integrations/lib`
+ - [ ] Generalize build configuration and
+ - [x] Generalize TypeScript configuration for all components
  - [ ] Add testing rig
  - [ ] Add sample application
- - [ ] Add code quality tooling (prettier, eslint) https://github.com/tactivos/mural-integrations-sdk/pull/8
+ - [x] Add code quality tooling (prettier, eslint) https://github.com/tactivos/mural-integrations-sdk/pull/8
  - [ ] Changelog
-
-### Upstream (mural-integrations)
-
-Pulling changes from `mural-integrations`
-
-```bash
-# mural-integrations
-git subtree split --prefix lib -b sub/lib
-
-# mural-integrations-sdk
-git fetch upstream # this should be the `mural-integrations` local repository
-git subtree merge [--squash] --prefix packages upstream/sub/lib
-```
-
-In the future `mural-integrations` will either use submodules, or have the SDK as a dependency.
 
 ### Documentation
 
