@@ -1,7 +1,7 @@
-import { Grid, Card, CardActionArea, CardMedia } from '@material-ui/core';
+import { Card, CardActionArea, CardMedia, Grid } from '@material-ui/core';
 import { Mural } from '@tactivos/mural-integrations-mural-client';
 import classnames from 'classnames';
-import * as moment from 'moment';
+import moment from 'moment';
 import * as React from 'react';
 import './styles.scss';
 

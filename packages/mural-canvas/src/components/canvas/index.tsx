@@ -48,7 +48,7 @@ export function muralSessionActivationUrl(
 export class CanvasHost extends React.Component<PropTypes> {
   handleMessage = async (evt: MessageEvent) => {
     const eventHandlerKey = MESSAGE_EVENT[evt.data.type];
-    const eventHandler = this.props[eventHandlerKey];
+    const eventHandler = this.props[eventHandlerKey] as EventHandler;
 
     if (eventHandler) {
       await eventHandler.call(null);

@@ -41,7 +41,7 @@ const authenticatedFetch = async (
 
   try {
     return fetch(input, initWithAuth).then(checkStatus);
-  } catch (err) {
+  } catch (err: any) {
     const errorHandler = catchAuthenticationError(input, initWithAuth);
     return errorHandler(err);
   }
