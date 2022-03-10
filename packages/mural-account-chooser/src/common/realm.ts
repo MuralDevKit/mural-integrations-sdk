@@ -26,10 +26,19 @@ export interface RealmResponse {
   requireConsent: boolean;
 }
 
-export const getMuralRealm = async (webAppUrl: string, email: string) => {
-  const response = await axios.post(`${webAppUrl}/api/v0/user/realm`, {
-    email,
-  });
+export const getMuralRealm = async (
+  webApp: {
+    host: string;
+    protocol: string;
+  },
+  email: string,
+) => {
+  const response = await axios.post(
+    new URL('/api/v0/user/realm', `${webApp.protocol}//${webApp.host}`).href,
+    {
+      email,
+    },
+  );
   return response.data as RealmResponse;
 };
 
