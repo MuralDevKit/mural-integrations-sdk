@@ -174,6 +174,7 @@ export default class AccountChooser extends React.Component<
             <AccountChoice
               avatar={activeSession.avatar}
               email={activeSession.email}
+              qa="active-session"
               onClick={activeSession.onSelect}
               status={'Signed in'}
             />
@@ -181,7 +182,7 @@ export default class AccountChooser extends React.Component<
         )}
 
         {hintEmailSignIn && (
-          <div data-qa="sign-in-from-hint">
+          <div>
             <AccountChoice
               avatar={
                 hintEmailSignIn.authMode
@@ -189,6 +190,7 @@ export default class AccountChooser extends React.Component<
                   : undefined
               }
               email={hint!}
+              qa="sign-in-from-hint"
               onClick={this.hintEmailSignIn}
               status={'Signed out'}
             />
@@ -223,9 +225,10 @@ export default class AccountChooser extends React.Component<
         )}
 
         {hintEmailSignUp && (
-          <div data-qa="sign-up-from-hint">
+          <div>
             <AccountChoice
               email={hintEmailSignUp!.email}
+              qa="sign-up-from-hint"
               onClick={this.hintEmailSignUp}
               status={'Create a MURAL account'}
             />

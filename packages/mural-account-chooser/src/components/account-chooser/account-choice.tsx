@@ -7,6 +7,7 @@ import MuralIcon from '../../images/mural-icon.png';
 interface PropTypes {
   avatar?: string;
   email: string;
+  qa?: string;
   status: string;
   onClick: MouseEventHandler;
 }
@@ -14,11 +15,12 @@ interface PropTypes {
 export default function AccountChoice({
   avatar,
   email,
+  qa,
   status,
   onClick,
 }: PropTypes) {
   return (
-    <button className="account-choice" onClick={onClick}>
+    <button className="account-choice" onClick={onClick} data-qa={qa}>
       <img className="avatar" src={avatar || MuralIcon} alt="avatar" />
       <div className="email">{email}</div>
       <div className="status">{status}</div>
