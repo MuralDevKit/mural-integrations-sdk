@@ -3,105 +3,72 @@
 $font-family: Proxima Nova, sans-serif;
 
 $secondary-text-color: #757575;
-$separator-color: #e5e5e5;
+$separator-color: #E5E5E5;
 $mural-color: #E8005A;
 
-$text-color: #2f2f2f;
-$text-color-dark-mode: #d0d0d0;
+$text-color: #2F2F2F;
+$text-color-dark-mode: #D0D0D0;
 
 $background: #FFFFFF;
 $background-dark-mode: #1F1F1F;
 
 .account-chooser {
-  text-align: center;
+  /* Flex */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+
+  /* Size / Position */
+  min-height: 725px;
+
+  /* Font */
   color: $text-color;
 
-  .title {
+  .header {
+    /* Size / Position */
+    width: 300px;
+    padding-top: 78px;
+
+    /* Font */
     font-family: $font-family;
     line-height: 100%;
-    width: 290px;
-    margin: 78px auto 36px;
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+  }
+
+  .content {
+    /* Flex */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 32px;
   }
 
   .notice {
+    /* Font */
     font-family: $font-family;
-    margin-top: 36px;
-    margin-bottom: 36px;
-  }
-
-  .account-choice {
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-
-    width: 270px;
-    height: 48px;
-    margin: 8px auto;
-
-    background: $background;
-    border: 2px solid darken($background, 4%);
-    box-shadow: 0 2px 2px darken($background, 6%);
-    border-radius: 16px;
-
-    &:active,
-    &:hover {
-      border: 2px solid darken($background, 10%);;
-    }
-
-    .avatar {
-      position: absolute;
-      top: 7px;
-      left: 7px;
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-    }
-
-    .email {
-      font-family: $font-family;
-      position: absolute;
-
-      width: 80%;
-      top: 8px;
-      left: 52px;
-
-      text-align: left;
-      font-weight: bold;
-      font-size: 15px;
-      line-height: 16px;
-
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-
-    .status {
-      font-family: $font-family;
-      position: absolute;
-
-      top: 25px;
-      left: 52px;
-
-      font-weight: 600;
-      font-size: 11px;
-      line-height: 16px;
-
-      color: $secondary-text-color;
-    }
+    font-size: 1em;
   }
 
   .sign-up-with {
-    cursor: pointer;
-    background: $background;
-    position: relative;
-
+    /* Size */
     width: 196px;
     height: 40px;
-    margin: 8px auto;
 
+    /* Button */
+    cursor: pointer;
+    background: $background;
     border: none;
     box-shadow: 0 1px 2px darken($background, 30%);
     border-radius: 2px;
+
+    /* Flex */
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
 
     &:active,
     &:hover {
@@ -109,128 +76,192 @@ $background-dark-mode: #1F1F1F;
     }
 
     .logo {
-      position: absolute;
-      left: 10px;
-      top: 10px;
-
       width: 20px;
       height: 20px;
     }
 
     .text {
+      /* Font */
       font-family: $font-family;
       color: $secondary-text-color;
-      padding-left: 25px;
-
-      font-weight: 600;
-      font-size: 14px;
+      font-weight: bold;
+      font-size: 1.05em;
       line-height: 16px;
       letter-spacing: 0.4px;
     }
   }
 
-  .link {
-    font-family: $font-family;
-    cursor: pointer;
-    background: none;
-    border: none;
-
-    padding: 0;
-    margin-top: 36px;
-
-    color: $text-color;
-    font-weight: bold;
-    font-size: 14px;
-    line-height: 120%;
-
-    border-bottom: 1px dashed $text-color;
-
-    &:active,
-    &:hover {
-      color: black;
-    }
-  }
-
   .separator {
+    /* Size / Position */
     position: relative;
-    margin: auto;
     width: 260px;
-    padding-top: 30px;
-    padding-bottom: 30px;
+
+    /* Other */
+    text-align: center;
+
+    span {
+      /* Size / Position */
+      padding-left: 5px;
+      padding-right: 5px;
+
+      /* Style */
+      background: $background;
+      border-radius: 4px;
+
+      /* Font */
+      font-family: $font-family;
+      color: #919191;
+      font-weight: bold;
+      font-size: 0.8em;
+    }
 
     &:after {
-      content: "";
+      /* Size */
       height: 2px;
       width: 260px;
-      background: $separator-color;
 
+      /* Position */
       position: absolute;
       top: 49%;
       left: 0;
+
+      /* Style */
+      background: $separator-color;
+
+      /* Other */
+      content: "";
       z-index: -1;
     }
+  }
 
-    span {
-      font-family: $font-family;
-      color: #919191;
+  .link {
+    /* Button */
+    cursor: pointer;
+    background: none;
+    padding: 0;
+    border: none;
+    border-bottom: 1px dashed $text-color;
 
-      font-weight: 600;
-      font-size: 12px;
-      line-height: 18px;
+    /* Font */
+    font-family: $font-family;
+    color: $text-color;
+    font-weight: bold;
+    font-size: 0.9em;
+    line-height: 120%;
+  }
 
-      background: $background;
-      padding-left: 5px;
-      padding-right: 5px;
-      border-radius: 4px;
-    }
+  .button-group {
+    /* Flex */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .button {
+    /* Button */
+    cursor: pointer;
+    border-radius: 8px;
+
+    /* Size */
+    width: 260px;
+    height: 44px;
+
+    /* Font */
+    font-family: $font-family;
+    font-weight: bold;
+    font-size: 1em;
   }
 
   .mural-color-button {
-    font-family: $font-family;
-    cursor: pointer;
+    /* Button */
+    border: none;
+
+    /* Style */
     background: $mural-color;
 
-    margin: 8px auto;
-    width: 260px;
-    height: 44px;
-
-    border: none;
-    border-radius: 8px;
-
-    font-weight: bold;
-    font-size: 16px;
+    /* Font */
     color: $background;
-
-    &:active,
-    &:hover {
-      background: darken($mural-color, 10%);
-    }
   }
 
   .light-color-button {
-    font-family: $font-family;
-    background: $background;
-    cursor: pointer;
-    margin: 8px auto;
-
-    width: 260px;
-    height: 44px;
-
+    /* Button */
     border: 1px solid black;
-    border-radius: 8px;
 
-    font-weight: bold;
-    font-size: 16px;
+    /* Style */
+    background: $background;
+  }
+
+  .account-choice {
+    /* Size */
+    width: 270px;
+    height: 48px;
+
+    /* Button */
+    cursor: pointer;
+    border: 2px solid darken($background, 4%);
+    box-shadow: 0 2px 2px darken($background, 6%);
+    border-radius: 16px;
+
+    /* Style */
+    background: $background;
+
+    /* Flex */
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
     &:active,
     &:hover {
-      background: darken($background, 10%);
+      border: 2px solid darken($background, 10%);
+    }
+
+    .avatar {
+      /* Size / Position */
+      width: 32px;
+      height: 32px;
+
+      /* Style */
+      border-radius: 8px;
+    }
+
+    .body {
+      /* Flex */
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      flex: 1 1;
+
+      .email {
+        /* Size */
+        width: 220px;
+
+        /* Font */
+        font-family: $font-family;
+        text-align: left;
+        font-weight: bold;
+        font-size: 1.2em;
+
+        /* Overflow */
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .status {
+        /* Font */
+        font-family: $font-family;
+        font-weight: bold;
+        font-size: 0.85em;
+        line-height: 16px;
+        color: $secondary-text-color;
+      }
     }
   }
 
-  .mural-logo {
-    margin-top: 130px;
-    width: 130px;
+  .footer {
+    .mural-logo {
+      /* Size / Position */
+      width: 130px;
+    }
   }
 
   &.dark {
@@ -246,8 +277,10 @@ $background-dark-mode: #1F1F1F;
         border: 2px solid lighten($background-dark-mode, 14%);
       }
 
-      .email {
-        color: $text-color-dark-mode;
+      .body {
+        .email {
+          color: $text-color-dark-mode;
+        }
       }
     }
 

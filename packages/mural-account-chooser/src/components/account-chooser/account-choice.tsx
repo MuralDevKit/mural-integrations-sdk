@@ -22,8 +22,10 @@ export default function AccountChoice({
   return (
     <button className="account-choice" onClick={onClick} data-qa={qa}>
       <img className="avatar" src={avatar || MuralIcon} alt="avatar" />
-      <div className="email">{email}</div>
-      <div className="status">{status}</div>
+      <div className="body">
+        <div className="email">{email}</div>
+        <div className="status">{status}</div>
+      </div>
     </button>
   );
 }
