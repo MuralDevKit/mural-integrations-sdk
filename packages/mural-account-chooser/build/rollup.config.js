@@ -1,10 +1,11 @@
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import path from 'path';
-import resolve from '@rollup/plugin-node-resolve';
-import image from '@rollup/plugin-image';
-import typescript from 'rollup-plugin-typescript2';
-import styles from 'rollup-plugin-styles';
 import commonjs from '@rollup/plugin-commonjs';
+import image from '@rollup/plugin-image';
+import resolve from '@rollup/plugin-node-resolve';
+import path from 'path';
+import { imagetools } from 'rollup-plugin-imagetools';
+import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+import styles from 'rollup-plugin-styles';
+import typescript from 'rollup-plugin-typescript2';
 
 export default [
   {
@@ -32,6 +33,7 @@ export default [
       peerDepsExternal(),
       styles(),
       image(),
+      imagetools(),
     ],
   },
 ];

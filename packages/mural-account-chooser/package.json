@@ -49,6 +49,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "rollup": "^2.54.0",
+    "rollup-plugin-imagetools": "^3.0.4",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.0",
     "rollup-plugin-scss": "^3.0.0",

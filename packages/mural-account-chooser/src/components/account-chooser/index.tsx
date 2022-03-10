@@ -11,11 +11,11 @@ import './styles.scss';
 import { AuthorizeParams } from './types';
 
 // @ts-ignore
-import MuralLogo from '../../images/mural-logo.png';
+import MuralLogo from '../../images/mural-logo.png?w=130';
 // @ts-ignore
-import GoogleIcon from '../../images/google-icon.png';
+import GoogleIcon from '../../images/google-icon.png?w=32&h=32';
 // @ts-ignore
-import MicrosoftIcon from '../../images/microsoft-icon.png';
+import MicrosoftIcon from '../../images/microsoft-icon.png?w=32&h=32';
 
 const AUTH_MODE_ICONS = {
   [AuthMode.GOOGLE]: GoogleIcon,

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { MouseEventHandler } from 'react';
 
 // @ts-ignore
-import MuralIcon from '../../images/mural-icon.png';
+import MuralIcon from '../../images/mural-icon.png?w=32&h=32';
 
 interface PropTypes {
   avatar?: string;
