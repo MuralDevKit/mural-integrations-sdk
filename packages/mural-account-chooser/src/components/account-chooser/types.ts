@@ -1,6 +1,6 @@
 interface AutomaticOptions {
   email: string;
-  signup?: boolean;
+  action: 'signin' | 'signup';
   consentSso?: boolean;
 }
 

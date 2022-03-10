@@ -122,6 +122,7 @@ export default class AccountChooser extends React.Component<
     this.onSelection(
       await this.props.getAuthUrl({
         auto: {
+          action: 'signin',
           email: this.props.hint!,
         },
       }),
@@ -131,9 +132,9 @@ export default class AccountChooser extends React.Component<
     this.onSelection(
       await this.props.getAuthUrl({
         auto: {
-          email: this.props.hint!,
-          signup: true,
+          action: 'signup',
           consentSso: false,
+          email: this.props.hint!,
         },
       }),
     );
@@ -142,9 +143,9 @@ export default class AccountChooser extends React.Component<
     this.onSelection(
       await this.props.getAuthUrl({
         auto: {
-          email: this.props.hint!,
-          signup: true,
+          action: 'signup',
           consentSso: true,
+          email: this.props.hint!,
         },
       }),
     );
