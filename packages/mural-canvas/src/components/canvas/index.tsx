@@ -23,7 +23,8 @@ const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
 export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
   muralId: string;
-  state: string;
+  muralUrl: string;
+  state?: string;
   authUrl?: URL | string;
 }
 
@@ -64,15 +65,8 @@ export class CanvasHost extends React.Component<PropTypes> {
   }
 
   render() {
-    const { muralId, state } = this.props;
-    const { appId, host } = this.props.apiClient.config;
-    const [workspaceId, boardId] = muralId.split('.');
-    let canvasUrl: string;
-
-    const muralUrl = new URL(
-      `/a/${appId}/t/${workspaceId}/m/${workspaceId}/${boardId}/${state}`,
-      `https://${host}`,
-    );
+    const { muralUrl } = this.props;
+    let canvasUrl: string = muralUrl;
 
     if (this.props.authUrl && this.props.apiClient.authenticated()) {
       canvasUrl = muralSessionActivationUrl(
@@ -80,12 +74,9 @@ export class CanvasHost extends React.Component<PropTypes> {
         this.props.authUrl,
         muralUrl,
       );
-    } else {
-      // directly to the visitor flow
-      canvasUrl = muralUrl.href;
     }
 
-    return <iframe className="mural-canvas" src={canvasUrl} seamless/>;
+    return <iframe className="mural-canvas" src={canvasUrl} seamless />;
   }
 }
 
