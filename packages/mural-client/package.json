@@ -19,7 +19,8 @@
   "license": "ISC",
   "repository": "https://github.com/tactivos/mural-integrations-sdk",
   "dependencies": {
-    "jsonwebtoken": "^8.5.1"
+    "jsonwebtoken": "^8.5.1",
+    "qs": "6.9.4"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^19.0.2",
@@ -27,6 +28,7 @@
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@types/jsonwebtoken": "^8.5.6",
     "@types/node": "^16.11.12",
+    "@types/qs": "^6.9.7",
     "rollup": "^2.54.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.0",

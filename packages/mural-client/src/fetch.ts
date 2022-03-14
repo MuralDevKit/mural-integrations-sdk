@@ -1,4 +1,5 @@
 import * as jwt from 'jsonwebtoken';
+import * as qs from 'qs';
 import {
   generateState,
   Session,
@@ -153,76 +154,113 @@ async function extractErrorResponse(res?: Response) {
   };
 }
 
-export const authorizeHandler =
-  (config: TokenHandlerConfig) =>
-  async (redirectUri?: string, opts = { store: false }): Promise<string> => {
-    const state = generateState();
+const encodeAutoParam = (auto: boolean | AutomaticOptions): string => {
+  if (typeof auto === 'boolean') {
+    return auto.toString();
+  }
 
-    // validate that the state hasn't been tampered
-    const params = new URLSearchParams();
-    if (redirectUri) params.set('redirectUri', redirectUri);
-    params.set('state', state);
+  const payload = Buffer.from(JSON.stringify(auto)).toString('base64');
+  return `json:${payload}`;
+};
 
-    const url = `${config.authorizeUri}?${params}`;
+interface AutomaticOptions {
+  email: string;
+  action: 'signin' | 'signup';
+  consentSso?: boolean;
+}
 
-    const authorizeUrl = await fetch(url, { method: 'GET' })
-      .then(checkStatus)
-      .then(res => res.text());
+export interface AuthorizeParams {
+  auto?: boolean | AutomaticOptions;
+  signup?: boolean;
+  reauthenticate?: boolean;
+  forward?: {
+    [key: string]: unknown;
+  };
+}
 
-    if (opts.store) {
-      storeState(state);
-    }
+export interface AuthorizeHandlerOptions {
+  authorizeParams?: AuthorizeParams;
+  storeState: boolean;
+}
 
-    return authorizeUrl;
+export const authorizeHandler = (config: TokenHandlerConfig) => async (
+  redirectUri?: string,
+  opts: AuthorizeHandlerOptions = { storeState: false },
+): Promise<string> => {
+  const state = generateState();
+
+  const params = qs.stringify(
+    {
+      state,
+      redirectUri,
+      auto: opts.authorizeParams?.auto
+        ? encodeAutoParam(opts.authorizeParams.auto)
+        : undefined,
+      signup: opts.authorizeParams?.signup || undefined,
+      reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
+      ...opts.authorizeParams?.forward,
+    },
+    { encode: true },
+  );
+
+  const url = `${config.authorizeUri}?${params}`;
+
+  const authorizeUrl = await fetch(url, { method: 'GET' })
+    .then(checkStatus)
+    .then(res => res.text());
+
+  if (opts.storeState) {
+    storeState(state);
+  }
+
+  return authorizeUrl;
+};
+
+export const requestTokenHandler = (config: TokenHandlerConfig) => async (
+  code: string,
+  state: string,
+  opts = { store: false },
+): Promise<Session> => {
+  // validate that the state hasn't been tampered
+  if (!validateState(state)) throw new Error('INVALID_STATE');
+
+  const url = `${config.requestTokenUri}?code=${code}`;
+  const session = await fetch(url, { method: 'GET' })
+    .then(checkStatus)
+    .then(res => res.json());
+
+  if (opts.store) {
+    fetchConfig.sessionStore.set(session);
+  }
+
+  return session;
+};
+
+export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
+  opts = { store: false },
+): Promise<Session> => {
+  const staleSession = fetchConfig.sessionStore.get();
+  const options = {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    body: JSON.stringify({
+      refreshToken: staleSession && staleSession.refreshToken,
+    }),
   };
 
-export const requestTokenHandler =
-  (config: TokenHandlerConfig) =>
-  async (
-    code: string,
-    state: string,
-    opts = { store: false },
-  ): Promise<Session> => {
-    // validate that the state hasn't been tampered
-    if (!validateState(state)) throw new Error('INVALID_STATE');
+  const freshSession: Session = await fetch(config.refreshTokenUri, options)
+    .then(checkStatus)
+    .then(res => res.json());
 
-    const url = `${config.requestTokenUri}?code=${code}`;
-    const session = await fetch(url, { method: 'GET' })
-      .then(checkStatus)
-      .then(res => res.json());
+  if (opts.store) {
+    fetchConfig.sessionStore.set(freshSession);
+  }
 
-    if (opts.store) {
-      fetchConfig.sessionStore.set(session);
-    }
-
-    return session;
-  };
-
-export const refreshTokenHandler =
-  (config: TokenHandlerConfig) =>
-  async (opts = { store: false }): Promise<Session> => {
-    const staleSession = fetchConfig.sessionStore.get();
-    const options = {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-      body: JSON.stringify({
-        refreshToken: staleSession && staleSession.refreshToken,
-      }),
-    };
-
-    const freshSession: Session = await fetch(config.refreshTokenUri, options)
-      .then(checkStatus)
-      .then(res => res.json());
-
-    if (opts.store) {
-      fetchConfig.sessionStore.set(freshSession);
-    }
-
-    return freshSession;
-  };
+  return freshSession;
+};
 
 // This is a shortcut as this file as multiple dependencies
 // we'll ensure we require the call to `setup` or anyways
