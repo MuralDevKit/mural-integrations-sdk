@@ -71,7 +71,10 @@ export default class AccountChooser extends React.Component<
     if (hint && hint !== activeSession?.email) {
       const realm = await this.loadRealm(hint);
       const authMode = realm ? getAuthMode(realm) : undefined;
-      const accountExist = realm && realm.accountStatus === AccountStatus.VALID;
+      const accountExist =
+        realm &&
+        (realm.accountStatus === AccountStatus.VALID ||
+          realm.accountStatus === AccountStatus.UNVERIFIED);
 
       if (accountExist) {
         hintEmailSignIn = { email: hint, authMode };
