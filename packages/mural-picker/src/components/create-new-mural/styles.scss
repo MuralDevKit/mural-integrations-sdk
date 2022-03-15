@@ -78,6 +78,13 @@
     }
   }
 
+  .blank {
+    width: 248px;
+    &-image {
+      background-color: #e2e2e2;
+    }
+  }
+
   &-img {
     display: block;
     width: 100%;

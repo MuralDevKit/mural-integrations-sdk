@@ -29,6 +29,7 @@ export interface PropTypes {
   apiClient: ApiClient
   token: string;
   roomId: string;
+  workspaceId: string;
   onCancelAndGoBack: () => void;
   onCreateMural: (mural: Mural) => void;
 }
@@ -55,7 +56,8 @@ const INITIAL_STATE: StateTypes = {
   title: '',
 };
 
-const LIMIT = 100
+const LIMIT = 100;
+const blankTemplateName = 'Blank Template'; 
 
 export default class CreateNewMural extends React.Component<PropTypes, StateTypes> {
   state: StateTypes = INITIAL_STATE;
@@ -77,13 +79,14 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
 
     this.setState({ loading: true }, async () => {
       try {
+        const blankTemplate: Template = { id: '', description: '', name: blankTemplateName, publicHash: '', thumbUrl: ''};
         // TODO: add 'next' query param for 'getTemplates' method into mural-client sdk
         const url = new URL('/api/public/v1/templates', `https://${this.props.apiClient.config.host}`);
         url.searchParams.set('limit', LIMIT.toString())
         if (this.state.nextToken) url.searchParams.set('next', this.state.nextToken)
         const response = await this.props.apiClient.fetch(url.toString(), { method: 'GET' });
         const data = await response.json()
-        const templates = [...Array.from(this.state.templates), ...(data.value || [])]
+        const templates = [blankTemplate, ...Array.from(this.state.templates), ...(data.value || [])];
         this.setState({ templates, nextToken: data.next, loading: false, error: '' }, () => {
           this.scrollRef.current?.removeEventListener('scroll', this.lazyLoadHandler)
           this.scrollRef.current?.addEventListener('scroll', this.lazyLoadHandler)
@@ -96,7 +99,7 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
 
   createMural = () => {
     const { title } = this.state
-    const { roomId } = this.props
+    const { roomId, workspaceId } = this.props
     const template = this.state.templates[this.state.selected]
 
     try {
@@ -109,16 +112,28 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
         this.setState({ error: "Please select a template." }); 
         return
       }
-
-      this.setState({ btnLoading: true }, async () => {
-        const data = await this.props.apiClient.createMuralFromTemplate(
-          title,
-          roomId,
-          template.id
-        );
-
-        this.props.onCreateMural(data.value)
-      })
+      if (template.name === blankTemplateName) {
+        this.setState({ btnLoading: true }, async () => {
+          const data = await this.props.apiClient.createMural(
+            title,
+            workspaceId,
+            roomId
+          );
+  
+          this.props.onCreateMural(data.value)
+        });
+      } else {
+        this.setState({ btnLoading: true }, async () => {
+          const data = await this.props.apiClient.createMuralFromTemplate(
+            title,
+            roomId,
+            template.id
+          );
+  
+          this.props.onCreateMural(data.value)
+        })
+      }
+      
     } catch (exception) {
       this.setState({ error: 'Error creating a new mural.' })
     }
@@ -218,10 +233,10 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
                     })}
                   >
                     <RippleEffect onClick={() => this.onSelectTemplate(index)}>
-                      <div className='template-item-img-container'>
-                        <img className='template-item-img' src={template.thumbUrl} alt='thumbnail' />
+                      <div className={`template-item-img-container ${template.name === blankTemplateName ? 'blank blank-image': ''}`}>
+                        {template.name !== blankTemplateName ? <img className='template-item-img' src={template.thumbUrl} alt='thumbnail' /> : ''}
                       </div>
-                      <div className='template-item-typography-container'>
+                      <div className={`template-item-typography-container' ${template.name === blankTemplateName ? 'blank': ''}`}>
                         <div className='template-item-typography-title'>
                           {template.name}
                         </div>
