@@ -33,7 +33,7 @@ export interface AccountChooserPropTypes {
   silent?: boolean;
   theme?: 'light' | 'dark';
   visitor?: { onSelect: () => void };
-  webApp: {
+  api: {
     host: string;
     protocol: string;
   };
@@ -98,9 +98,9 @@ export default class AccountChooser extends React.Component<
   }
 
   loadRealm = async (email: string) => {
-    const { webApp } = this.props;
+    const { api } = this.props;
     try {
-      return await getMuralRealm(webApp, email);
+      return await getMuralRealm(api, email);
     } catch (e: any) {
       this.props.onError(e);
       return null;

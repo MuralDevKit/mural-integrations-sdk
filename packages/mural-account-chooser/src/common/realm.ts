@@ -27,14 +27,14 @@ export interface RealmResponse {
 }
 
 export const getMuralRealm = async (
-  webApp: {
+  api: {
     host: string;
     protocol: string;
   },
   email: string,
 ) => {
   const response = await axios.post(
-    new URL('/api/v0/user/realm', `${webApp.protocol}//${webApp.host}`).href,
+    new URL('/api/v0/user/realm', `${api.protocol}//${api.host}`).href,
     {
       email,
     },

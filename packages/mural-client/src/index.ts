@@ -23,7 +23,10 @@ export type FetchFunction = (
 export type ClientConfig = {
   appId: string;
   fetchFn: FetchFunction;
-  host: string;
+  api: {
+    host: string;
+    protocol: string;
+  };
 };
 
 export type ApiError = {
@@ -34,7 +37,10 @@ export type ApiError = {
 
 export type BuildClientArgs = {
   appId: string;
-  muralHost?: string;
+  api: {
+    host: string;
+    protocol: string;
+  };
   storage?: Storage;
 } & TokenHandlerConfig;
 
@@ -60,7 +66,7 @@ export function buildClientConfig(args: BuildClientArgs): ClientConfig {
 
   return {
     appId: args.appId,
-    host: args.muralHost || 'app.mural.co',
+    api: args.api || { host: 'app.mural.co', protocol: 'https:' },
     fetchFn,
   };
 }
@@ -69,7 +75,10 @@ export interface ApiClient {
   authenticated: () => boolean;
   config: {
     appId: string;
-    host: string;
+    api: {
+      host: string;
+      protocol: string;
+    };
   };
   fetch: FetchFunction;
   createMural: (
@@ -111,7 +120,10 @@ export interface ApiClient {
 export default (config: ClientConfig): ApiClient => {
   const { fetchFn } = config;
 
-  const baseUrl = new URL('/api/public/v1/', `https://${config.host}`);
+  const baseUrl = new URL(
+    '/api/public/v1/',
+    `${config.api.protocol}//${config.api.host}`,
+  );
   const api = (path: string) => new URL(path, baseUrl).href;
 
   return {
