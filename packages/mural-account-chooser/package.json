@@ -1,6 +1,6 @@
 {
   "name": "@tactivos/mural-integrations-mural-account-chooser",
-  "version": "1.2.0-alpha.0",
+  "version": "1.2.1-alpha.0",
   "description": "Account Chooser component for MURAL integrations",
   "main": "dist/mural-account-chooser.bundle.js",
   "module": "dist/mural-account-chooser.esm.js",
