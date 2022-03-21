@@ -70,20 +70,21 @@ export default class AccountChooser extends React.Component<
 
     if (hint && hint !== activeSession?.email) {
       const realm = await this.loadRealm(hint);
-      const authMode = realm ? getAuthMode(realm) : undefined;
-      const accountExist =
-        realm &&
-        (realm.accountStatus === AccountStatus.VALID ||
-          realm.accountStatus === AccountStatus.UNVERIFIED);
+      if (realm) {
+        const authMode = getAuthMode(realm);
+        const accountExist =
+          realm.accountStatus === AccountStatus.VALID ||
+          realm.accountStatus === AccountStatus.UNVERIFIED;
 
-      if (accountExist) {
-        hintEmailSignIn = { email: hint, authMode };
-      } else {
-        hintEmailSignUp = {
-          email: hint,
-          authMode,
-          requireConsent: realm?.requireConsent,
-        };
+        if (accountExist) {
+          hintEmailSignIn = { email: hint, authMode };
+        } else {
+          hintEmailSignUp = {
+            email: hint,
+            authMode,
+            requireConsent: realm?.requireConsent,
+          };
+        }
       }
     }
 
@@ -170,85 +171,93 @@ export default class AccountChooser extends React.Component<
       return <CircularProgress />;
     }
 
-    const noAccountOptions =
-      !activeSession && !hintEmailSignIn && !hintEmailSignUp;
+    const haveAccountOptions =
+      activeSession || hintEmailSignIn || hintEmailSignUp;
     return (
       <div data-qa="account-chooser" className={`account-chooser ${theme}`}>
-        <span className="header">Choose an account to get started</span>
+        <span className="header">
+          {haveAccountOptions
+            ? 'Choose an account to get started'
+            : 'Sign in to get started'}
+        </span>
 
-        <div className="content">
-          {(activeSession || hintEmailSignIn) && (
-            <div className="button-group">
-              {activeSession && (
-                <AccountChoice
-                  avatar={activeSession.avatar}
-                  email={activeSession.email}
-                  qa="active-session"
-                  onClick={activeSession.onSelect}
-                  status={'Signed in'}
-                />
-              )}
+        {haveAccountOptions && (
+          <div className="content">
+            {(activeSession || hintEmailSignIn) && (
+              <div className="button-group">
+                {activeSession && (
+                  <AccountChoice
+                    avatar={activeSession.avatar}
+                    email={activeSession.email}
+                    qa="active-session"
+                    onClick={activeSession.onSelect}
+                    status={'Signed in'}
+                  />
+                )}
 
-              {hintEmailSignIn && (
-                <AccountChoice
-                  avatar={
-                    hintEmailSignIn.authMode
-                      ? AUTH_MODE_ICONS[hintEmailSignIn.authMode]
-                      : undefined
-                  }
-                  email={hint!}
-                  qa="sign-in-from-hint"
-                  onClick={this.hintEmailSignIn}
-                  status={'Signed out'}
-                />
-              )}
-            </div>
-          )}
-
-          {hintEmailSignUp && hintEmailSignUp.requireConsent && (
-            <>
-              <span className="notice">
-                We noticed <b>{hintEmailSignUp.email}</b> is a{' '}
-                {hintEmailSignUp.authMode} account
-              </span>
-              <button
-                data-qa="sign-up-with"
-                className="sign-up-with"
-                onClick={this.hintSsoSignUp}
-              >
-                <img
-                  alt="auth-mode-icon"
-                  className="logo"
-                  src={AUTH_MODE_ICONS[hintEmailSignUp.authMode!]}
-                />
-                <div className="text">
-                  Sign up with {hintEmailSignUp.authMode}
-                </div>
-              </button>
-
-              <div className="separator">
-                <span>OR</span>
+                {hintEmailSignIn && (
+                  <AccountChoice
+                    avatar={
+                      hintEmailSignIn.authMode
+                        ? AUTH_MODE_ICONS[hintEmailSignIn.authMode]
+                        : undefined
+                    }
+                    email={hint!}
+                    qa="sign-in-from-hint"
+                    onClick={this.hintEmailSignIn}
+                    status={'Signed out'}
+                  />
+                )}
               </div>
-            </>
-          )}
+            )}
 
-          {hintEmailSignUp && (
-            <AccountChoice
-              email={hintEmailSignUp!.email}
-              qa="sign-up-from-hint"
-              onClick={this.hintEmailSignUp}
-              status={'Create a MURAL account'}
-            />
-          )}
-        </div>
+            {hintEmailSignUp && hintEmailSignUp.requireConsent && (
+              <>
+                <span className="notice">
+                  We noticed <b>{hintEmailSignUp.email}</b> is a{' '}
+                  {hintEmailSignUp.authMode} account
+                </span>
+                <button
+                  data-qa="sign-up-with"
+                  className="sign-up-with"
+                  onClick={this.hintSsoSignUp}
+                >
+                  <img
+                    alt="auth-mode-icon"
+                    className="logo"
+                    src={AUTH_MODE_ICONS[hintEmailSignUp.authMode!]}
+                  />
+                  <div className="text">
+                    Sign up with {hintEmailSignUp.authMode}
+                  </div>
+                </button>
+
+                <div className="separator">
+                  <span>OR</span>
+                </div>
+              </>
+            )}
+
+            {hintEmailSignUp && (
+              <AccountChoice
+                email={hintEmailSignUp!.email}
+                qa="sign-up-from-hint"
+                onClick={this.hintEmailSignUp}
+                status={'Create a MURAL account'}
+              />
+            )}
+          </div>
+        )}
 
         <div className="content">
           <button
             data-qa="use-another-account"
-            className={noAccountOptions ? 'light-color-button' : 'link'}
+            className={
+              haveAccountOptions ? 'link' : 'button light-color-button'
+            }
             onClick={this.useAnotherAccount}
           >
-            {noAccountOptions ? 'Sign in' : 'Use another account'}
+            {haveAccountOptions ? 'Use another account' : 'Sign in'}
           </button>
 
           <div className="separator" />
