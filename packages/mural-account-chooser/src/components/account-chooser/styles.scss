@@ -18,9 +18,10 @@ $background-dark-mode: #1F1F1F;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+  gap: 70px;
 
   /* Size / Position */
-  min-height: 725px;
+  padding-top: 78px;
 
   /* Font */
   color: $text-color;
@@ -28,7 +29,6 @@ $background-dark-mode: #1F1F1F;
   .header {
     /* Size / Position */
     width: 300px;
-    padding-top: 78px;
 
     /* Font */
     font-family: $font-family;
