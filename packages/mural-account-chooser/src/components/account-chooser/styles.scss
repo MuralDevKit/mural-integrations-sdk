@@ -1,0 +1,298 @@
+@import "@tactivos/mural-integrations-common/styles/fonts.css";
+
+$font-family: Proxima Nova, sans-serif;
+
+$secondary-text-color: #757575;
+$separator-color: #E5E5E5;
+$mural-color: #E8005A;
+
+$text-color: #2F2F2F;
+$text-color-dark-mode: #D0D0D0;
+
+$background: #FFFFFF;
+$background-dark-mode: #1F1F1F;
+
+.account-chooser {
+  /* Flex */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 70px;
+
+  /* Size / Position */
+  padding-top: 78px;
+
+  /* Font */
+  color: $text-color;
+
+  .header {
+    /* Size / Position */
+    width: 300px;
+
+    /* Font */
+    font-family: $font-family;
+    line-height: 100%;
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+  }
+
+  .content {
+    /* Flex */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 32px;
+  }
+
+  .notice {
+    /* Font */
+    font-family: $font-family;
+    font-size: 1em;
+  }
+
+  .sign-up-with {
+    /* Size */
+    width: 196px;
+    height: 40px;
+
+    /* Button */
+    cursor: pointer;
+    background: $background;
+    border: none;
+    box-shadow: 0 1px 2px darken($background, 30%);
+    border-radius: 2px;
+
+    /* Flex */
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    &:active,
+    &:hover {
+      box-shadow: 0 1px 2px darken($background, 50%);
+    }
+
+    .logo {
+      width: 20px;
+      height: 20px;
+    }
+
+    .text {
+      /* Font */
+      font-family: $font-family;
+      color: $secondary-text-color;
+      font-weight: bold;
+      font-size: 1.05em;
+      line-height: 16px;
+      letter-spacing: 0.4px;
+    }
+  }
+
+  .separator {
+    /* Size / Position */
+    position: relative;
+    width: 260px;
+
+    /* Other */
+    text-align: center;
+
+    span {
+      /* Size / Position */
+      padding-left: 5px;
+      padding-right: 5px;
+
+      /* Style */
+      background: $background;
+      border-radius: 4px;
+
+      /* Font */
+      font-family: $font-family;
+      color: #919191;
+      font-weight: bold;
+      font-size: 0.8em;
+    }
+
+    &:after {
+      /* Size */
+      height: 2px;
+      width: 260px;
+
+      /* Position */
+      position: absolute;
+      top: 49%;
+      left: 0;
+
+      /* Style */
+      background: $separator-color;
+
+      /* Other */
+      content: "";
+      z-index: -1;
+    }
+  }
+
+  .link {
+    /* Button */
+    cursor: pointer;
+    background: none;
+    padding: 0;
+    border: none;
+    border-bottom: 1px dashed $text-color;
+
+    /* Font */
+    font-family: $font-family;
+    color: $text-color;
+    font-weight: bold;
+    font-size: 0.9em;
+    line-height: 120%;
+  }
+
+  .button-group {
+    /* Flex */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .button {
+    /* Button */
+    cursor: pointer;
+    border-radius: 8px;
+
+    /* Size */
+    width: 260px;
+    height: 44px;
+
+    /* Font */
+    font-family: $font-family;
+    font-weight: bold;
+    font-size: 1em;
+  }
+
+  .mural-color-button {
+    /* Button */
+    border: none;
+
+    /* Style */
+    background: $mural-color;
+
+    /* Font */
+    color: $background;
+  }
+
+  .light-color-button {
+    /* Button */
+    border: 1px solid black;
+
+    /* Style */
+    background: $background;
+  }
+
+  .account-choice {
+    /* Size */
+    width: 270px;
+    height: 48px;
+
+    /* Button */
+    cursor: pointer;
+    border: 2px solid darken($background, 4%);
+    box-shadow: 0 2px 2px darken($background, 6%);
+    border-radius: 16px;
+
+    /* Style */
+    background: $background;
+
+    /* Flex */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &:active,
+    &:hover {
+      border: 2px solid darken($background, 10%);
+    }
+
+    .avatar {
+      /* Size / Position */
+      width: 32px;
+      height: 32px;
+
+      /* Style */
+      border-radius: 8px;
+    }
+
+    .body {
+      /* Flex */
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      flex: 1 1;
+
+      .email {
+        /* Size */
+        width: 220px;
+
+        /* Font */
+        font-family: $font-family;
+        text-align: left;
+        font-weight: bold;
+        font-size: 1.2em;
+
+        /* Overflow */
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .status {
+        /* Font */
+        font-family: $font-family;
+        font-weight: bold;
+        font-size: 0.85em;
+        line-height: 16px;
+        color: $secondary-text-color;
+      }
+    }
+  }
+
+  .footer {
+    .mural-logo {
+      /* Size / Position */
+      width: 130px;
+    }
+  }
+
+  &.dark {
+    color: $text-color-dark-mode;
+
+    .account-choice {
+      background: $background-dark-mode;
+      border: 2px solid lighten($background-dark-mode, 8%);
+      box-shadow: 0 2px 2px lighten($background-dark-mode, 10%);
+
+      &:active,
+      &:hover {
+        border: 2px solid lighten($background-dark-mode, 14%);
+      }
+
+      .body {
+        .email {
+          color: $text-color-dark-mode;
+        }
+      }
+    }
+
+    .link {
+      color: $text-color-dark-mode;
+      border-color: $text-color-dark-mode;
+    }
+
+    .separator {
+      span {
+        background: $background-dark-mode;
+      }
+    }
+  }
+}

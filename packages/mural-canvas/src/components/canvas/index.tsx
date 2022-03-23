@@ -65,15 +65,11 @@ export class CanvasHost extends React.Component<PropTypes> {
   }
 
   render() {
-    const { muralUrl } = this.props;
+    const { muralUrl, authUrl, apiClient } = this.props;
     let canvasUrl: string = muralUrl;
 
-    if (this.props.authUrl && this.props.apiClient.authenticated()) {
-      canvasUrl = muralSessionActivationUrl(
-        this.props.apiClient,
-        this.props.authUrl,
-        muralUrl,
-      );
+    if (authUrl && apiClient.authenticated()) {
+      canvasUrl = muralSessionActivationUrl(apiClient, authUrl, muralUrl);
     }
 
     return <iframe className="mural-canvas" src={canvasUrl} seamless />;
