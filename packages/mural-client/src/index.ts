@@ -39,15 +39,14 @@ export type BuildClientArgs = {
 } & TokenHandlerConfig;
 
 export const getApiError = async (error: Error): Promise<ApiError | null> => {
-  if (!(error instanceof FetchError) || !error.response) return null;
+  if (!(error instanceof FetchError) || !error.json) return null;
 
-  const { response } = error;
-  const payload = await response.json();
+  const errorPayload = error.json as { code: string; message: string };
 
   return {
-    code: payload.code,
-    message: payload.message || error.message,
-    status: response.status,
+    code: errorPayload.code,
+    message: errorPayload.message || error.message,
+    status: error.response.status,
   };
 };
 
