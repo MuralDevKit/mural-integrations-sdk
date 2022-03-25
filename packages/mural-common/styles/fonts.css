@@ -1,8 +1,9 @@
 @font-face {
   font-family: 'Proxima Nova';
-  src: url('@tactivos/mural-integrations-common/fonts/proximanova-regular-webfont.woff2')
+  src: url('@muraldevkit/mural-integrations-common/fonts/proximanova-regular-webfont.woff2')
       format('woff2'),
-    url('@tactivos/mural-integrations-common/fonts/proximanova-regular-webfont.woff') format('woff');
+    url('@muraldevkit/mural-integrations-common/fonts/proximanova-regular-webfont.woff')
+      format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: auto;
@@ -10,8 +11,10 @@
 
 @font-face {
   font-family: 'Proxima Nova';
-  src: url('@tactivos/mural-integrations-common/fonts/proximanova-bold-webfont.woff2') format('woff2'),
-    url('@tactivos/mural-integrations-common/fonts/proximanova-bold-webfont.woff') format('woff');
+  src: url('@muraldevkit/mural-integrations-common/fonts/proximanova-bold-webfont.woff2')
+      format('woff2'),
+    url('@muraldevkit/mural-integrations-common/fonts/proximanova-bold-webfont.woff')
+      format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: auto;

@@ -4,7 +4,7 @@ import {
   Mural as MuralType,
   Room,
   Workspace,
-} from '@tactivos/mural-integrations-mural-client';
+} from '@muraldevkit/mural-integrations-mural-client';
 import classnames from 'classnames';
 import * as React from 'react';
 import MuralCard, { CardSize } from '../mural-card';

@@ -8,7 +8,7 @@
     "lerna": "^4.0.0",
     "prettier": "^2.3.2"
   },
-  "name": "mural-integrations-sdk",
+  "name": "@muraldevkit/mural-integrations-sdk",
   "scripts": {
     "lint": "eslint --ext ts,tsx,js --fix packages/"
   }
