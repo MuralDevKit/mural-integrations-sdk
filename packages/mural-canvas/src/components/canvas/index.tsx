@@ -1,4 +1,4 @@
-import { ApiClient } from '@tactivos/mural-integrations-mural-client';
+import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { EventHandler } from '../../types';
 import './styles.scss';

@@ -1,5 +1,5 @@
 {
-  "name": "@tactivos/mural-integrations-mural-client",
+  "name": "@muraldevkit/mural-integrations-mural-client",
   "version": "1.2.0-alpha.0",
   "description": "",
   "main": "dist/mural-client.bundle.js",
@@ -35,7 +35,7 @@
     "rollup-plugin-scss": "^3.0.0",
     "rollup-plugin-styles": "^3.14.1",
     "rollup-plugin-typescript2": "^0.30.0",
-    "typescript": "^4.4.3"
+    "typescript": "^4.4.5"
   },
   "gitHead": "d17daf41de6f6aef448d79dd4c6e1994963f37c3"
 }

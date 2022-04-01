@@ -11,7 +11,7 @@ import {
   ApiClient,
   Room,
   Workspace,
-} from '@tactivos/mural-integrations-mural-client';
+} from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import './styles.scss';
 
@@ -65,7 +65,7 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
       if (workspaces?.length) {
         this.setState({ workspaces, isLoading: false });
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleError(e, 'Error retrieving workspaces.');
       this.setState({ isLoading: false });
     }
@@ -100,7 +100,7 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
         roomId: '',
         room: null,
       });
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ isLoading: false });
       this.handleError(e, 'Error retrieving rooms.');
     }

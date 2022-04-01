@@ -4,7 +4,7 @@ import {
   Mural,
   Room,
   Workspace,
-} from '@tactivos/mural-integrations-mural-client';
+} from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import MuralPicker, {
   PropTypes as MuralPickerPropTypes,

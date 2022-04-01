@@ -1,5 +1,5 @@
 import { Card, CardActionArea, CardMedia, Grid } from '@material-ui/core';
-import { Mural } from '@tactivos/mural-integrations-mural-client';
+import { Mural } from '@muraldevkit/mural-integrations-mural-client';
 import classnames from 'classnames';
 import moment from 'moment';
 import * as React from 'react';

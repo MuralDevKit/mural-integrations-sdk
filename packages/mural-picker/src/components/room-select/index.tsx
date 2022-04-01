@@ -5,7 +5,7 @@ import {
   Mural,
   Room,
   Workspace,
-} from '@tactivos/mural-integrations-mural-client';
+} from '@muraldevkit/mural-integrations-mural-client';
 import { debounce } from 'lodash';
 import * as React from 'react';
 import { DELAYS } from '../../common/delays';
@@ -55,7 +55,7 @@ export default class RoomSelect extends React.Component<PropTypes> {
         );
         this.setState({ isSearchingRooms: false });
         this.props.onRoomSearch(rooms);
-      } catch (e) {
+      } catch (e: any) {
         this.setState({ isSearchingRooms: false });
         this.props.handleError(e, 'Error searching rooms.');
       }
@@ -73,7 +73,7 @@ export default class RoomSelect extends React.Component<PropTypes> {
           murals = await this.props.apiClient.getMuralsByWorkspace(
             this.props.workspace.id,
           );
-        } catch (e) {
+        } catch (e: any) {
           this.props.handleError(e, ERRORS.ERR_RETRIEVING_ROOM_AND_MURALS);
         }
       }
@@ -87,7 +87,7 @@ export default class RoomSelect extends React.Component<PropTypes> {
 
         this.props.onLoadingComplete();
         this.props.onRoomSelect(room, murals);
-      } catch (e) {
+      } catch (e: any) {
         this.props.onLoadingComplete();
         this.props.handleError(e, ERRORS.ERR_RETRIEVING_ROOM_MURALS);
       }

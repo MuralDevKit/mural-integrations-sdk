@@ -4,7 +4,7 @@ import {
   Mural,
   Room,
   Workspace,
-} from '@tactivos/mural-integrations-mural-client';
+} from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import MuralPickerError from '../error';
@@ -94,7 +94,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
         this.setState({ workspaces, workspace });
         await this.loadMuralsAndRoomsByWorkspace(workspace);
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_WORKSPACES);
     }
     this.setState({ isLoading: false });
@@ -154,7 +154,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
         roomId: '',
         room: null,
       });
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ isLoading: false });
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_ROOM_AND_MURALS);
     }
@@ -202,7 +202,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
         isCreateSelected: false,
         mural,
       });
-    } catch (e) {
+    } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL);
     }
   };

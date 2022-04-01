@@ -10,7 +10,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   ApiClient,
   Workspace,
-} from '@tactivos/mural-integrations-mural-client';
+} from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import './styles.scss';
 
@@ -63,7 +63,7 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
 
         this.setState({ workspace, workspaces, isLoading: false });
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleError(e, 'Error retrieving workspaces.');
       this.setState({
         isLoading: false,

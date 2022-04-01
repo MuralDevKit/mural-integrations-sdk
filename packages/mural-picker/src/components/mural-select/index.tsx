@@ -4,7 +4,7 @@ import {
   ApiClient,
   Mural,
   Workspace,
-} from '@tactivos/mural-integrations-mural-client';
+} from '@muraldevkit/mural-integrations-mural-client';
 import { debounce } from 'lodash';
 import * as React from 'react';
 import { DELAYS } from '../../common/delays';
@@ -40,7 +40,7 @@ export default class MuralSelect extends React.Component<PropTypes> {
     } else {
       try {
         this.props.onMuralPick(mural);
-      } catch (e) {
+      } catch (e: any) {
         this.props.handleError(e, ERRORS.ERROR_SELECTING_MURAL);
       }
     }
@@ -57,7 +57,7 @@ export default class MuralSelect extends React.Component<PropTypes> {
           );
         this.setState({ searchedMurals: murals, isSearchingMurals: false });
         this.props.onMuralSearch(murals);
-      } catch (e) {
+      } catch (e: any) {
         this.setState({ isSearchingMurals: false });
         this.props.handleError(e, ERRORS.ERR_SEARCH_MURALS);
       }

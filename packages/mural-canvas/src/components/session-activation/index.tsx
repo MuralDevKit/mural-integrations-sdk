@@ -1,4 +1,4 @@
-import { ApiClient } from '@tactivos/mural-integrations-mural-client';
+import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { EventHandler } from '../../types';
@@ -55,7 +55,7 @@ const SessionActivation: React.FC<PropTypes> = ({ apiClient, onError }) => {
       );
 
       window.location.replace(claimUrl.href);
-    } catch (e) {
+    } catch (e: any) {
       // worst case scenario, send the user on `mural` and let it go
       window.location.replace(redirectUrl.href);
     }

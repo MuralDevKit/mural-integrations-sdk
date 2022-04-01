@@ -1,6 +1,6 @@
 import { FormControl, InputLabel, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Workspace } from '@tactivos/mural-integrations-mural-client';
+import { Workspace } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 
 interface PropTypes {

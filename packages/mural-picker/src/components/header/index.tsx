@@ -1,6 +1,6 @@
-import * as React from "react";
+import * as React from 'react';
 // @ts-ignore
-import MuralIcon from "@tactivos/mural-integrations-common/assets/icon.png";
+import MuralIcon from '@muraldevkit/mural-integrations-common/assets/icon.png';
 
 interface PropTypes {
   hideLogo?: boolean;

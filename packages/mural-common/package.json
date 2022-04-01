@@ -1,5 +1,5 @@
 {
-  "name": "@tactivos/mural-integrations-common",
+  "name": "@muraldevkit/mural-integrations-common",
   "version": "1.1.4-alpha.0",
   "description": "MURAL integration basic components and assets.",
   "main": "index.js",
