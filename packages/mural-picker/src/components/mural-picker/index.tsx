@@ -396,7 +396,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
                 apiClient={this.props.apiClient}
                 token=""
                 roomId={this.state.room.id}
-                workspaceId={this.state.workspace.id }
+                workspaceId={this.state.workspace!.id }
                 onCreateMural={this.onFinishCreation}
                 onCancelAndGoBack={this.setInitialState}
               />

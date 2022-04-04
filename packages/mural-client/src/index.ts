@@ -92,7 +92,7 @@ export interface ApiClient {
   getRoomsByWorkspace: (id: string) => Promise<Room[]>;
   getAllWorkSpaces: () => Promise<WorkSpace[]>;
   getWorkSpaceById: (id: string) => Promise<WorkSpace>;
-  getTemplates: () => Promise<Template[]>;
+  getTemplates: (limit: string, next: string) => Promise<{value: Template[], next: string}>;
   searchWorkspaceRooms: (
     workspaceId: string | null,
     title: string,
@@ -184,11 +184,17 @@ export default (config: ClientConfig): ApiClient => {
       });
       return response.json();
     },
-    getTemplates: async (): Promise<Template[]> => {
-      const response = await fetchFn(`${apiUrl}/templates`, {
+    getTemplates: async (limit = '100', next = ''): Promise<{value: Template[], next: string}> => {
+      const url = new URL(`${apiUrl}/templates`);
+      url.searchParams.set('limit', limit);
+      if (next) {
+        url.searchParams.set('next', next);
+      }
+
+      const response = await fetchFn(url.toString(), {
         method: 'GET',
       });
-      return (await response.json()).value;
+      return response.json();
     },
     searchWorkspaceRooms: async (
       workspaceId: string | null,
