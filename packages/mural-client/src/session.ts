@@ -6,6 +6,11 @@ export interface Session {
   refreshToken: string;
 }
 
+export interface OauthTokens {
+  access_token: string;
+  refresh_token: string;
+}
+
 export interface AccessTokenPayload {
   exp: number;
   iat: number;
@@ -14,8 +19,17 @@ export interface AccessTokenPayload {
   username: string;
 }
 
-export function setSession(session: Session, storage: Storage) {
-  storage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+export function setSession(
+  session: OauthTokens ,
+  storage: Storage
+) {
+  storage.setItem(
+    SESSION_STORAGE_KEY,
+    JSON.stringify({
+      accessToken: session.access_token,
+      refreshToken: session.refresh_token,
+    })
+  );
 }
 
 export function getSession(storage: Storage): Session | null {
@@ -30,7 +44,7 @@ export function deleteSession(storage: Storage) {
 
 export const setupSessionStore = (storage: Storage) => ({
   get: () => getSession(storage),
-  set: (session: Session) => setSession(session, storage),
+  set: (session: OauthTokens) => setSession(session, storage),
   delete: () => deleteSession(storage),
 });
 

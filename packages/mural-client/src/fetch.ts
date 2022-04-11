@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {
   generateState,
+  OauthTokens,
   Session,
   setupSessionStore,
   storeState,
@@ -198,7 +199,7 @@ export const requestTokenHandler = (config: TokenHandlerConfig) => async (
 
 export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
   opts = { store: false },
-): Promise<Session> => {
+): Promise<OauthTokens> => {
   const staleSession = fetchConfig.sessionStore.get();
   const options = {
     method: 'POST',
@@ -211,7 +212,7 @@ export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
     }),
   };
 
-  const freshSession: Session = await fetch(config.refreshTokenUri, options)
+  const freshSession: OauthTokens = await fetch(config.refreshTokenUri, options)
     .then(checkStatus)
     .then(res => res.json());
 
