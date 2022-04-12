@@ -1,6 +1,6 @@
 {
   "name": "@muraldevkit/mural-integrations-mural-account-chooser",
-  "version": "1.2.2-alpha.0",
+  "version": "1.2.3-alpha.0",
   "description": "Account Chooser component for MURAL integrations",
   "main": "dist/mural-account-chooser.bundle.js",
   "module": "dist/mural-account-chooser.esm.js",
@@ -22,14 +22,17 @@
   "author": "mural.co",
   "license": "ISC",
   "repository": "https://github.com/tactivos/mural-integrations-sdk",
+  "publishConfig": {
+    "access": "public"
+  },
   "bugs": {
     "url": "https://github.com/tactivos/mural-integrations-sdk/issues"
   },
   "homepage": "https://github.com/tactivos/mural-integrations-sdk/tree/packages/mural-account-chooser",
   "dependencies": {
     "@material-ui/core": "4.11.4",
-    "@muraldevkit/mural-integrations-common": "^1.2.2-alpha.0",
-    "@muraldevkit/mural-integrations-mural-client": "^1.2.2-alpha.0",
+    "@muraldevkit/mural-integrations-common": "^1.2.3-alpha.0",
+    "@muraldevkit/mural-integrations-mural-client": "^1.2.3-alpha.0",
     "axios": "^0.26.0"
   },
   "peerDependencies": {
@@ -53,5 +56,6 @@
     "rollup-plugin-typescript2": "^0.30.0",
     "sass": "^1.49.0",
     "typescript": "^4.3.5"
-  }
+  },
+  "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9"
 }

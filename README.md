@@ -2,8 +2,6 @@
 
 This repository hosts the MURAL integration SDK
 
-> Note: this is a sub-tree split of https://github.com/tactivos/mural-integrations/tree/master/lib
-
 ### Components
 
 - mural-picker: Mural selection wizard with workspace/room level filtering.
@@ -12,13 +10,22 @@ This repository hosts the MURAL integration SDK
 - mural-account-chooser: Mural account selection.
 - mural-common: (internal) Assets and shared code.
 
+### Sample application
+
+Take a look at the sample integration [here](sample/README.md)
+
+> Make sure to build the components before starting the sample, as it requires
+> the compilation output to be ready.
+
+In order to run this application, you need to have a registered application create/update the configuration file.
+
 ### Roadmap
 
  - [x] Use this repository in `mural-integrations/lib`
  - [ ] Generalize build configuration and
  - [x] Generalize TypeScript configuration for all components
  - [ ] Add testing rig
- - [ ] Add sample application
+ - [x] Add sample application
  - [x] Add code quality tooling (prettier, eslint)
  - [ ] Changelog
 

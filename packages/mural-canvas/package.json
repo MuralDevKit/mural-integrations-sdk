@@ -1,6 +1,6 @@
 {
   "name": "@muraldevkit/mural-integrations-mural-canvas",
-  "version": "1.2.2-alpha.0",
+  "version": "1.2.3-alpha.0",
   "description": "Mural Canvas component for MURAL integrations",
   "main": "dist/mural-canvas.bundle.js",
   "module": "dist/mural-canvas.esm.js",
@@ -22,6 +22,9 @@
   "author": "mural.co",
   "license": "ISC",
   "repository": "https://github.com/tactivos/mural-integrations-sdk",
+  "publishConfig": {
+    "access": "public"
+  },
   "bugs": {
     "url": "https://github.com/tactivos/mural-integrations-sdk/issues"
   },
@@ -30,8 +33,8 @@
     "@material-ui/core": "4.11.4",
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.58",
-    "@muraldevkit/mural-integrations-common": "^1.2.2-alpha.0",
-    "@muraldevkit/mural-integrations-mural-client": "^1.2.2-alpha.0",
+    "@muraldevkit/mural-integrations-common": "^1.2.3-alpha.0",
+    "@muraldevkit/mural-integrations-mural-client": "^1.2.3-alpha.0",
     "classnames": "^2.3.1"
   },
   "peerDependencies": {
@@ -58,5 +61,5 @@
     "sass": "^1.49.0",
     "typescript": "^4.3.5"
   },
-  "gitHead": "df24ae20be53bccb282813353465a71d816327da"
+  "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9"
 }

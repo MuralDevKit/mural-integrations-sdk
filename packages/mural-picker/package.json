@@ -1,6 +1,6 @@
 {
   "name": "@muraldevkit/mural-integrations-mural-picker",
-  "version": "1.2.2-alpha.0",
+  "version": "1.2.3-alpha.0",
   "description": "Mural Picker component for MURAL integrations",
   "main": "dist/mural-picker.bundle.js",
   "module": "dist/mural-picker.esm.js",
@@ -22,6 +22,9 @@
   "author": "mural.co",
   "license": "ISC",
   "repository": "https://github.com/tactivos/mural-integrations-sdk",
+  "publishConfig": {
+    "access": "public"
+  },
   "bugs": {
     "url": "https://github.com/tactivos/mural-integrations-sdk/issues"
   },
@@ -30,8 +33,8 @@
     "@material-ui/core": "4.11.4",
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.58",
-    "@muraldevkit/mural-integrations-common": "^1.2.2-alpha.0",
-    "@muraldevkit/mural-integrations-mural-client": "^1.2.2-alpha.0",
+    "@muraldevkit/mural-integrations-common": "^1.2.3-alpha.0",
+    "@muraldevkit/mural-integrations-mural-client": "^1.2.3-alpha.0",
     "classnames": "^2.3.1"
   },
   "peerDependencies": {
@@ -60,5 +63,5 @@
     "sass": "^1.49.0",
     "typescript": "^4.3.5"
   },
-  "gitHead": "37e923e2b373a5f320cccfad0cc4c529b2ebec39"
+  "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9"
 }
