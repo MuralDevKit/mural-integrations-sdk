@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "dependencies": {
     "@craco/craco": "^6.4.3",
-    "@tactivos/mural-integrations-mural-canvas": "file:packages/tactivos-mural-integrations-mural-canvas-1.1.4-alpha.0.tgz",
-    "@tactivos/mural-integrations-mural-client": "file:packages/tactivos-mural-integrations-mural-client-1.1.4-alpha.0.tgz",
-    "@tactivos/mural-integrations-mural-picker": "file:packages/tactivos-mural-integrations-mural-picker-1.1.4-alpha.0.tgz",
+    "@muraldevkit/mural-integrations-mural-canvas": "file:../packages/mural-canvas",
+    "@muraldevkit/mural-integrations-mural-client": "file:../packages/mural-client",
+    "@muraldevkit/mural-integrations-mural-picker": "file:../packages/mural-picker",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
