@@ -1,6 +1,6 @@
 {
   "name": "@muraldevkit/mural-integrations-common",
-  "version": "1.2.2-alpha.0",
+  "version": "1.2.3-alpha.0",
   "description": "MURAL integration basic components and assets.",
   "main": "index.js",
   "files": [
@@ -16,8 +16,8 @@
   ],
   "author": "",
   "license": "ISC",
-	"publishConfig": {
-		"access": "public"
-	},
+  "publishConfig": {
+    "access": "public"
+  },
   "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9"
 }
