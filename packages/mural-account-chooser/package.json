@@ -22,6 +22,9 @@
   "author": "mural.co",
   "license": "ISC",
   "repository": "https://github.com/tactivos/mural-integrations-sdk",
+	"publishConfig": {
+		"access": "public"
+	},
   "bugs": {
     "url": "https://github.com/tactivos/mural-integrations-sdk/issues"
   },
@@ -53,5 +56,6 @@
     "rollup-plugin-typescript2": "^0.30.0",
     "sass": "^1.49.0",
     "typescript": "^4.3.5"
-  }
+  },
+  "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9"
 }
