@@ -11,7 +11,7 @@ import './styles.scss';
 import * as React from 'react';
 import { List, ButtonBase, CircularProgress, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { ApiClient, Template, Mural } from '@tactivos/mural-integrations-mural-client';
+import { ApiClient, Template, Mural } from '@muraldevkit/mural-integrations-mural-client';
 import { withStyles } from '@material-ui/styles';
 import { PrimaryButton, SecondaryButton, ListItem, ListSubheader, Divider } from '../../shared';
 import classnames from "classnames";
