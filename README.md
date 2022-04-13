@@ -2,38 +2,32 @@
 
 This repository hosts the MURAL integration SDK
 
-> Note: this is a sub-tree split of https://github.com/tactivos/mural-integrations/tree/master/lib
-
 ### Components
 
 - mural-picker: Mural selection wizard with workspace/room level filtering.
 - mural-canvas: Mural canvas host to embed murals into third-party applications.
 - mural-client: Mural public API client supporting OAuth 2.0 authentication.
+- mural-account-chooser: Mural account selection.
 - mural-common: (internal) Assets and shared code.
+
+### Sample application
+
+Take a look at the sample integration [here](sample/README.md)
+
+> Make sure to build the components before starting the sample, as it requires
+> the compilation output to be ready.
+
+In order to run this application, you need to have a registered application create/update the configuration file.
 
 ### Roadmap
 
- - [ ] Use this repository in `mural-integrations/lib`
- - [ ] Generalize build configuration and TypeScript configuration for all components
+ - [x] Use this repository in `mural-integrations/lib`
+ - [ ] Generalize build configuration and
+ - [x] Generalize TypeScript configuration for all components
  - [ ] Add testing rig
- - [ ] Add sample application
- - [ ] Add code quality tooling (prettier, eslint) https://github.com/tactivos/mural-integrations-sdk/pull/8
+ - [x] Add sample application
+ - [x] Add code quality tooling (prettier, eslint)
  - [ ] Changelog
-
-### Upstream (mural-integrations)
-
-Pulling changes from `mural-integrations`
-
-```bash
-# mural-integrations
-git subtree split --prefix lib -b sub/lib
-
-# mural-integrations-sdk
-git fetch upstream # this should be the `mural-integrations` local repository
-git subtree merge [--squash] --prefix packages upstream/sub/lib
-```
-
-In the future `mural-integrations` will either use submodules, or have the SDK as a dependency.
 
 ### Documentation
 

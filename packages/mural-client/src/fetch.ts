@@ -1,4 +1,5 @@
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
+import * as qs from 'qs';
 import {
   generateState,
   OauthTokens,
@@ -21,6 +22,13 @@ export type AuthenticatedFetchConfig = {
   sessionStore: ReturnType<typeof setupSessionStore>;
 };
 
+export class InvalidSessionError extends Error {
+  constructor(message?: string) {
+    super(message);
+    this.name = 'InvalidSessionError';
+  }
+}
+
 let fetchConfig: AuthenticatedFetchConfig;
 
 export const authenticated = () => {
@@ -41,8 +49,9 @@ const authenticatedFetch = async (
   };
 
   try {
-    return fetch(input, initWithAuth).then(checkStatus);
-  } catch (err) {
+    const response = await fetch(input, initWithAuth);
+    return await checkStatus(response);
+  } catch (err: any) {
     const errorHandler = catchAuthenticationError(input, initWithAuth);
     return errorHandler(err);
   }
@@ -81,29 +90,44 @@ function isTokenExpired(token: string) {
 }
 
 export class FetchError extends Error {
-  response?: Response;
+  constructor(message: string, response: Response) {
+    super(message);
+    this.response = response;
+  }
+
+  static async fromResponse(response: Response) {
+    const fetchError = new FetchError(
+      `Request to ${response.url} failed with status ${response.status}`,
+      response,
+    );
+    await fetchError.readResponseContent();
+    return fetchError;
+  }
+
+  async readResponseContent() {
+    const { text, json } = await extractErrorContent(this.response);
+    this.text = text;
+    this.json = json;
+  }
+
+  json?: {};
+  response: Response;
+  text?: string;
 }
 
-function checkStatus(response: Response) {
+async function checkStatus(response: Response) {
   if (response.ok) return response;
-
-  const error = new FetchError(
-    `Request to ${new URL(response.url).pathname} failed with status ${
-      response.status
-    }`,
-  );
-  error.response = response;
-  throw error;
+  throw await FetchError.fromResponse(response);
 }
 
 function catchAuthenticationError(input: RequestInfo, init: RequestInit = {}) {
-  return async (error: { response: Response }): Promise<Response> => {
+  return async (error: FetchError | Error): Promise<Response> => {
     const session = fetchConfig.sessionStore.get();
-    const res = await extractErrorResponse(error.response);
 
     if (
-      res.status === 401 &&
-      res.text === 'Need to Refresh' &&
+      error instanceof FetchError &&
+      error.response.status === 401 &&
+      error.text === 'Need to Refresh' &&
       session &&
       session.refreshToken
     ) {
@@ -115,33 +139,28 @@ function catchAuthenticationError(input: RequestInfo, init: RequestInit = {}) {
     /*
    There's currently a bug on mural-api side which causes that some possible errors are transformed into CORS error.
      - This appends because 'Access-Control-Allow-Origin' is not set correctly when an error occurs
-     - So temporarily we are dealing with the invalid session error when status is 0
+     - So temporarily we are dealing any networking errors as an invalid session
      - TODO: update this code when mural-api bug is fixed
     */
-    const invalidSessionError = res.status === 0 || res.status === 401;
+    const invalidSessionError =
+      !(error instanceof FetchError) || error.response.status === 401;
     if (invalidSessionError) {
       fetchConfig.sessionStore.delete();
-      window.location.reload();
-
-      // resolving here to ensure we aren't retrying forever
-      return Promise.resolve(error.response as Response);
+      throw new InvalidSessionError();
     }
 
-    throw {
-      ...error,
-      response: error.response ? { ...error.response, ...res } : undefined,
-    };
+    throw error;
   };
 }
 
-async function extractErrorResponse(res?: Response) {
-  if (!res) return { status: 0, json: undefined, text: undefined };
+async function extractErrorContent(response: Response) {
   let text: string | undefined;
   let json: any;
 
   try {
-    text = await res.text();
-    json = text && text.match(/^[[{"]/) ? JSON.parse(text) : undefined;
+    text = await response.text();
+    json =
+      text && text.match(new RegExp('^[[{"]')) ? JSON.parse(text) : undefined;
     if (json) text = undefined;
     // eslint-disable-next-line no-empty
   } catch (_) {}
@@ -149,20 +168,57 @@ async function extractErrorResponse(res?: Response) {
   return {
     json,
     text,
-    status: res.status,
   };
+}
+
+const encodeAutoParam = (auto: boolean | AutomaticOptions): string => {
+  if (typeof auto === 'boolean') {
+    return auto.toString();
+  }
+
+  const payload = Buffer.from(JSON.stringify(auto)).toString('base64');
+  return `json:${payload}`;
+};
+
+interface AutomaticOptions {
+  email: string;
+  action: 'signin' | 'signup';
+  consentSso?: boolean;
+}
+
+export interface AuthorizeParams {
+  auto?: boolean | AutomaticOptions;
+  signup?: boolean;
+  reauthenticate?: boolean;
+  forward?: {
+    [key: string]: unknown;
+  };
+}
+
+export interface AuthorizeHandlerOptions {
+  authorizeParams?: AuthorizeParams;
+  storeState: boolean;
 }
 
 export const authorizeHandler = (config: TokenHandlerConfig) => async (
   redirectUri?: string,
-  opts = { store: false },
+  opts: AuthorizeHandlerOptions = { storeState: false },
 ): Promise<string> => {
   const state = generateState();
 
-  // validate that the state hasn't been tampered
-  const params = new URLSearchParams();
-  if (redirectUri) params.set('redirectUri', redirectUri);
-  params.set('state', state);
+  const params = qs.stringify(
+    {
+      state,
+      redirectUri,
+      auto: opts.authorizeParams?.auto
+        ? encodeAutoParam(opts.authorizeParams.auto)
+        : undefined,
+      signup: opts.authorizeParams?.signup || undefined,
+      reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
+      ...opts.authorizeParams?.forward,
+    },
+    { encode: true },
+  );
 
   const url = `${config.authorizeUri}?${params}`;
 
@@ -170,7 +226,7 @@ export const authorizeHandler = (config: TokenHandlerConfig) => async (
     .then(checkStatus)
     .then(res => res.text());
 
-  if (opts.store) {
+  if (opts.storeState) {
     storeState(state);
   }
 
@@ -225,7 +281,12 @@ export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
 
 // This is a shortcut as this file as multiple dependencies
 // we'll ensure we require the call to `setup` or anyways
-// something would break down the road
+// something would break down the road.
+//
+// Having a module-level configuration makes it easier to
+// import the fetchFn from multiple files.
+//
+// This should be treated as a singleton.
 export default function setup(
   config: AuthenticatedFetchConfig,
 ): typeof authenticatedFetch {

@@ -1,0 +1,11 @@
+**/*.test.js
+**/*_test.js
+test/helpers/**/*
+test/unit/**/*
+scripts/**/*
+public/**/*
+assets/**/*
+.storybook/*
+builds/**/*
+**/dist/**/*
+**/out/**/*

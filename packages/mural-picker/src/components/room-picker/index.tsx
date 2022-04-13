@@ -1,20 +1,19 @@
-import * as React from "react";
 import {
   CircularProgress,
   FormControl,
   InputLabel,
   TextField,
-} from "@material-ui/core";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import Alert from "@material-ui/lab/Alert";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+} from '@material-ui/core';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import Alert from '@material-ui/lab/Alert';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   ApiClient,
   Room,
-  WorkSpace,
-} from "@tactivos/mural-integrations-mural-client";
-// @ts-ignore
-import "./styles.scss";
+  Workspace,
+} from '@muraldevkit/mural-integrations-mural-client';
+import * as React from 'react';
+import './styles.scss';
 
 export interface RoomPickerData {
   roomId: string;
@@ -30,16 +29,16 @@ export interface RoomPickerPropTypes {
   onRoomSelect: (data: RoomPickerData) => Promise<RoomSelectResult | undefined>;
   handleError: (error: Error, message: string) => void;
   hideLogo?: boolean;
-  theme?: "light" | "dark";
+  theme?: 'light' | 'dark';
   buttonTitle: string;
 }
 
 interface StateTypes {
   isLoading: boolean;
-  workspaces: WorkSpace[];
+  workspaces: Workspace[];
   rooms: Room[];
   error: string;
-  workspace: WorkSpace | null;
+  workspace: Workspace | null;
   room: Room | null;
 }
 
@@ -47,7 +46,7 @@ const INITIAL_STATE: StateTypes = {
   isLoading: true,
   workspaces: [],
   rooms: [],
-  error: "",
+  error: '',
   workspace: null,
   room: null,
 };
@@ -62,48 +61,48 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
   loadWorkspaces = async () => {
     this.setState({ isLoading: true });
     try {
-      const workspaces = await this.props.apiClient.getAllWorkSpaces();
+      const workspaces = await this.props.apiClient.getWorkspaces();
       if (workspaces?.length) {
         this.setState({ workspaces, isLoading: false });
       }
-    } catch (e) {
-      this.handleError(e, "Error retrieving workspaces.");
+    } catch (e: any) {
+      this.handleError(e, 'Error retrieving workspaces.');
       this.setState({ isLoading: false });
     }
   };
 
   onWorkspaceSelect = async (
     _: React.ChangeEvent<{}>,
-    workspace: WorkSpace | null
+    workspace: Workspace | null,
   ) => {
-    this.setState({ workspace, error: "" });
+    this.setState({ workspace, error: '' });
     await this.loadRoomsByWorkspace(workspace);
   };
 
-  loadRoomsByWorkspace = async (workspace: WorkSpace | null) => {
+  loadRoomsByWorkspace = async (workspace: Workspace | null) => {
     if (!workspace) {
       return this.setState({
         workspace: null,
         rooms: [],
-        roomId: "",
+        roomId: '',
       });
     }
     try {
       this.setState({ isLoading: true });
       const rooms = await this.props.apiClient.getRoomsByWorkspace(
-        workspace.id
+        workspace.id,
       );
       const sortedRooms = rooms.sort((a, b) => b.type.localeCompare(a.type));
       this.setState({
         isLoading: false,
         workspace,
         rooms: sortedRooms,
-        roomId: "",
+        roomId: '',
         room: null,
       });
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ isLoading: false });
-      this.handleError(e, "Error retrieving rooms.");
+      this.handleError(e, 'Error retrieving rooms.');
     }
   };
 
@@ -113,20 +112,20 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
   };
 
   getRoomGroup = (room?: Room) => {
-    if (!room) return "";
-    return room.type === "private" ? "PRIVATE ROOMS" : "OPEN ROOMS";
+    if (!room) return '';
+    return room.type === 'private' ? 'PRIVATE ROOMS' : 'OPEN ROOMS';
   };
 
   onRoomSelect = async (_: React.ChangeEvent<{}>, room: Room | null) => {
-    this.setState({ room, error: "" });
+    this.setState({ room, error: '' });
   };
 
   onSubmit = async () => {
     if (!this.state.workspace) {
-      return this.setState({ error: "Please select a workspace." });
+      return this.setState({ error: 'Please select a workspace.' });
     }
     if (!this.state.room) {
-      return this.setState({ error: "Please select a room." });
+      return this.setState({ error: 'Please select a room.' });
     }
 
     const result = await this.props.onRoomSelect({
@@ -144,7 +143,7 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
   render() {
     const { theme, buttonTitle } = this.props;
     const { error, isLoading } = this.state;
-    const currentTheme = theme || "light";
+    const currentTheme = theme || 'light';
     const muiTheme = createMuiTheme({
       palette: {
         type: currentTheme,
@@ -173,10 +172,10 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
                 <Autocomplete
                   id="workspace-select"
                   options={this.state.workspaces}
-                  getOptionLabel={(option) => {
-                    return option.name || "";
+                  getOptionLabel={option => {
+                    return option.name || '';
                   }}
-                  renderInput={(params) => (
+                  renderInput={params => (
                     <TextField
                       {...params}
                       placeholder="Find a workspace..."
@@ -184,7 +183,7 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
                     />
                   )}
                   value={this.state.workspace}
-                  groupBy={() => "SWITCH TO"}
+                  groupBy={() => 'SWITCH TO'}
                   onChange={this.onWorkspaceSelect}
                 />
               </div>
@@ -197,10 +196,10 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
                 <Autocomplete
                   id="room-select"
                   options={this.state.rooms}
-                  getOptionLabel={(option) => {
-                    return option?.name || "";
+                  getOptionLabel={option => {
+                    return option?.name || '';
                   }}
-                  renderInput={(params) => (
+                  renderInput={params => (
                     <TextField
                       {...params}
                       placeholder="Find a room..."

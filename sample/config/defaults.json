@@ -1,0 +1,25 @@
+{
+  "appName": "",
+  "serverPort": 4001,
+  "endpoints": {
+		"server": "http://localhost:4001",
+    "webapp": "https://app.mural.co"
+	},
+	"services": {
+	  "auth": "localhost:4001",
+		"mural": "app.mural.co"
+	},
+  "clientApp": {
+    "clientId": "",
+    "clientSecret": "",
+    "redirectUri": "http://localhost:4002/auth/callback",
+    "scopes": [
+      "murals:read",
+      "murals:write",
+      "rooms:read",
+      "workspaces:read",
+      "identity:read",
+			"restricted:login"
+    ]
+  }
+}

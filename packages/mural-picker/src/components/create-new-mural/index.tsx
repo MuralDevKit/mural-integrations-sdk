@@ -79,7 +79,7 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
 
     this.setState({ loading: true }, async () => {
       try {
-        const blankTemplate: Template = { id: '', description: '', name: defaultBlankTemplateName, publicHash: '', thumbUrl: ''};
+        const blankTemplate: Template = { id: '', description: '', name: defaultBlankTemplateName, publicHash: '', thumbUrl: '', type: 'default', updatedOn: 0, workspaceId: '', viewLink: '' };
 
         // TODO: add 'next' query param for 'getTemplates' method into mural-client sdk
         const url = new URL('/api/public/v1/templates', `https://${this.props.apiClient.config.host}`);

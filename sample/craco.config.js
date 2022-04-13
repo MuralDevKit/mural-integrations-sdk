@@ -1,0 +1,25 @@
+const { DefinePlugin } = require("webpack");
+const path = require("path");
+const config = require("dos-config");
+
+module.exports = {
+  webpack: {
+    alias: {
+      react: path.join(__dirname, "node_modules/react"),
+      "react-dom": path.join(__dirname, "node_modules/react-dom")
+    },
+    plugins: [
+      new DefinePlugin({
+        APP_ID: JSON.stringify(config.clientApp.clientId),
+        SERVICES: JSON.stringify(config.services)
+      })
+    ]
+  },
+  devServer: {
+    before: (app, server, compiler) => {
+      app.get("/", (_, res) => {
+        res.redirect("/auth");
+      });
+    }
+  }
+};

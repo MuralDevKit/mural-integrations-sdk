@@ -1,0 +1,61 @@
+{
+  "name": "@muraldevkit/mural-integrations-mural-account-chooser",
+  "version": "2.0.0-alpha.0",
+  "description": "Account Chooser component for MURAL integrations",
+  "main": "dist/mural-account-chooser.bundle.js",
+  "module": "dist/mural-account-chooser.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "pack": "npm pack --pack-destination ../../dist/",
+    "build": "npx rollup --config build/rollup.config.js",
+    "compile": "npx tsc --project build/tsconfig.json",
+    "test": "npm run test",
+    "clean": "rm -rf dist out"
+  },
+  "keywords": [
+    "mural",
+    "mural-account-chooser"
+  ],
+  "author": "mural.co",
+  "license": "ISC",
+  "repository": "https://github.com/tactivos/mural-integrations-sdk",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/tactivos/mural-integrations-sdk/issues"
+  },
+  "homepage": "https://github.com/tactivos/mural-integrations-sdk/tree/packages/mural-account-chooser",
+  "dependencies": {
+    "@material-ui/core": "4.11.4",
+    "@muraldevkit/mural-integrations-common": "^2.0.0-alpha.0",
+    "@muraldevkit/mural-integrations-mural-client": "^2.0.0-alpha.0",
+    "axios": "^0.26.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.13.0",
+    "react-dom": ">=16.13.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^19.0.2",
+    "@rollup/plugin-image": "^2.1.0",
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "@types/react": "16.9.43",
+    "@types/react-dom": "16.9.8",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "rollup": "^2.54.0",
+    "rollup-plugin-imagetools": "^3.0.4",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.0",
+    "rollup-plugin-scss": "^3.0.0",
+    "rollup-plugin-styles": "^3.14.1",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "sass": "^1.49.0",
+    "typescript": "^4.3.5"
+  },
+  "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9"
+}
