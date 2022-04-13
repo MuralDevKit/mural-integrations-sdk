@@ -80,7 +80,14 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
     this.setState({ loading: true }, async () => {
       try {
         const blankTemplate: Template = { id: '', description: '', name: defaultBlankTemplateName, publicHash: '', thumbUrl: ''};
-        const data = await this.props.apiClient.getTemplates(LIMIT.toString(), this.state.nextToken);
+
+        // TODO: add 'next' query param for 'getTemplates' method into mural-client sdk
+        const url = new URL('/api/public/v1/templates', `https://${this.props.apiClient.config.host}`);
+        url.searchParams.set('limit', LIMIT.toString())
+        if (this.state.nextToken) url.searchParams.set('next', this.state.nextToken)
+        const response = await this.props.apiClient.fetch(url.toString(), { method: 'GET' });
+        const data = await response.json();
+        
         const templates = [blankTemplate, ...Array.from(this.state.templates), ...(data.value || [])];
         this.setState({ templates, nextToken: data.next, loading: false, error: '' });
       } catch (exception) {
