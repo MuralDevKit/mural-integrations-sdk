@@ -1,4 +1,5 @@
 import { CircularProgress } from '@material-ui/core';
+import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import {
   AccountStatus,
@@ -25,6 +26,7 @@ const AUTH_MODE_ICONS = {
 };
 
 export interface AccountChooserPropTypes {
+  apiClient: ApiClient;
   activeSession?: { email: string; avatar: string; onSelect: () => void };
   getAuthUrl: (options?: AuthorizeParams) => Promise<string>;
   hint?: string;
@@ -33,10 +35,6 @@ export interface AccountChooserPropTypes {
   silent?: boolean;
   theme?: 'light' | 'dark';
   visitor?: { onSelect: () => void };
-  api: {
-    host: string;
-    protocol: string;
-  };
 }
 
 interface StateTypes {
@@ -98,9 +96,9 @@ export default class AccountChooser extends React.Component<
   }
 
   loadRealm = async (email: string) => {
-    const { api } = this.props;
+    const { apiClient } = this.props;
     try {
-      return await getMuralRealm(api, email);
+      return await getMuralRealm(apiClient, email);
     } catch (e: any) {
       this.props.onError(e);
       return null;

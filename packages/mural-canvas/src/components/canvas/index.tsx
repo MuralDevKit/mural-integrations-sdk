@@ -22,12 +22,16 @@ const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
   'mural.ready': 'onReady',
 };
 
+export interface CanvasParams {
+  backUri?: URL | string;
+}
+
 export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
+  authUrl?: URL | string;
+  canvasParams: CanvasParams;
   muralId: string;
   state?: string;
-  authUrl?: URL | string;
-  backUri?: URL | string;
 }
 
 export function muralSessionActivationUrl(
@@ -67,18 +71,17 @@ export class CanvasHost extends React.Component<PropTypes> {
   }
 
   render() {
-    const { backUri, muralId, state } = this.props;
-    const {
-      appId,
-      api: { host, protocol },
-    } = this.props.apiClient.config;
+    const { muralId, canvasParams, state } = this.props;
+    const { appId } = this.props.apiClient.config;
     const [workspaceId, boardId] = muralId.split('.');
 
     let muralPath = `/a/${appId}/t/${workspaceId}/m/${workspaceId}/${boardId}`;
     if (state) muralPath += `/${state}`;
 
-    const muralUrl = new URL(muralPath, `${protocol}//${host}`);
-    if (backUri) muralUrl.searchParams.set('backUri', backUri.toString());
+    const muralUrl = this.props.apiClient.url(muralPath);
+    for (const [key, value] of Object.entries(canvasParams)) {
+      if (value) muralUrl.searchParams.set(key, value.toString());
+    }
 
     let canvasUrl: string;
     if (this.props.authUrl && this.props.apiClient.authenticated()) {

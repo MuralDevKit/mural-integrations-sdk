@@ -15,13 +15,8 @@ export async function getMuralSessionClaimUrl(
   code: string,
 ): Promise<URL> {
   const redirectUrl = new URL(muralUrl.toString());
-
-  const {
-    api: { host, protocol },
-  } = apiClient.config;
-  const claimRequestUrl = new URL(
+  const claimRequestUrl = apiClient.url(
     `/api/v0/authenticate/oauth2/session/${code}`,
-    `${protocol}//${host}`,
   );
 
   claimRequestUrl.searchParams.set('redirectUrl', redirectUrl.href);
