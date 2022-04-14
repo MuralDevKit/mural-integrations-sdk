@@ -1,3 +1,4 @@
+import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import axios from 'axios';
 
 // eslint-disable-next-line no-shadow
@@ -26,19 +27,10 @@ export interface RealmResponse {
   requireConsent: boolean;
 }
 
-export const getMuralRealm = async (
-  webApp: {
-    host: string;
-    protocol: string;
-  },
-  email: string,
-) => {
-  const response = await axios.post(
-    new URL('/api/v0/user/realm', `${webApp.protocol}//${webApp.host}`).href,
-    {
-      email,
-    },
-  );
+export const getMuralRealm = async (apiClient: ApiClient, email: string) => {
+  const response = await axios.post(apiClient.url('/api/v0/user/realm').href, {
+    email,
+  });
   return response.data as RealmResponse;
 };
 

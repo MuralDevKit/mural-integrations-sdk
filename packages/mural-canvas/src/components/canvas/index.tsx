@@ -8,6 +8,7 @@ interface CanvasEvents {
   onMemberAccessDenied?: EventHandler;
   onVisitorAccessDenied?: EventHandler;
   onGuestAccessDenied?: EventHandler;
+  onMuralUnavailable?: EventHandler;
   onError?: EventHandler;
   onReady?: EventHandler;
 }
@@ -16,15 +17,21 @@ const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
   'mural.member_access_denied': 'onMemberAccessDenied',
   'mural.visitor_access_denied': 'onVisitorAccessDenied',
   'mural.guest_access_denied': 'onGuestAccessDenied',
+  'mural.mural_unavailable': 'onMuralUnavailable',
   'mural.error': 'onError',
   'mural.ready': 'onReady',
 };
 
+export interface CanvasParams {
+  backUri?: URL | string;
+}
+
 export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
-  muralId: string;
-  state: string;
   authUrl?: URL | string;
+  canvasParams: CanvasParams;
+  muralId: string;
+  state?: string;
 }
 
 export function muralSessionActivationUrl(
@@ -64,16 +71,19 @@ export class CanvasHost extends React.Component<PropTypes> {
   }
 
   render() {
-    const { muralId, state } = this.props;
-    const { appId, host } = this.props.apiClient.config;
+    const { muralId, canvasParams, state } = this.props;
+    const { appId } = this.props.apiClient.config;
     const [workspaceId, boardId] = muralId.split('.');
+
+    let muralPath = `/a/${appId}/t/${workspaceId}/m/${workspaceId}/${boardId}`;
+    if (state) muralPath += `/${state}`;
+
+    const muralUrl = this.props.apiClient.url(muralPath);
+    for (const [key, value] of Object.entries(canvasParams)) {
+      if (value) muralUrl.searchParams.set(key, value.toString());
+    }
+
     let canvasUrl: string;
-
-    const muralUrl = new URL(
-      `/a/${appId}/t/${workspaceId}/m/${workspaceId}/${boardId}/${state}`,
-      `https://${host}`,
-    );
-
     if (this.props.authUrl && this.props.apiClient.authenticated()) {
       canvasUrl = muralSessionActivationUrl(
         this.props.apiClient,
@@ -85,7 +95,14 @@ export class CanvasHost extends React.Component<PropTypes> {
       canvasUrl = muralUrl.href;
     }
 
-    return <iframe className="mural-canvas" src={canvasUrl} seamless/>;
+    return (
+      <iframe
+        data-qa="mural-canvas"
+        className="mural-canvas"
+        src={canvasUrl}
+        seamless
+      />
+    );
   }
 }
 
