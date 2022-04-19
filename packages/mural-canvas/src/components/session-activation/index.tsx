@@ -15,9 +15,8 @@ export async function getMuralSessionClaimUrl(
   code: string,
 ): Promise<URL> {
   const redirectUrl = new URL(muralUrl.toString());
-  const claimRequestUrl = new URL(
+  const claimRequestUrl = apiClient.url(
     `/api/v0/authenticate/oauth2/session/${code}`,
-    `https://${apiClient.config.host}`,
   );
 
   claimRequestUrl.searchParams.set('redirectUrl', redirectUrl.href);
@@ -26,12 +25,8 @@ export async function getMuralSessionClaimUrl(
     method: 'PUT',
   });
 
-  // Workaround for the wrong content-type
-  const decoder = new TextDecoder();
-  const buf = await res.arrayBuffer();
-  const claimUrl = decoder.decode(buf);
-
-  return new URL(claimUrl.replace('"', ''));
+  const claimUrl = await res.json();
+  return new URL(claimUrl);
 }
 
 const SessionActivation: React.FC<PropTypes> = ({ apiClient, onError }) => {
