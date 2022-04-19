@@ -210,7 +210,7 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
 
     return (
       <ThemeProvider theme={muiTheme}>
-        <div className={`mural-picker-body ${theme}`} data-qa="mural-picker">
+        <div className={`mural-picker-body ${currentTheme}`} data-qa="mural-picker">
           <Header hideLogo={hideLogo} />
           <div className={'mural-picker-selects'}>
             <WorkspaceSelect

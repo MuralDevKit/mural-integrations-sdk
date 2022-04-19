@@ -286,7 +286,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
 
     return (
       <ThemeProvider theme={muiTheme}>
-        <div className={`mural-picker-body ${theme}`} data-qa="mural-picker">
+        <div className={`mural-picker-body ${currentTheme}`} data-qa="mural-picker">
           <Header hideLogo={hideLogo} />
           <div className={'mural-picker-selects'}>
             <WorkspaceSelect
@@ -329,16 +329,14 @@ export default class MuralPicker extends React.Component<PropTypes> {
           )}
 
           {this.state.isCreateSelected && this.state.room && (
-            <React.Fragment>
-              <CreateNewMural
-                apiClient={this.props.apiClient}
-                token=""
-                roomId={this.state.room.id}
-                workspaceId={this.state.workspace!.id }
-                onCreateMural={this.onFinishCreation}
-                onCancelAndGoBack={this.setInitialState}
-              />
-            </React.Fragment>
+            <CreateNewMural
+              apiClient={this.props.apiClient}
+              token=""
+              roomId={this.state.room.id}
+              workspaceId={this.state.workspace!.id }
+              onCreateMural={this.onFinishCreation}
+              onCancelAndGoBack={this.setInitialState}
+            />
           )}
         </div>
       </ThemeProvider>

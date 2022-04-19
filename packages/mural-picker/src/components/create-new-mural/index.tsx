@@ -57,19 +57,36 @@ const INITIAL_STATE: StateTypes = {
 };
 
 const LIMIT = 100;
-const defaultBlankTemplateName = 'Blank Template'; 
+const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
+const DEFAULT_BLANK_TEMPLATE_ID = 'gh&rishIOpNm-thON^43D-O&(8&hHjPle$-(kplP&Nm-ujlK8*0^';
+
+const BLANK_TEMPLATE: Template = {
+  id: DEFAULT_BLANK_TEMPLATE_ID,
+  description: '',
+  name: DEFAULT_BLANK_TEMPLATE_NAME,
+  publicHash: '',
+  thumbUrl: '',
+  type: 'default',
+  updatedOn: 0,
+  workspaceId: '',
+  viewLink: '',
+} as const;
 
 export default class CreateNewMural extends React.Component<PropTypes, StateTypes> {
   state: StateTypes = INITIAL_STATE;
   scrollRef: React.RefObject<HTMLDivElement>;
   containerRef: React.RefObject<HTMLDivElement>;
   titleRef: React.RefObject<HTMLInputElement>;
+  maskRef: React.RefObject<HTMLDivElement>;
+  commonElementHeight: number;
 
   constructor(props: PropTypes) {
-    super(props)
-    this.scrollRef = React.createRef()
-    this.containerRef = React.createRef()
-    this.titleRef = React.createRef()
+    super(props);
+    this.scrollRef = React.createRef();
+    this.containerRef = React.createRef();
+    this.titleRef = React.createRef();
+    this.maskRef = React.createRef();
+    this.commonElementHeight = 0; 
   }
 
   loadTemplates = async () => {
@@ -79,8 +96,6 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
 
     this.setState({ loading: true }, async () => {
       try {
-        const blankTemplate: Template = { id: '', description: '', name: defaultBlankTemplateName, publicHash: '', thumbUrl: '', type: 'default', updatedOn: 0, workspaceId: '', viewLink: '' };
-
         // TODO: add 'next' query param for 'getTemplates' method into mural-client sdk
         const url = new URL('/api/public/v1/templates', `https://${this.props.apiClient.config.host}`);
         url.searchParams.set('limit', LIMIT.toString())
@@ -88,8 +103,10 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
         const response = await this.props.apiClient.fetch(url.toString(), { method: 'GET' });
         const data = await response.json();
         
-        const templates = [blankTemplate, ...Array.from(this.state.templates), ...(data.value || [])];
-        this.setState({ templates, nextToken: data.next, loading: false, error: '' });
+        const templates = [BLANK_TEMPLATE, ...Array.from(this.state.templates), ...(data.value || [])];
+        this.setState({ templates, nextToken: data.next, loading: false, error: '' }, () => {
+          this.scrollRef.current?.addEventListener('scroll', this.lazyLoadHandler)
+        });
       } catch (exception) {
         this.setState({ loading: false, error: 'Error getting templates.' })
       }
@@ -97,23 +114,18 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
   };
 
   createMural = () => {
-    const { title } = this.state
-    const { roomId, workspaceId } = this.props
-    const template = this.state.templates[this.state.selected]
+    const { title } = this.state;
+    const { roomId, workspaceId } = this.props;
+    const template = this.state.templates[this.state.selected];
+
+    if (!title) return this.setState({ error: "Please enter a title for a new Mural." });
+
+    if (!template) return this.setState({ error: "Please select a template." });
 
     try {
-      if (!title) {
-        this.setState({ error: "Please enter a title for a new Mural." });
-        return
-      }
-
-      if (!template) {
-        this.setState({ error: "Please select a template." }); 
-        return
-      }
       this.setState({ btnLoading: true }, async () => {
         let data;
-        if (template.name === defaultBlankTemplateName) {
+        if (this.state.selected === 0) {
           data = await this.props.apiClient.createMural(
             title,
             workspaceId,
@@ -126,7 +138,6 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
             template.id
           );
         }
-        
 
         this.props.onCreateMural(data.value)
       });
@@ -154,6 +165,7 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
   componentDidMount() {
     this.loadTemplates();
     this.resizeHandler({ target: window })
+    this.commonElementHeight = Number(this.maskRef.current?.clientHeight);
     window.addEventListener('resize', this.resizeHandler)
   }
 
@@ -172,10 +184,20 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
   }
 
   render() {
-    const actionsHeight = 70;
-    const headerHeight = 114;
-    const maskHeight = 114;
-    const scrollHeight = this.state.scrollHeight - maskHeight - headerHeight
+    const TEMPLATE_CATEGORIES = [
+      'MURAL',
+      'Icebreaker',
+      'Understand',
+      'Empathize',
+      'Brainstorm',
+      'Design',
+      'Evaluate',
+      'Plan',
+      'Agile'
+    ] as  const;
+    const headerHeight = this.commonElementHeight;
+    const maskHeight = this.commonElementHeight;
+    const scrollHeight = this.state.scrollHeight - maskHeight - headerHeight;
 
     if (this.state.loading && !this.state.templates.length) {
       return (
@@ -205,15 +227,7 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
             </ListItem>
             <Divider />
             <ListSubheader disableGutters>Browse by category</ListSubheader>
-            <ListItem disableGutters button>MURAL</ListItem>
-            <ListItem disableGutters button>Icebreaker</ListItem>
-            <ListItem disableGutters button>Understand</ListItem>
-            <ListItem disableGutters button>Empathize</ListItem>
-            <ListItem disableGutters button>Brainstorm</ListItem>
-            <ListItem disableGutters button>Design</ListItem>
-            <ListItem disableGutters button>Evaluate</ListItem>
-            <ListItem disableGutters button>Plan</ListItem>
-            <ListItem disableGutters button>Agile</ListItem>
+            {TEMPLATE_CATEGORIES.map((category, index) => <ListItem key={index} disableGutters button>{category}</ListItem>)}
           </List>
         </div>
         <div className='new-mural-items'>
@@ -230,10 +244,14 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
                     })}
                   >
                     <RippleEffect onClick={() => this.onSelectTemplate(index)}>
-                      <div className={`template-item-img-container ${template.name === defaultBlankTemplateName ? 'blank blank-image': ''}`}>
-                        {template.name !== defaultBlankTemplateName ? <img className='template-item-img' src={template.thumbUrl} alt='thumbnail' /> : ''}
+                      <div className={classnames('template-item-img-container', {
+                        'blank blank-image': template.id === DEFAULT_BLANK_TEMPLATE_ID
+                        })}>
+                        {template.id !== DEFAULT_BLANK_TEMPLATE_ID ? <img className='template-item-img' src={template.thumbUrl} alt='thumbnail' /> : ''}
                       </div>
-                      <div className={`template-item-typography-container' ${template.name === defaultBlankTemplateName ? 'blank': ''}`}>
+                      <div className={classnames('template-item-typography-container', {
+                        'blank': template.id === DEFAULT_BLANK_TEMPLATE_ID
+                      })}>
                         <div className='template-item-typography-title'>
                           {template.name}
                         </div>
@@ -248,10 +266,10 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
             </div>
           </div>
           
-          <div className='new-mural-items-mask' style={{ height: maskHeight }} />
+          <div className='new-mural-items-mask' ref={this.maskRef} />
         </div>
 
-        <div className='new-mural-buttons-container' style={{ height: actionsHeight }}>
+        <div className='new-mural-buttons-container' >
           <TextField
             inputRef={this.titleRef}
             value={this.state.title}
