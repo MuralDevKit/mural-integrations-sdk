@@ -11,6 +11,9 @@ interface CanvasEvents {
   onMuralUnavailable?: EventHandler;
   onError?: EventHandler;
   onReady?: EventHandler;
+  onRpcReady?: EventHandler;
+  onRpcContext?: EventHandler;
+  onRpcMessage?: EventHandler;
 }
 
 const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
@@ -20,6 +23,9 @@ const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
   'mural.mural_unavailable': 'onMuralUnavailable',
   'mural.error': 'onError',
   'mural.ready': 'onReady',
+  'mural.rpc_ready': 'onRpcReady',
+  'mural.rpc_context': 'onRpcContext',
+  'mural.rpc_message': 'onRpcMessage',
 };
 
 export interface CanvasParams {
@@ -31,7 +37,9 @@ export interface PropTypes extends CanvasEvents {
   authUrl?: URL | string;
   canvasParams: CanvasParams;
   muralId: string;
+  muralUrl: string;
   state?: string;
+  iframeRef: any;
 }
 
 export function muralSessionActivationUrl(
@@ -58,7 +66,7 @@ export class CanvasHost extends React.Component<PropTypes> {
     const eventHandler = this.props[eventHandlerKey] as EventHandler;
 
     if (eventHandler) {
-      await eventHandler.call(null);
+      await eventHandler.call(null, evt.data.payload ?? null);
     }
 
     if (this.props.onMessage) {
@@ -71,33 +79,19 @@ export class CanvasHost extends React.Component<PropTypes> {
   }
 
   render() {
-    const { muralId, canvasParams, state } = this.props;
-    const { appId } = this.props.apiClient.config;
-    const [workspaceId, boardId] = muralId.split('.');
+    const { muralUrl, authUrl, apiClient } = this.props;
 
-    let muralPath = `/a/${appId}/t/${workspaceId}/m/${workspaceId}/${boardId}`;
-    if (state) muralPath += `/${state}`;
+    const canvasUrl: string =
+      authUrl && apiClient.authenticated()
+        ? muralSessionActivationUrl(apiClient, authUrl, muralUrl)
+        : muralUrl;
 
-    const muralUrl = this.props.apiClient.url(muralPath);
-    for (const [key, value] of Object.entries(canvasParams)) {
-      if (value) muralUrl.searchParams.set(key, value.toString());
-    }
-
-    let canvasUrl: string;
-    if (this.props.authUrl && this.props.apiClient.authenticated()) {
-      canvasUrl = muralSessionActivationUrl(
-        this.props.apiClient,
-        this.props.authUrl,
-        muralUrl,
-      );
-    } else {
-      // directly to the visitor flow
-      canvasUrl = muralUrl.href;
-    }
+    const { iframeRef } = this.props;
 
     return (
       <iframe
         data-qa="mural-canvas"
+        ref={iframeRef}
         className="mural-canvas"
         src={canvasUrl}
         seamless

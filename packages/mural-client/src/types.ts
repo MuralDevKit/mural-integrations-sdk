@@ -34,6 +34,7 @@ export type Mural = {
     visitors: string;
     workspaceMembers: string;
   };
+  _canvasLink: string;
 };
 
 export type Template = {
