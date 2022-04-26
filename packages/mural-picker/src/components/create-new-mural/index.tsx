@@ -16,6 +16,18 @@ import { withStyles } from '@material-ui/styles';
 import { PrimaryButton, SecondaryButton, ListItem, ListSubheader, Divider } from '../../shared';
 import classnames from "classnames";
 
+const TEMPLATE_CATEGORIES = [
+  'MURAL',
+  'Icebreaker',
+  'Understand',
+  'Empathize',
+  'Brainstorm',
+  'Design',
+  'Evaluate',
+  'Plan',
+  'Agile',
+] as const;
+
 export const RippleEffect = withStyles({
   root: {
     display: 'flex',
@@ -26,7 +38,7 @@ export const RippleEffect = withStyles({
 })(ButtonBase)
 
 export interface PropTypes {
-  apiClient: ApiClient
+  apiClient: ApiClient;
   token: string;
   roomId: string;
   workspaceId: string;
@@ -97,7 +109,7 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
     this.setState({ loading: true }, async () => {
       try {
         // TODO: add 'next' query param for 'getTemplates' method into mural-client sdk
-        const url = new URL('/api/public/v1/templates', `https://${this.props.apiClient.config.host}`);
+        const url = new URL('/api/public/v1/templates', `https://${this.props.apiClient.config?.muralHost}`);
         url.searchParams.set('limit', LIMIT.toString())
         if (this.state.nextToken) url.searchParams.set('next', this.state.nextToken)
         const response = await this.props.apiClient.fetch(url.toString(), { method: 'GET' });
@@ -119,12 +131,11 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
     const template = this.state.templates[this.state.selected];
 
     if (!title) return this.setState({ error: "Please enter a title for a new Mural." });
-
     if (!template) return this.setState({ error: "Please select a template." });
 
-    try {
-      this.setState({ btnLoading: true }, async () => {
-        let data;
+    this.setState({ btnLoading: true }, async () => {
+      let data;
+      try {
         if (this.state.selected === 0) {
           data = await this.props.apiClient.createMural(
             title,
@@ -140,11 +151,15 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
         }
 
         this.props.onCreateMural(data.value)
-      });
+      } catch (exception) {
+        this.setState({
+          error: 'Error creating a new mural.',
+          btnLoading: false,
+        });
+      }
+    });
       
-    } catch (exception) {
-      this.setState({ error: 'Error creating a new mural.' })
-    }
+    
   }
 
   resizeHandler = (event: any) => {
@@ -184,17 +199,6 @@ export default class CreateNewMural extends React.Component<PropTypes, StateType
   }
 
   render() {
-    const TEMPLATE_CATEGORIES = [
-      'MURAL',
-      'Icebreaker',
-      'Understand',
-      'Empathize',
-      'Brainstorm',
-      'Design',
-      'Evaluate',
-      'Plan',
-      'Agile'
-    ] as  const;
     const headerHeight = this.commonElementHeight;
     const maskHeight = this.commonElementHeight;
     const scrollHeight = this.state.scrollHeight - maskHeight - headerHeight;
