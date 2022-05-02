@@ -50,13 +50,17 @@ export default class MuralSelect extends React.Component<PropTypes> {
     if (this.props.workspace && title.length > 2) {
       try {
         this.setState({ isSearchingMurals: true });
-        const murals: Mural[] =
-          await this.props.apiClient.searchMuralsByWorkspace(
-            this.props.workspace.id,
-            title,
-          );
-        this.setState({ searchedMurals: murals, isSearchingMurals: false });
-        this.props.onMuralSearch(murals);
+        const eMurals = await this.props.apiClient.searchMuralsByWorkspace({
+          workspaceId: this.props.workspace.id,
+          title,
+        });
+
+        this.setState({
+          searchedMurals: eMurals.value,
+          isSearchingMurals: false,
+        });
+
+        this.props.onMuralSearch(eMurals.value);
       } catch (e: any) {
         this.setState({ isSearchingMurals: false });
         this.props.handleError(e, ERRORS.ERR_SEARCH_MURALS);

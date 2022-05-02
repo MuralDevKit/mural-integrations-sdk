@@ -7,6 +7,7 @@ import {
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
+import CreateNewMural from '../create-new-mural';
 import MuralPickerError from '../error';
 import Header from '../header';
 import Loading from '../loading';
@@ -14,7 +15,6 @@ import { CardSize } from '../mural-card';
 import MuralList from '../mural-list';
 import RoomSelect from '../room-select';
 import WorkspaceSelect from '../workspace-select';
-import CreateNewMural from "../create-new-mural";
 import './styles.scss';
 
 export interface CreateMuralData {
@@ -80,20 +80,16 @@ export default class MuralPicker extends React.Component<PropTypes> {
   async componentDidMount() {
     this.setState({ isLoading: true });
     try {
-      const workspaces = await this.props.apiClient.getWorkspaces();
-      const lastActiveWorkspaceId =
-        await this.props.apiClient.getLastActiveWorkspaceId();
-      if (workspaces?.length) {
-        let workspace;
-        if (lastActiveWorkspaceId) {
-          workspace =
-            workspaces.find(
-              workspace => workspace.id === lastActiveWorkspaceId,
-            ) || workspaces[0];
-        } else {
-          workspace = workspaces[0];
-        }
-        this.setState({ workspaces, workspace });
+      const eWorkspaces = await this.props.apiClient.getWorkspaces();
+      const lastActiveWorkspaceId = (
+        await this.props.apiClient.getCurrentUser()
+      ).value.lastActiveWorkspace;
+      if (eWorkspaces.value.length) {
+        const workspace =
+          eWorkspaces.value.find(w => w.id === lastActiveWorkspaceId) ||
+          eWorkspaces.value[0];
+
+        this.setState({ workspaces: eWorkspaces.value, workspace });
         await this.loadMuralsAndRoomsByWorkspace(workspace);
       }
     } catch (e: any) {
@@ -138,21 +134,23 @@ export default class MuralPicker extends React.Component<PropTypes> {
     this.setState({ isLoading: true, error: '' });
 
     try {
-      const roomPromise = this.props.apiClient.getRoomsByWorkspace(
-        workspace.id,
-      );
-      const muralPromise = this.props.apiClient.getMuralsByWorkspace(
-        workspace.id,
-      );
-      const [rooms, murals] = await Promise.all([roomPromise, muralPromise]);
-      const sortedRooms: Room[] = rooms.sort((a, b) =>
+      const q = {
+        workspaceId: workspace.id,
+      };
+      const [uponRooms, uponMurals] = await Promise.all([
+        this.props.apiClient.getRoomsByWorkspace(q),
+        this.props.apiClient.getMuralsByWorkspace(q),
+      ]);
+
+      const rooms: Room[] = uponRooms.value.sort((a, b) =>
         b.type.localeCompare(a.type),
       );
+
       this.setState({
         isLoading: false,
         workspace,
-        workspaceRooms: sortedRooms,
-        murals,
+        workspaceRooms: rooms,
+        murals: uponMurals.value,
         roomId: '',
         room: null,
       });
@@ -223,7 +221,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
       );
       return;
     }
-  }
+  };
 
   onCreateMuralButtonHandler = async () => {
     if (!this.state.workspace) {
@@ -242,20 +240,22 @@ export default class MuralPicker extends React.Component<PropTypes> {
   };
 
   setInitialState = () => {
-    this.setState((state) => {
+    this.setState(state => {
       return { ...state, isCreateSelected: false, title: INITIAL_STATE.title };
     });
-  }
+  };
 
   onFinishCreation = async (mural: Mural) => {
-    this.setInitialState()
-    this.props.onCreateMural(mural)
+    this.setInitialState();
+    this.props.onCreateMural(mural);
 
     if (this.state.room) {
-      const murals = await this.props.apiClient.getMuralsByRoom(this.state.room.id);
-      this.setState({ murals });
+      const murals = await this.props.apiClient.getMuralsByRoom({
+        roomId: this.state.room.id,
+      });
+      this.setState({ murals: murals.value });
     }
-  }
+  };
 
   handleError = (e: Error, displayMsg: string) => {
     // display error and send back error data to caller
@@ -274,19 +274,22 @@ export default class MuralPicker extends React.Component<PropTypes> {
     const muiTheme = createMuiTheme({
       palette: {
         type: currentTheme,
-        text: { primary: currentTheme === "light" ? "#585858" : "#a7a7a7" },
+        text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
         primary: {
           main: '#FF0066',
         },
       },
       typography: {
-        fontFamily: 'Proxima Nova'
-      }
+        fontFamily: 'Proxima Nova',
+      },
     });
 
     return (
       <ThemeProvider theme={muiTheme}>
-        <div className={`mural-picker-body ${currentTheme}`} data-qa="mural-picker">
+        <div
+          className={`mural-picker-body ${currentTheme}`}
+          data-qa="mural-picker"
+        >
           <Header hideLogo={hideLogo} />
           <div className={'mural-picker-selects'}>
             <WorkspaceSelect
@@ -313,7 +316,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
           {/* TODO: add search */}
           {this.state.error && <MuralPickerError error={this.state.error} />}
           {this.state.isLoading && <Loading />}
-          {(!this.state.isCreateSelected && !this.state.isLoading) && (
+          {!this.state.isCreateSelected && !this.state.isLoading && (
             <MuralList
               workspace={this.state.workspace}
               room={this.state.room}
@@ -333,7 +336,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
               apiClient={this.props.apiClient}
               token=""
               roomId={this.state.room.id}
-              workspaceId={this.state.workspace!.id }
+              workspaceId={this.state.workspace!.id}
               onCreateMural={this.onFinishCreation}
               onCancelAndGoBack={this.setInitialState}
             />

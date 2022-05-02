@@ -72,10 +72,10 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
   async componentDidMount() {
     this.onLoading();
     try {
-      const workspaces = await this.props.apiClient.getWorkspaces();
-      if (workspaces?.length) {
-        const workspace = workspaces[0];
-        this.setState({ workspaces, workspace });
+      const eWorkspaces = await this.props.apiClient.getWorkspaces();
+      if (eWorkspaces.value.length) {
+        const workspace = eWorkspaces.value[0];
+        this.setState({ workspaces: eWorkspaces.value, workspace });
         await this.loadMuralsAndRoomsByWorkspace(workspace);
       }
     } catch (e: any) {
@@ -120,21 +120,19 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
     this.onLoading();
 
     try {
-      const roomPromise = this.props.apiClient.getRoomsByWorkspace(
-        workspace.id,
-      );
-      const muralPromise = this.props.apiClient.getMuralsByWorkspace(
-        workspace.id,
-      );
-      const [rooms, murals] = await Promise.all([roomPromise, muralPromise]);
-      const sortedRooms: Room[] = rooms.sort((a, b) =>
-        b.type.localeCompare(a.type),
-      );
+      const q = { workspaceId: workspace.id };
+      const [eRooms, eMurals] = await Promise.all([
+        this.props.apiClient.getRoomsByWorkspace(q),
+        this.props.apiClient.getMuralsByWorkspace(q),
+      ]);
+
+      const byTypeAsc = (a: Room, b: Room) => b.type.localeCompare(a.type);
+
       this.setState({
         isLoading: false,
         workspace,
-        workspaceRooms: sortedRooms,
-        murals,
+        workspaceRooms: eRooms.value.sort(byTypeAsc),
+        murals: eMurals.value,
         roomId: '',
         room: null,
       });
@@ -210,7 +208,10 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
 
     return (
       <ThemeProvider theme={muiTheme}>
-        <div className={`mural-picker-body ${currentTheme}`} data-qa="mural-picker">
+        <div
+          className={`mural-picker-body ${currentTheme}`}
+          data-qa="mural-picker"
+        >
           <Header hideLogo={hideLogo} />
           <div className={'mural-picker-selects'}>
             <WorkspaceSelect

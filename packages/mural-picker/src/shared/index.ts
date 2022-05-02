@@ -2,9 +2,9 @@ import {
   Button as BaseButton,
   ListItem as BaseListItem,
   ListSubheader as BaseListSubheader,
-  Divider as BaseDivider
+  Divider as BaseDivider,
 } from '@material-ui/core';
-import { withStyles } from "@material-ui/styles";
+import { withStyles } from '@material-ui/styles';
 
 export const PrimaryButton = withStyles({
   root: {
@@ -13,17 +13,17 @@ export const PrimaryButton = withStyles({
   label: {
     color: '#fff',
     textTransform: 'uppercase',
-  }
-})(BaseButton)
+  },
+})(BaseButton);
 
 export const SecondaryButton = withStyles({
   label: {
     textTransform: 'capitalize',
     borderBottom: '1px dashed #393939',
     color: '#393939',
-    fontWeight: 700
+    fontWeight: 700,
   },
-})(BaseButton)
+})(BaseButton);
 
 export const ListSubheader = withStyles({
   root: {
@@ -35,8 +35,8 @@ export const ListSubheader = withStyles({
     color: '#ccc',
     padding: 0,
     marginBottom: 12,
-  }
-})(BaseListSubheader)
+  },
+})(BaseListSubheader);
 
 export const ListItem = withStyles({
   root: {
@@ -50,11 +50,11 @@ export const ListItem = withStyles({
     backgroundColor: 'transparent !important',
     color: '#FF0061',
   },
-})(BaseListItem)
+})(BaseListItem);
 
 export const Divider = withStyles({
   root: {
     marginTop: 10,
     marginBottom: 20,
   },
-})(BaseDivider)
+})(BaseDivider);

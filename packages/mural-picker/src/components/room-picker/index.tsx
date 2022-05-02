@@ -61,9 +61,9 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
   loadWorkspaces = async () => {
     this.setState({ isLoading: true });
     try {
-      const workspaces = await this.props.apiClient.getWorkspaces();
-      if (workspaces?.length) {
-        this.setState({ workspaces, isLoading: false });
+      const eWorkspaces = await this.props.apiClient.getWorkspaces();
+      if (eWorkspaces.value.length) {
+        this.setState({ workspaces: eWorkspaces.value, isLoading: false });
       }
     } catch (e: any) {
       this.handleError(e, 'Error retrieving workspaces.');
@@ -89,14 +89,14 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
     }
     try {
       this.setState({ isLoading: true });
-      const rooms = await this.props.apiClient.getRoomsByWorkspace(
-        workspace.id,
-      );
-      const sortedRooms = rooms.sort((a, b) => b.type.localeCompare(a.type));
+      const eRooms = await this.props.apiClient.getRoomsByWorkspace({
+        workspaceId: workspace.id,
+      });
+      const rooms = eRooms.value.sort((a, b) => b.type.localeCompare(a.type));
       this.setState({
         isLoading: false,
         workspace,
-        rooms: sortedRooms,
+        rooms: rooms,
         roomId: '',
         room: null,
       });
@@ -147,14 +147,14 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
     const muiTheme = createMuiTheme({
       palette: {
         type: currentTheme,
-        text: { primary: currentTheme === "light" ? "#585858" : "#a7a7a7" },
+        text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
         primary: {
           main: '#FF0066',
         },
       },
       typography: {
-        fontFamily: 'Proxima Nova'
-      }
+        fontFamily: 'Proxima Nova',
+      },
     });
 
     return (
