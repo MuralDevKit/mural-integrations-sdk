@@ -33,16 +33,22 @@ import {
 } from '../../shared';
 import './styles.scss';
 
-const TEMPLATE_CATEGORIES = [
-  'Icebreaker',
-  'Understand',
-  'Empathize',
-  'Brainstorm',
-  'Design',
-  'Evaluate',
-  'Plan',
-  'Agile',
-] as const;
+/* Once we have the proper template lookup in the public API, we should showcase
+ * all of the template categories to enable filtering.
+ *
+ *const TEMPLATE_CATEGORIES = [
+ *  'Icebreaker',
+ *  'Understand',
+ *  'Empathize',
+ *  'Brainstorm',
+ *  'Design',
+ *  'Evaluate',
+ *  'Plan',
+ *  'Agile',
+ *] as const;
+ */
+
+const TEMPLATE_CATEGORIES = [] as const;
 
 export const RippleEffect = withStyles({
   root: {
@@ -63,24 +69,24 @@ export interface PropTypes {
 }
 
 interface StateTypes {
-  scrollHeight: number;
-  templates: Template[];
-  nextToken: string | null;
-  loading: boolean;
   btnLoading: boolean;
   error: string;
+  loading: boolean;
+  nextToken: string | null;
+  scrollHeight: number;
   selected: number;
+  templates: Template[];
   title: string;
 }
 
 const INITIAL_STATE: StateTypes = {
-  scrollHeight: 620,
-  templates: [],
-  nextToken: null,
-  loading: false,
   btnLoading: false,
   error: '',
-  selected: -1,
+  loading: false,
+  nextToken: null,
+  scrollHeight: 620,
+  selected: 0,
+  templates: [],
   title: '',
 };
 
@@ -158,12 +164,14 @@ export default class CreateNewMural extends React.Component<
   };
 
   createMural = () => {
-    const { title } = this.state;
+    let { title } = this.state;
     const { roomId, workspace } = this.props;
     const template = this.state.templates[this.state.selected];
 
-    if (!title)
-      return this.setState({ error: 'Please enter a title for a new Mural.' });
+    if (!title) {
+      title = 'Untitled mural';
+    }
+
     if (!template) return this.setState({ error: 'Please select a template.' });
 
     this.setState({ btnLoading: true }, async () => {
@@ -357,12 +365,13 @@ export default class CreateNewMural extends React.Component<
                 }
                 variant="standard"
                 label="Mural title"
+                placeholder="Untitled mural"
               />
               <PrimaryButton
                 className="button"
                 onClick={this.createMural}
                 variant="contained"
-                disabled={!this.state.title || this.state.btnLoading}
+                disabled={this.state.btnLoading}
               >
                 Create Mural{' '}
                 {this.state.btnLoading && (

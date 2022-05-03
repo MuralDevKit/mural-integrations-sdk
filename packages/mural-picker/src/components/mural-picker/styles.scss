@@ -17,6 +17,7 @@
     align-items: stretch;
     column-gap: 10px;
   }
+
   .mural-picker-select {
     font-weight: 400;
     flex: 1;
@@ -68,13 +69,8 @@
     font-weight: 400;
   }
 
-  .mural-preview {
-    margin-top: 0.75em;
-    margin-bottom: 1.35em;
-  }
-
   .column-gap {
-    column-gap: 10px;
+    column-gap: 0.5em;
   }
 }
 

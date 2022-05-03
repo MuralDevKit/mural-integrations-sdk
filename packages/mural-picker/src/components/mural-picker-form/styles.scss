@@ -18,6 +18,7 @@
     column-gap: 0.5em;
     flex-wrap: wrap;
   }
+
   .mural-picker-select {
     font-weight: 400;
     flex: 1 1 32%;
@@ -71,11 +72,6 @@
       'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     font-weight: 400;
-  }
-
-  .mural-preview {
-    margin-top: 0.75em;
-    margin-bottom: 1.35em;
   }
 
   .column-gap {

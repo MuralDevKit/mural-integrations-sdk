@@ -113,7 +113,7 @@ export default class MuralList extends React.Component<PropTypes> {
     }
 
     return (
-      <Grid item className="mural-preview">
+      <Grid item>
         <Card
           variant="outlined"
           className={classnames('mural-card', `${this.props.cardSize}-card`, {

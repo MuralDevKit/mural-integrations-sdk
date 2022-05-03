@@ -1,11 +1,15 @@
+@use '../styles.scss' as _;
+
 .new-mural {
   &-container {
     display: flex;
-    flex-direction: row;
-    overflow-x: hidden;
     position: relative;
-    margin-top: 66px;
+    flex-direction: row;
+    justify-content: space-evenly;
+    overflow-x: hidden;
     overflow-y: hidden;
+
+    padding-top: 2em;
   }
 
   &-info {
@@ -14,16 +18,21 @@
   }
 
   &-categories {
-    display: none;
-    width: 21.336%;
+    width: 20%;
     max-width: 195px;
     margin-right: 20px;
+    cursor: disabled;
+    // pointer-events: none;
   }
 
   &-items {
-    // width: 78.664%;
-    width: 100%;
     position: relative;
+
+    /* This ensure the container spans complete rows, including scrollbar */
+    flex-basis: calc(
+      _.$card-per-row * _.$card-width + (_.$card-per-row - 1) * _.$card-gutter +
+        20px
+    );
 
     &-scroll {
       overflow-y: auto;
@@ -33,6 +42,8 @@
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
+      column-gap: 0.5em;
+      row-gap: 0.5em;
       justify-content: start;
       padding-bottom: 80px;
     }
@@ -81,15 +92,19 @@
 
 .template-item {
   box-sizing: border-box;
-  width: 22.5%;
-  min-width: 160px;
+  width: _.$card-width;
+  height: _.$card-height;
 
-  margin: 0 10px;
-  margin-bottom: 20px;
+  border-radius: 5px;
+  box-shadow: #eeeeee 0 0 5px;
 
   &-sfx {
+    height: 100%;
     width: 100%;
+
+    /* These styles are hardcoded in MUI */
     align-items: stretch !important;
+    margin: 0 !important;
   }
 
   &-selected {
@@ -114,6 +129,8 @@
     background-color: #e2e2e2;
     border: 1px solid #d8d8d8;
 
+    height: 65%;
+
     & img {
       width: 100%;
       object-fit: cover;
@@ -123,7 +140,7 @@
 
   &-typography {
     &-container {
-      padding: 0 0.33em;
+      padding: 0.66em;
       font-size: 0.8em;
 
       text-overflow: ellipsis;

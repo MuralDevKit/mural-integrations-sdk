@@ -1,20 +1,19 @@
-@use '../styles.scss';
+@use '../styles.scss' as _;
 
 .mural-card {
-  width: 188px;
-  height: 160px;
+  width: _.$card-width;
+  height: _.$card-height;
   border-radius: 0;
-  margin: 0.75em 0 1.35em 0;
   border: 1px solid transparent;
 
   .MuiButtonBase-root {
-    font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI",
-      "Roboto", "Oxygen", "Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
   }
 
   .mural-thumbnail {
-    width: 188px;
+    width: 100%;
     height: 120px;
   }
 
@@ -62,8 +61,8 @@
 }
 
 #create-a-mural {
-  font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "Roboto", "Oxygen", "Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue",
+  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   border: 1px dashed #d8d8d8;
   text-align: center;
