@@ -79,7 +79,7 @@ export function buildClientConfig(args: BuildClientArgs): ClientConfig {
   };
 }
 
-type Envelope<TResource> = {
+export type Envelope<TResource> = {
   value: TResource;
   next?: TResource extends any[] ? string | null : undefined;
 };
@@ -109,7 +109,9 @@ const isIntegration = (
   options: Sorted | Paginated | Integration | Record<string, any>,
 ): options is Integration => 'integration' in options;
 
-type ResourceEndpoint<TResource, TParams = void, TOptions = null> = (
+type Primitive = number | string | boolean | bigint;
+
+export type ResourceEndpoint<TResource, TParams = void, TOptions = null> = (
   query: TParams,
   options?: (TOptions extends Sorted ? Sorted<TResource> : {}) &
     (TOptions extends Paginated ? Paginated<TResource> : {}) &
@@ -117,9 +119,6 @@ type ResourceEndpoint<TResource, TParams = void, TOptions = null> = (
     TOptions,
 ) => Promise<Envelope<TResource>>;
 
-type Primitive = number | string | boolean | bigint;
-
-//
 const optionsParams = (
   options:
     | Sorted<any>

@@ -8,10 +8,11 @@
  */
 
 import {
-  List,
+  Box,
   ButtonBase,
   CircularProgress,
   TextField,
+  List,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { withStyles } from '@material-ui/styles';
@@ -19,6 +20,7 @@ import {
   ApiClient,
   Template,
   Mural,
+  Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
 import classnames from 'classnames';
 import * as React from 'react';
@@ -32,7 +34,6 @@ import {
 import './styles.scss';
 
 const TEMPLATE_CATEGORIES = [
-  'MURAL',
   'Icebreaker',
   'Understand',
   'Empathize',
@@ -54,9 +55,9 @@ export const RippleEffect = withStyles({
 
 export interface PropTypes {
   apiClient: ApiClient;
-  token: string;
   roomId: string;
-  workspaceId: string;
+  workspace: Workspace;
+
   onCancelAndGoBack: () => void;
   onCreateMural: (mural: Mural) => void;
 }
@@ -128,7 +129,7 @@ export default class CreateNewMural extends React.Component<
     this.setState({ loading: true }, async () => {
       try {
         const eTemplates = await this.props.apiClient.getTemplatesByWorkspace({
-          workspaceId: this.props.workspaceId,
+          workspaceId: this.props.workspace.id,
         });
 
         const templates = [
@@ -158,7 +159,7 @@ export default class CreateNewMural extends React.Component<
 
   createMural = () => {
     const { title } = this.state;
-    const { roomId, workspaceId } = this.props;
+    const { roomId, workspace } = this.props;
     const template = this.state.templates[this.state.selected];
 
     if (!title)
@@ -171,7 +172,7 @@ export default class CreateNewMural extends React.Component<
         if (this.state.selected === 0) {
           eMural = await this.props.apiClient.createMural({
             title,
-            workspaceId,
+            workspaceId: workspace.id,
             roomId,
           });
         } else {
@@ -266,7 +267,10 @@ export default class CreateNewMural extends React.Component<
               </ListItem>
               <Divider />
               <ListSubheader disableGutters>Browse by category</ListSubheader>
-              {TEMPLATE_CATEGORIES.map((category, index) => (
+              {[
+                `Current workspace (${this.props.workspace.name})`,
+                ...TEMPLATE_CATEGORIES,
+              ].map((category, index) => (
                 <ListItem key={index} disableGutters button>
                   {category}
                 </ListItem>
@@ -294,22 +298,16 @@ export default class CreateNewMural extends React.Component<
                       })}
                     >
                       <RippleEffect
+                        className="template-item-sfx"
                         onClick={() => this.onSelectTemplate(index)}
                       >
-                        <div
-                          className={classnames('template-item-img-container', {
-                            'blank blank-image':
-                              template.id === DEFAULT_BLANK_TEMPLATE_ID,
-                          })}
-                        >
-                          {template.id !== DEFAULT_BLANK_TEMPLATE_ID ? (
+                        <div className="template-item-img-container">
+                          {template.id !== DEFAULT_BLANK_TEMPLATE_ID && (
                             <img
                               className="template-item-img"
                               src={template.thumbUrl}
                               alt="thumbnail"
                             />
-                          ) : (
-                            ''
                           )}
                         </div>
                         <div
@@ -337,48 +335,46 @@ export default class CreateNewMural extends React.Component<
                 })}
               </div>
             </div>
-
             <div className="new-mural-items-mask" ref={this.maskRef} />
           </div>
 
-          <div className="new-mural-buttons-container">
-            <TextField
-              inputRef={this.titleRef}
-              value={this.state.title}
-              onChange={event =>
-                this.setState({ error: '', title: event.target.value })
-              }
-              label="Title"
-              style={{
-                width: '100%',
-                maxWidth: 320,
-                marginBottom: 21,
-                marginRight: 20,
-              }}
-            />
+          <Box className="new-mural-buttons-container">
             <SecondaryButton
-              style={{ marginRight: 14 }}
-              onClick={this.props.onCancelAndGoBack}
+              className="button"
               variant="text"
+              onClick={this.props.onCancelAndGoBack}
             >
               Cancel & go back
             </SecondaryButton>
-            <PrimaryButton
-              style={{ minWidth: 120 }}
-              onClick={this.createMural}
-              variant="contained"
-              disabled={this.state.btnLoading}
-            >
-              Create Mural{' '}
-              {this.state.btnLoading && (
-                <CircularProgress
-                  style={{ marginLeft: 10 }}
-                  size={18}
-                  color="inherit"
-                />
-              )}
-            </PrimaryButton>
-          </div>
+
+            <Box className="new-mural-create">
+              <TextField
+                className="new-mural-create--input"
+                inputRef={this.titleRef}
+                value={this.state.title}
+                onChange={event =>
+                  this.setState({ error: '', title: event.target.value })
+                }
+                variant="standard"
+                label="Mural title"
+              />
+              <PrimaryButton
+                className="button"
+                onClick={this.createMural}
+                variant="contained"
+                disabled={!this.state.title || this.state.btnLoading}
+              >
+                Create Mural{' '}
+                {this.state.btnLoading && (
+                  <CircularProgress
+                    style={{ marginLeft: 10 }}
+                    size={18}
+                    color="inherit"
+                  />
+                )}
+              </PrimaryButton>
+            </Box>
+          </Box>
         </div>
       </>
     );

@@ -331,16 +331,17 @@ export default class MuralPicker extends React.Component<PropTypes> {
             />
           )}
 
-          {this.state.isCreateSelected && this.state.room && (
-            <CreateNewMural
-              apiClient={this.props.apiClient}
-              token=""
-              roomId={this.state.room.id}
-              workspaceId={this.state.workspace!.id}
-              onCreateMural={this.onFinishCreation}
-              onCancelAndGoBack={this.setInitialState}
-            />
-          )}
+          {this.state.isCreateSelected &&
+            this.state.room &&
+            this.state.workspace && (
+              <CreateNewMural
+                apiClient={this.props.apiClient}
+                roomId={this.state.room.id}
+                workspace={this.state.workspace}
+                onCreateMural={this.onFinishCreation}
+                onCancelAndGoBack={this.setInitialState}
+              />
+            )}
         </div>
       </ThemeProvider>
     );
