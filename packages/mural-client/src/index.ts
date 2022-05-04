@@ -91,11 +91,11 @@ type Sorted<TResource = null> = {
 type Paginated<TResource = null> = {
   paginate: {
     limit: number;
-    next?: string;
+    next?: string | null;
   };
 } & Sorted<TResource>;
 
-type Integration<_TResource = null> = { integration?: boolean };
+type Integration<_TResource = null> = { integration: boolean };
 
 const isSorted = (
   options: Sorted | Paginated | Integration | Record<string, any>,
@@ -113,17 +113,17 @@ type Primitive = number | string | boolean | bigint;
 
 export type ResourceEndpoint<TResource, TParams = void, TOptions = null> = (
   query: TParams,
-  options?: (TOptions extends Sorted ? Sorted<TResource> : {}) &
-    (TOptions extends Paginated ? Paginated<TResource> : {}) &
-    (TOptions extends Integration ? Integration<TResource> : {}) &
-    TOptions,
+  options?: Partial<
+    (TOptions extends Sorted ? Sorted<TResource> : {}) &
+      (TOptions extends Paginated ? Paginated<TResource> : {}) &
+      (TOptions extends Integration ? Integration<TResource> : {}) &
+      TOptions
+  >,
 ) => Promise<Envelope<TResource>>;
 
 const optionsParams = (
   options:
-    | Sorted<any>
-    | Paginated<any>
-    | Integration<any>
+    | Partial<Sorted<any> | Paginated<any> | Integration<any>>
     | { [key: string]: Primitive }
     | undefined,
 ) => {
@@ -131,6 +131,7 @@ const optionsParams = (
   if (!options) return params;
 
   if (isSorted(options)) {
+    // @ts-ignore
     params.set('sortBy', options.sortBy.toString());
 
     // @ts-ignore
@@ -149,6 +150,7 @@ const optionsParams = (
     if (options.integration)
       params.set('integration', options.integration.toString());
 
+    // @ts-ignore
     delete options.integration;
   }
 

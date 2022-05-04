@@ -1,12 +1,3 @@
-/**
- * NOTE:
- * The MURAL public API does not currently support template retrieval
- * and selection, so this component is not yet being used (and is not quite
- * finished). However, it's a functional start to the component, so I've left
- * this in here for when the API endpoints are available and we can flesh this
- * out.
- */
-
 import {
   Box,
   ButtonBase,
@@ -23,6 +14,7 @@ import {
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
 import classnames from 'classnames';
+import { debounce } from 'lodash';
 import * as React from 'react';
 import {
   PrimaryButton,
@@ -49,6 +41,22 @@ import './styles.scss';
  */
 
 const TEMPLATE_CATEGORIES = [] as const;
+
+const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
+const DEFAULT_BLANK_TEMPLATE_ID =
+  'gh&rishIOpNm-thON^43D-O&(8&hHjPle$-(kplP&Nm-ujlK8*0^';
+
+const BLANK_TEMPLATE: Template = {
+  id: DEFAULT_BLANK_TEMPLATE_ID,
+  description: '',
+  name: DEFAULT_BLANK_TEMPLATE_NAME,
+  publicHash: '',
+  thumbUrl: '',
+  type: 'default',
+  updatedOn: 0,
+  workspaceId: '',
+  viewLink: '',
+} as const;
 
 export const RippleEffect = withStyles({
   root: {
@@ -86,44 +94,28 @@ const INITIAL_STATE: StateTypes = {
   nextToken: null,
   scrollHeight: 620,
   selected: 0,
-  templates: [],
+  templates: [BLANK_TEMPLATE],
   title: '',
 };
 
-const LIMIT = 100;
-const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
-const DEFAULT_BLANK_TEMPLATE_ID =
-  'gh&rishIOpNm-thON^43D-O&(8&hHjPle$-(kplP&Nm-ujlK8*0^';
-
-const BLANK_TEMPLATE: Template = {
-  id: DEFAULT_BLANK_TEMPLATE_ID,
-  description: '',
-  name: DEFAULT_BLANK_TEMPLATE_NAME,
-  publicHash: '',
-  thumbUrl: '',
-  type: 'default',
-  updatedOn: 0,
-  workspaceId: '',
-  viewLink: '',
-} as const;
+const LIMIT = 25;
+const THRESHOLD = 0.8;
 
 export default class CreateNewMural extends React.Component<
   PropTypes,
   StateTypes
 > {
   state: StateTypes = INITIAL_STATE;
-  scrollRef: React.RefObject<HTMLDivElement>;
   containerRef: React.RefObject<HTMLDivElement>;
   titleRef: React.RefObject<HTMLInputElement>;
-  maskRef: React.RefObject<HTMLDivElement>;
+  scrollRef: React.RefObject<HTMLInputElement>;
   commonElementHeight: number;
 
   constructor(props: PropTypes) {
     super(props);
-    this.scrollRef = React.createRef();
     this.containerRef = React.createRef();
     this.titleRef = React.createRef();
-    this.maskRef = React.createRef();
+    this.scrollRef = React.createRef();
     this.commonElementHeight = 0;
   }
 
@@ -134,12 +126,19 @@ export default class CreateNewMural extends React.Component<
 
     this.setState({ loading: true }, async () => {
       try {
-        const eTemplates = await this.props.apiClient.getTemplatesByWorkspace({
-          workspaceId: this.props.workspace.id,
-        });
+        const eTemplates = await this.props.apiClient.getTemplatesByWorkspace(
+          {
+            workspaceId: this.props.workspace.id,
+          },
+          {
+            paginate: {
+              limit: LIMIT,
+              next: this.state.nextToken,
+            },
+          },
+        );
 
         const templates = [
-          BLANK_TEMPLATE,
           ...Array.from(this.state.templates),
           ...(eTemplates.value || []),
         ];
@@ -201,32 +200,25 @@ export default class CreateNewMural extends React.Component<
     });
   };
 
-  resizeHandler = (event: any) => {
-    this.setState({
-      scrollHeight: event.target.innerHeight ?? INITIAL_STATE.scrollHeight,
-    });
-  };
+  lazyLoadHandler = debounce((event: Event) => {
+    if (!(event.target instanceof Element)) return;
 
-  lazyLoadHandler = (event: any) => {
-    const value = event.target.scrollTop;
-    const total = this.containerRef.current?.clientHeight || 0;
-    const percentage = (value * 100) / total;
-    const treshold = this.state.templates.length >= LIMIT * 2 ? 70 : 45;
+    const { scrollTop, scrollHeight, clientHeight } = event.target;
 
-    if (percentage >= treshold && !this.state.error) {
+    // This computes the ratio of the current scroll bar position
+    // 0 ⇒ top, 1 ⇒ bottom
+    const ratio = scrollTop / (scrollHeight - clientHeight);
+
+    if (!this.state.error && this.state.nextToken && ratio >= THRESHOLD) {
       this.loadTemplates();
     }
-  };
+  }, 50);
 
   componentDidMount() {
     this.loadTemplates();
-    this.resizeHandler({ target: window });
-    this.commonElementHeight = Number(this.maskRef.current?.clientHeight);
-    window.addEventListener('resize', this.resizeHandler);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.resizeHandler);
     this.scrollRef.current?.removeEventListener('scroll', this.lazyLoadHandler);
   }
 
@@ -243,10 +235,6 @@ export default class CreateNewMural extends React.Component<
   };
 
   render() {
-    const headerHeight = this.commonElementHeight;
-    const maskHeight = this.commonElementHeight;
-    const scrollHeight = this.state.scrollHeight - maskHeight - headerHeight;
-
     if (this.state.loading && !this.state.templates.length) {
       return (
         <div className="mural-list-spinner">
@@ -285,106 +273,102 @@ export default class CreateNewMural extends React.Component<
               ))}
             </List>
           </div>
-          <div className="new-mural-items">
-            <div
-              ref={this.scrollRef}
-              className="new-mural-items-scroll"
-              style={{ maxHeight: scrollHeight }}
-            >
-              <div
-                ref={this.containerRef}
-                className="new-mural-items-container"
-              >
-                {this.state.templates.map((template: Template, index) => {
-                  const isSelected = this.state.selected === index;
+          <div ref={this.scrollRef} className="new-mural-items">
+            <div ref={this.containerRef} className="new-mural-items-container">
+              {this.state.templates.map((template: Template, index) => {
+                const isSelected = this.state.selected === index;
+                const isBlank = template.id === DEFAULT_BLANK_TEMPLATE_ID;
 
-                  return (
-                    <div
-                      key={index}
-                      className={classnames('template-item', {
-                        'template-item-selected': isSelected,
-                      })}
+                return (
+                  <div
+                    key={index}
+                    className={classnames('template-item', {
+                      'template-item-selected': isSelected,
+                    })}
+                  >
+                    <RippleEffect
+                      className="template-item-sfx"
+                      onClick={() => this.onSelectTemplate(index)}
                     >
-                      <RippleEffect
-                        className="template-item-sfx"
-                        onClick={() => this.onSelectTemplate(index)}
-                      >
-                        <div className="template-item-img-container">
-                          {template.id !== DEFAULT_BLANK_TEMPLATE_ID && (
-                            <img
-                              className="template-item-img"
-                              src={template.thumbUrl}
-                              alt="thumbnail"
-                            />
-                          )}
+                      <div className="template-item-img-container">
+                        {!isBlank && (
+                          <img
+                            className="template-item-img"
+                            src={template.thumbUrl}
+                            alt="thumbnail"
+                          />
+                        )}
+                      </div>
+                      <div className={'template-item-typography-container'}>
+                        <div className="template-item-typography-title">
+                          {template.name}
                         </div>
-                        <div
-                          className={classnames(
-                            'template-item-typography-container',
-                            {
-                              blank: template.id === DEFAULT_BLANK_TEMPLATE_ID,
-                            },
-                          )}
-                        >
-                          <div className="template-item-typography-title">
-                            {template.name}
-                          </div>
-                          {/* TODO: property 'createdBy' is missing in 'Template' interface */}
-                          <div className="template-item-typography-subtitle">
-                            {(template as any).createdBy} Template
-                          </div>
-                          <div className="template-item-typography-desc">
-                            {template.description}
-                          </div>
+                        {/* TODO: property 'createdBy' is missing in 'Template' interface */}
+                        <div className="template-item-typography-subtitle">
+                          {isBlank
+                            ? ''
+                            : `${this.props.workspace.name} Template`}
                         </div>
-                      </RippleEffect>
-                    </div>
-                  );
-                })}
-              </div>
+                      </div>
+                    </RippleEffect>
+                  </div>
+                );
+              })}
+              {
+                /* LOAD MORE */
+                this.state.nextToken && (
+                  <div key="_next" className="template-item">
+                    <RippleEffect
+                      className="template-item-sfx template-item-sfx--button"
+                      onClick={this.loadTemplates}
+                    >
+                      Load more…
+                    </RippleEffect>
+                  </div>
+                )
+              }
             </div>
-            <div className="new-mural-items-mask" ref={this.maskRef} />
           </div>
-
-          <Box className="new-mural-buttons-container">
-            <SecondaryButton
-              className="button"
-              variant="text"
-              onClick={this.props.onCancelAndGoBack}
-            >
-              Cancel & go back
-            </SecondaryButton>
-
-            <Box className="new-mural-create">
-              <TextField
-                className="new-mural-create--input"
-                inputRef={this.titleRef}
-                value={this.state.title}
-                onChange={event =>
-                  this.setState({ error: '', title: event.target.value })
-                }
-                variant="standard"
-                label="Mural title"
-                placeholder="Untitled mural"
-              />
-              <PrimaryButton
-                className="button"
-                onClick={this.createMural}
-                variant="contained"
-                disabled={this.state.btnLoading}
-              >
-                Create Mural{' '}
-                {this.state.btnLoading && (
-                  <CircularProgress
-                    style={{ marginLeft: 10 }}
-                    size={18}
-                    color="inherit"
-                  />
-                )}
-              </PrimaryButton>
-            </Box>
-          </Box>
         </div>
+        <Box className="new-mural-buttons-container">
+          <div className="new-mural-items-mask" />
+          <SecondaryButton
+            className="button"
+            variant="text"
+            onClick={this.props.onCancelAndGoBack}
+          >
+            Cancel & go back
+          </SecondaryButton>
+
+          <Box className="new-mural-create">
+            <TextField
+              className="new-mural-create--input"
+              inputRef={this.titleRef}
+              value={this.state.title}
+              onChange={event =>
+                this.setState({ error: '', title: event.target.value })
+              }
+              variant="standard"
+              label="Mural title"
+              placeholder="Untitled mural"
+            />
+            <PrimaryButton
+              className="button"
+              onClick={this.createMural}
+              variant="contained"
+              disabled={this.state.btnLoading}
+            >
+              Create Mural{' '}
+              {this.state.btnLoading && (
+                <CircularProgress
+                  style={{ marginLeft: 10 }}
+                  size={18}
+                  color="inherit"
+                />
+              )}
+            </PrimaryButton>
+          </Box>
+        </Box>
       </>
     );
   }

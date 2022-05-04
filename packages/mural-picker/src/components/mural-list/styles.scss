@@ -1,13 +1,19 @@
-.mural-selector-container {
-  padding-top: 2em;
-  overflow-y: auto;
+.mural-selector {
+  &-container {
+    padding-top: 2em;
+    overflow-y: auto;
 
-  .subsection-header {
-    font-weight: bold;
-    font-size: 14px;
-    line-height: 14px;
-    color: #606060;
-    margin-bottom: 0.6em;
-    margin-top: 1em;
+    .subsection-header {
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 14px;
+      color: #606060;
+      margin-bottom: 0.6em;
+      margin-top: 1em;
+    }
+
+    .mural-selector-grid {
+      gap: 0.5em;
+    }
   }
 }

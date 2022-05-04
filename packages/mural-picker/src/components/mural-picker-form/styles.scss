@@ -15,7 +15,6 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    column-gap: 0.5em;
     flex-wrap: wrap;
   }
 
@@ -72,10 +71,6 @@
       'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     font-weight: 400;
-  }
-
-  .column-gap {
-    column-gap: 0.5em;
   }
 }
 

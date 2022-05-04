@@ -28,9 +28,10 @@ export interface CanvasParams {
 
 export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
-  authUrl?: URL | string;
-  canvasParams: CanvasParams;
   muralId: string;
+
+  authUrl?: URL | string;
+  canvasParams?: CanvasParams;
   state?: string;
 }
 
@@ -79,7 +80,8 @@ export class CanvasHost extends React.Component<PropTypes> {
     if (state) muralPath += `/${state}`;
 
     const muralUrl = this.props.apiClient.url(muralPath);
-    for (const [key, value] of Object.entries(canvasParams)) {
+
+    for (const [key, value] of Object.entries(canvasParams || {})) {
       if (value) muralUrl.searchParams.set(key, value.toString());
     }
 
