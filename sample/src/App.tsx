@@ -58,23 +58,54 @@ type AppState = {
   segue: Segue;
   muralId: string | null;
   state: string | null;
-  muralUrl: string| null;
+  muralUrl: string | null;
 };
 
-interface RpcCallInfo {
+interface RpcMessage {
+  type: string;
+  rpcid: string;
   method: string;
   args?: string[];
 }
 
-interface RpcMessage {
-  type: string;
-  calls: RpcCallInfo[]
-  rpcid: string;
+interface RpcContext {
+  user: any;
+  participants: any[];
+  facilitators: any[]
 }
 
+interface RpcCallback {
+  type: string;
+  rpcid: string;
+  error?: string;
+  context?: RpcContext;
+}
+
+// simple queue abstraction
+class Queue<T> {
+  constructor() {
+    this.data = new Array<T>();
+  }
+
+  private data: T[];
+
+  //put value on end of queue
+  push(elem: T) {
+    this.data.push(elem);
+  }
+
+  //Take first value from queue
+  pop(): T {
+    return this.data.shift();
+  }
+}
+
+
 class App extends React.Component<{}, AppState> {
-  private canvasEl: React.Ref<Canvas>;
+  private canvasEl: any;
   private rpcContext: any;
+  private rpcQueue: Queue<RpcMessage> = new Queue<RpcMessage>();
+  private outboundRpcs = new Map();
 
   constructor(props) {
     super(props);
@@ -90,72 +121,108 @@ class App extends React.Component<{}, AppState> {
   };
 
   handleMessage = (evt: MessageEvent) => {
-    console.log(evt);
+    console.log('[handleMessage]', evt);
   };
 
-  // make RPC context call with params
-  onRpcReady = () => {
-    this.startRecordingBot();
-  };
+  dispatch = () => {
+    const msg = this.rpcQueue.pop();
 
-  onRpcMessage = (msg) => {
-    console.info(msg);
-  }
-
-  onRpcContext = (context) => {
-    console.log('onRpcContext', context);
-    this.rpcContext = context;
-  };
-
-  sendMessageToCanvas = (msg: RpcMessage) => {
-    const canvasMessageReceiver = this.canvasEl?.current?.contentWindow;
-    if (canvasMessageReceiver) {
-      const targetOrigin = `https://${SERVICES.mural}`;
-      canvasMessageReceiver.postMessage(msg, targetOrigin)
+    if (msg) {
+      // send the message through the canvas
+      const canvasMessageReceiver = this.canvasEl?.current?.contentWindow;
+      if (canvasMessageReceiver) {
+        const targetOrigin = `https://${SERVICES.mural}`;
+        canvasMessageReceiver.postMessage(msg, targetOrigin)
+      }
     }
   }
 
-  startRecordingBot = () => {
-    const rpcMessageType = 'mural.integration.rpc';
+  sendMessageToCanvas = (msg: RpcMessage) => {
+    // push the message on the queue to preserve call ordering
+    this.rpcQueue.push(msg);
 
-    console.log('startRecordingBot', this.rpcContext);
+    const uponRpc = new Promise((resolve, reject) => {
+      // we could potentially have a `timeout` here to automatically reject
+      // stale RPCs after a while
+
+      // index the message per RPC id
+      this.outboundRpcs[msg.rpcid] = [resolve, reject];
+    });
+
+    // send the message
+    this.dispatch();
+
+    return uponRpc;
+  }
+
+  startRecordingBot = () => {
+    console.log('[startRecordingBot] initial context:', this.rpcContext);
 
     const visitorId = this.rpcContext?.user?.visitorId;
     if (!visitorId) {
-      console.log('I am not a visitor');
+      console.log('[startRecordingBot] I am not a visitor');
       return;
     }
 
     this.sendMessageToCanvas({
-      type: rpcMessageType,
+      type: 'mural.rpc_message',
       rpcid: uuid(),
-      calls: [
-        {
-          method: 'dispatcher.participants.update.visitor',
-          args: [visitorId, {
-            name: 'Recording Bot',
-            avatar: 'https://cdn.icon-icons.com/icons2/1371/PNG/512/robot02_90810.png',
-            color: '#FF0000'
-          }]
-        },
-        // { method: 'remote.send.visitor.data' },
-        { method: 'modal.close', args: ['visitor-modal'] }
-      ]
-    });
-
-
-    if (this.rpcContext.facilitators && this.rpcContext.facilitators.length > 0) {
-      const facilitatorUserName = this.rpcContext.facilitators[0].username;
+      method: 'dispatcher.participants.update.visitor',
+      args: [visitorId, {
+        name: 'Recording Bot',
+        avatar: 'https://cdn.icon-icons.com/icons2/1371/PNG/512/robot02_90810.png',
+        color: '#FF0000'
+      }]
+    }).then(() => {
+      console.log('promise resolved')
       this.sendMessageToCanvas({
-        type: rpcMessageType,
+        type: 'mural.rpc_message',
         rpcid: uuid(),
-        calls: [
-          {
+        method: 'modal.close',
+        args: ['visitor-modal']
+
+      }).then(() => {
+        if (this.rpcContext.facilitators && this.rpcContext.facilitators.length > 0) {
+          const facilitatorUserName = this.rpcContext.facilitators[0].username;
+          this.sendMessageToCanvas({
+            type: 'mural.rpc_message',
+            rpcid: uuid(),
             method: 'dispatcher.facilitation.asParticipant.followParticipant',
             args: [facilitatorUserName],
-          }
-        ]
-      });
+          });
+        }
+      })
+    })
+  }
+
+  // this is first incoming message - make RPC context call with params
+  onRpcReady = () => {
+  };
+
+  onRpcCallback = (data: any) => {
+    const msg: RpcCallback = data;
+    console.info(msg);
+
+    if (!this.outboundRpcs.has(msg.rpcid)) {
+      console.warn(`Ignoring non-originating RPC ${msg.rpcid}`);
+    }
+
+    if (msg.context) {
+      this.rpcContext = msg.context;
+    }
+
+    if (msg.rpcid) {
+      // figure out if we have an error of a success
+      if (!msg.error) {
+        this.outboundRpcs[msg.rpcid][0](msg);
+      } else {
+        console.log('App received rpc error', msg.error);
+        this.outboundRpcs[msg.rpcid][1](msg);
+      }
+      // dispatch the next RPC in the queue
+      this.dispatch();
+    } else {
+      this.startRecordingBot();
     }
   }
 
@@ -239,9 +306,7 @@ class App extends React.Component<{}, AppState> {
             onError={() => alert('ERROR')}
             onMessage={this.handleMessage}
             onReady={() => console.log('READY')}
-            onRpcReady={this.onRpcReady}
-            onRpcContext={this.onRpcContext}
-            onRpcMessage={this.onRpcMessage}
+            onRpcCallback={this.onRpcCallback}
             muralUrl={this.state.muralUrl}
             iframeRef={this.canvasEl}
           />

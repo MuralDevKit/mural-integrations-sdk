@@ -11,9 +11,7 @@ interface CanvasEvents {
   onMuralUnavailable?: EventHandler;
   onError?: EventHandler;
   onReady?: EventHandler;
-  onRpcReady?: EventHandler;
-  onRpcContext?: EventHandler;
-  onRpcMessage?: EventHandler;
+  onRpcCallback?: EventHandler;
 }
 
 const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
@@ -23,9 +21,7 @@ const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
   'mural.mural_unavailable': 'onMuralUnavailable',
   'mural.error': 'onError',
   'mural.ready': 'onReady',
-  'mural.rpc_ready': 'onRpcReady',
-  'mural.rpc_context': 'onRpcContext',
-  'mural.rpc_message': 'onRpcMessage',
+  'mural.rpc_callback': 'onRpcCallback',
 };
 
 export interface CanvasParams {
@@ -66,7 +62,7 @@ export class CanvasHost extends React.Component<PropTypes> {
     const eventHandler = this.props[eventHandlerKey] as EventHandler;
 
     if (eventHandler) {
-      await eventHandler.call(null, evt.data.payload ?? null);
+      await eventHandler.call(null, evt.data ?? null);
     }
 
     if (this.props.onMessage) {
