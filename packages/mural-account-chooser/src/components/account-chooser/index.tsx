@@ -174,8 +174,6 @@ export default class AccountChooser extends React.Component<
   render() {
     const { activeSession, hint, theme, visitor } = this.props;
     const { hintEmailSignIn, hintEmailSignUp, isLoading } = this.state;
-    console.log({activeSession, hint, theme, visitor})
-    console.log({hintEmailSignIn, hintEmailSignUp, isLoading})
 
     if (isLoading) {
       return <CircularProgress />;
