@@ -50,7 +50,7 @@ interface StateTypes {
   isLoading: boolean;
 }
 
-enum ACCOUNT_CHOOSER_ACTION {
+export enum ACCOUNT_CHOOSER_ACTION {
  SIGN_IN = 'SIGN_IN',
  SIGN_UP = 'SIGN_UP',
  NEW_ACCOUNT = 'NEW_ACCOUNT',
