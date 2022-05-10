@@ -337,7 +337,7 @@ export default class CreateNewMural extends React.Component<
             variant="text"
             onClick={this.props.onCancelAndGoBack}
           >
-            Cancel & go back
+            Cancel<span className="content--lg">&nbsp;& go back</span>
           </SecondaryButton>
 
           <Box className="new-mural-create">
@@ -358,7 +358,7 @@ export default class CreateNewMural extends React.Component<
               variant="contained"
               disabled={this.state.btnLoading}
             >
-              Create Mural{' '}
+              Create<span className="content--lg">&nbsp;Mural</span>{' '}
               {this.state.btnLoading && (
                 <CircularProgress
                   style={{ marginLeft: 10 }}
