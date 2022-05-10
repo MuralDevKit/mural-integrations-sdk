@@ -31,7 +31,7 @@ export interface AccountChooserPropTypes {
   getAuthUrl: (options?: AuthorizeParams) => Promise<string>;
   hint?: string;
   onError: (e: Error) => void;
-  onSelection: (url: string) => void;
+  onSelection: (url: string, action?: ACCOUNT_CHOOSER_ACTION) => void;
   silent?: boolean;
   theme?: 'light' | 'dark';
   visitor?: { onSelect: () => void };
@@ -48,6 +48,13 @@ interface StateTypes {
     requireConsent?: boolean;
   };
   isLoading: boolean;
+}
+
+export enum ACCOUNT_CHOOSER_ACTION {
+ SIGN_IN = 'SIGN_IN',
+ SIGN_UP = 'SIGN_UP',
+ NEW_ACCOUNT = 'NEW_ACCOUNT',
+ ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
 }
 
 export default class AccountChooser extends React.Component<
@@ -119,8 +126,8 @@ export default class AccountChooser extends React.Component<
     return this.useAnotherAccount();
   };
 
-  onSelection = (url: string) => {
-    this.props.onSelection(url);
+  onSelection = (url: string, action?: ACCOUNT_CHOOSER_ACTION) => {
+    this.props.onSelection(url, action);
   };
 
   hintEmailSignIn = async () =>
@@ -131,6 +138,7 @@ export default class AccountChooser extends React.Component<
           email: this.props.hint!,
         },
       }),
+      ACCOUNT_CHOOSER_ACTION.SIGN_IN,
     );
 
   hintEmailSignUp = async () =>
@@ -142,6 +150,7 @@ export default class AccountChooser extends React.Component<
           email: this.props.hint!,
         },
       }),
+      ACCOUNT_CHOOSER_ACTION.SIGN_UP,
     );
 
   hintSsoSignUp = async () =>
@@ -153,13 +162,14 @@ export default class AccountChooser extends React.Component<
           email: this.props.hint!,
         },
       }),
+      ACCOUNT_CHOOSER_ACTION.SIGN_UP,
     );
 
   useAnotherAccount = async () =>
-    this.onSelection(await this.props.getAuthUrl());
+    this.onSelection(await this.props.getAuthUrl(), ACCOUNT_CHOOSER_ACTION.ANOTHER_ACCOUNT);
 
   createNewAccount = async () =>
-    this.onSelection(await this.props.getAuthUrl({ signup: true }));
+    this.onSelection(await this.props.getAuthUrl({ signup: true }), ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT);
 
   render() {
     const { activeSession, hint, theme, visitor } = this.props;

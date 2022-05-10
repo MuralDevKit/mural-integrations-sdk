@@ -1,3 +1,3 @@
-import AccountChooser from './components/account-chooser';
+import AccountChooser, { ACCOUNT_CHOOSER_ACTION } from './components/account-chooser';
 
-export { AccountChooser };
+export { AccountChooser, ACCOUNT_CHOOSER_ACTION };
