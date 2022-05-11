@@ -36,6 +36,10 @@ class Queue<T> {
   pop(): T | undefined {
     return this.data.shift();
   }
+
+  clear() {
+    this.data = new Array<T>();
+  }
 }
 
 export type RpcConfig = {
@@ -179,5 +183,15 @@ export default class RpcClient extends EventEmitter {
 
   get context() {
     return this.rpcContext;
+  }
+
+  dispose() {
+    if (!this.config) return;
+
+    this.rpcQueue.clear();
+    this.outboundRpcs.forEach(([_, reject]) => reject('RPC client disposed'));
+    this.outboundRpcs.clear();
+
+    this.config.source.removeEventListener('message', this.recv);
   }
 }

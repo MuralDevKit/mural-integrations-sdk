@@ -83,8 +83,17 @@ export class CanvasHost extends React.Component<PropTypes> {
       });
     }
 
-    // Wire the other events
     window.addEventListener('message', this.handleMessage);
+  }
+
+  componentDidUnmoun() {
+    const { rpcClient } = this.props;
+
+    if (rpcClient) {
+      rpcClient.dispose();
+    }
+
+    window.removeEventListener('message', this.handleMessage);
   }
 
   render() {
