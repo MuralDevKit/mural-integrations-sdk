@@ -7,7 +7,7 @@ import styles from 'rollup-plugin-styles';
 import commonjs from '@rollup/plugin-commonjs';
 
 const truthy = value => {
-  ['t', 'true', '1', 'on', 'yes', 'y'].includes(value.toString().toLower());
+  ['t', 'true', '1', 'on', 'yes', 'y'].includes(value.toString().toLowerCase());
 };
 
 const DEBUG = truthy(process.env.DEBUG || false);
