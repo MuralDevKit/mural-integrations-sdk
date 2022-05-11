@@ -35,7 +35,8 @@
     "@material-ui/lab": "4.0.0-alpha.58",
     "@muraldevkit/mural-integrations-common": "^2.0.0-alpha.0",
     "@muraldevkit/mural-integrations-mural-client": "^2.0.0-alpha.0",
-    "classnames": "^2.3.1"
+    "classnames": "^2.3.1",
+    "uuid": "^8.3.2"
   },
   "peerDependencies": {
     "moment": "=>2.29.1",
@@ -49,6 +50,7 @@
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@types/react": "16.9.43",
     "@types/react-dom": "16.9.8",
+    "@types/uuid": "^8.3.4",
     "moment": "^2.29.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",

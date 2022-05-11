@@ -1,6 +1,7 @@
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { EventHandler } from '../../types';
+import RpcClient from '../../rpc';
 import './styles.scss';
 
 interface CanvasEvents {
@@ -11,7 +12,6 @@ interface CanvasEvents {
   onMuralUnavailable?: EventHandler;
   onError?: EventHandler;
   onReady?: EventHandler;
-  onRpcCallback?: EventHandler;
 }
 
 const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
@@ -21,7 +21,6 @@ const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
   'mural.mural_unavailable': 'onMuralUnavailable',
   'mural.error': 'onError',
   'mural.ready': 'onReady',
-  'mural.rpc_callback': 'onRpcCallback',
 };
 
 export interface CanvasParams {
@@ -30,12 +29,14 @@ export interface CanvasParams {
 
 export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
-  authUrl?: URL | string;
   canvasParams: CanvasParams;
   muralId: string;
   muralUrl: string;
+  iframeRef: React.Ref<HTMLIFrameElement>;
+
+  authUrl?: URL | string;
   state?: string;
-  iframeRef: any;
+  rpcClient?: RpcClient;
 }
 
 export function muralSessionActivationUrl(
@@ -57,6 +58,8 @@ export function muralSessionActivationUrl(
 }
 
 export class CanvasHost extends React.Component<PropTypes> {
+  private iframeRef = React.createRef<HTMLIFrameElement>();
+
   handleMessage = async (evt: MessageEvent) => {
     const eventHandlerKey = MESSAGE_EVENT[evt.data.type];
     const eventHandler = this.props[eventHandlerKey] as EventHandler;
@@ -71,6 +74,16 @@ export class CanvasHost extends React.Component<PropTypes> {
   };
 
   componentDidMount() {
+    const { rpcClient } = this.props;
+
+    if (rpcClient) {
+      rpcClient.init({
+        source: window,
+        target: this.iframeRef?.current?.contentWindow as any,
+      });
+    }
+
+    // Wire the other events
     window.addEventListener('message', this.handleMessage);
   }
 
@@ -82,12 +95,10 @@ export class CanvasHost extends React.Component<PropTypes> {
         ? muralSessionActivationUrl(apiClient, authUrl, muralUrl)
         : muralUrl;
 
-    const { iframeRef } = this.props;
-
     return (
       <iframe
         data-qa="mural-canvas"
-        ref={iframeRef}
+        ref={this.iframeRef}
         className="mural-canvas"
         src={canvasUrl}
         seamless
