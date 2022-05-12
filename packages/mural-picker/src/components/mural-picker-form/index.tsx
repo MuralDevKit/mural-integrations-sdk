@@ -247,6 +247,7 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
           </div>
           <Button
             className="mural-select-button"
+            data-qa="mural-select-button"
             disabled={!this.state.mural}
             onClick={this.onMuralSelect}
             color="secondary"
