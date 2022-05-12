@@ -28,7 +28,7 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "start:server": "ts-node -O '{ \"module\": \"commonjs\" }' --files server.ts",
+    "start:server": "NODE_TLS_REJECT_UNAUTHORIZED='0' ts-node -O '{ \"module\": \"commonjs\" }' --files server.ts",
     "start:client": "craco start"
   },
   "eslintConfig": {

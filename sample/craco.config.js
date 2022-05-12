@@ -16,6 +16,9 @@ module.exports = {
     ]
   },
   devServer: {
+    port: config.client.port,
+    host: config.client.host,
+    https: config.client.https ?? false,
     before: (app, server, compiler) => {
       app.get("/", (_, res) => {
         res.redirect("/auth");

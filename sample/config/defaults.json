@@ -1,25 +1,37 @@
 {
   "appName": "",
-  "serverPort": 4001,
-  "endpoints": {
-		"server": "http://localhost:4001",
-    "webapp": "https://app.mural.co"
-	},
-	"services": {
-	  "auth": "localhost:4001",
-		"mural": "app.mural.co"
-	},
+  "server": {
+    "host": "<api-endpoint-host>",
+    "port": 5005,
+    "_https": {
+      "_comment": "rename _https to http and provide path to key and cert for https",
+      "cert": "<path-to-certificate>",
+      "key": "<path-to-certificate-key>"
+    }
+  },
+  "client": {
+    "host": "<client-endpoint-host>",
+    "port": 2022,
+    "_https": {
+      "_comment": "rename _https to http and provide path to key and cert for https",
+      "cert": "<path-to-certificate>",
+      "key": "<path-to-certificate-key>"
+    }
+  },
+  "services": {
+    "auth": { "host": "<api-endpoint-host>:5005", "secure": true },
+    "mural": { "host": "<mural host e.g. app.mural.co or canvas-integration.mural.engineering>", "secure": true }
+  },
   "clientApp": {
-    "clientId": "",
-    "clientSecret": "",
-    "redirectUri": "http://localhost:4002/auth/callback",
+    "clientId": "<client-id>",
+    "clientSecret": "<client-secret>",
+    "redirectUri": "https://<client-endpoint-host>:2022/auth/callback",
     "scopes": [
       "murals:read",
       "murals:write",
       "rooms:read",
       "workspaces:read",
-      "identity:read",
-			"restricted:login"
+      "identity:read"
     ]
   }
 }

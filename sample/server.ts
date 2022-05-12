@@ -4,14 +4,17 @@ import { Request, Response } from "express";
 import createApp from "async-app";
 import app from "./lib/base-app";
 import { authorize, accessToken, refreshToken } from "./lib/oauth";
+import * as https from "https";
+import * as fs from "fs";
 
 console.debug("==== ENV ====\n", process.env);
 
+const protocol = config.services.mural.secure ? 'https' : 'http';
 const configProvider = () => {
   const cfg = {
-    authorizationUri: `https://${config.services.mural}/api/public/v1/authorization/oauth2/`,
-    accessTokenUri: `https://${config.services.mural}/api/public/v1/authorization/oauth2/token`,
-    refreshTokenUri: `https://${config.services.mural}/api/public/v1/authorization/oauth2/refresh`,
+    authorizationUri: `${protocol}://${config.services.mural.host}/api/public/v1/authorization/oauth2/`,
+    accessTokenUri: `${protocol}://${config.services.mural.host}/api/public/v1/authorization/oauth2/token`,
+    refreshTokenUri: `${protocol}://${config.services.mural.host}/api/public/v1/authorization/oauth2/refresh`,
     ...config.clientApp
   };
 
@@ -69,12 +72,27 @@ auth.post(
   }
 );
 
-app.get("/", (_, res) => res.send("Hello world!"));
+app.get("/", (_, res) => res.send("MURAL Integrations SDK - Sample App"));
 app.use("/auth", auth);
 
-app.listen(config.serverPort, () => {
-  console.log(`Example app listening at http://localhost:${config.serverPort}`);
-  console.log(`Targeting app: ${config.services.mural}`);
+function printUsage() {
+  console.log(
+    `Example app listening at ${config.server.https ? 'https' : 'http'}://${
+      config.server.host
+    }:${config.server.port}`,
+  );
+  console.log(`Targeting app: ${config.services.mural.host}`);
 
   console.debug("==== CONFIG ====\n", config);
-});
+}
+
+if (config.server.https) {
+  const options = {
+    key: fs.readFileSync(__dirname + '/' + config.server.https.key),
+    cert: fs.readFileSync(__dirname + '/' + config.server.https.cert),
+  };
+  var server = https.createServer(options, app);
+  server.listen(config.server.port, () => printUsage());
+} else {
+  app.listen(config.server.port, () => printUsage());
+}

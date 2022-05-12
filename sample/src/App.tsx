@@ -25,10 +25,11 @@ console.log(APP_ID);
 console.log(SERVICES);
 
 // --- Configuration ---
+const protocol = SERVICES.auth.secure ? 'https' : 'http';
 const tokenHandlerConfig = {
-  authorizeUri: new URL('/auth', `https://${SERVICES.auth}`).href,
-  requestTokenUri: new URL('/auth/token', `https://${SERVICES.auth}`).href,
-  refreshTokenUri: new URL('/auth/refresh', `https://${SERVICES.auth}`).href,
+  authorizeUri: new URL('/auth', `${protocol}://${SERVICES.auth.host}`).href,
+  requestTokenUri: new URL('/auth/token', `${protocol}://${SERVICES.auth.host}`).href,
+  refreshTokenUri: new URL('/auth/refresh', `${protocol}://${SERVICES.auth.host}`).href,
 };
 
 const authorize = authorizeHandler(tokenHandlerConfig);
@@ -38,7 +39,7 @@ const refreshToken = refreshTokenHandler(tokenHandlerConfig);
 // --- MURAL API client ---
 const clientConfig = buildClientConfig({
   appId: APP_ID,
-  muralHost: SERVICES.mural,
+  muralHost: SERVICES.mural.host,
   ...tokenHandlerConfig,
 });
 
@@ -183,8 +184,6 @@ class App extends React.Component<{}, AppState> {
       onMuralSelect: this.handleMural,
       handleError: handleError,
     };
-
-    const authUrl = new URL('/session', window.origin);
 
     switch (this.state.segue) {
       case Segue.LOADING: {

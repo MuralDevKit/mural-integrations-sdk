@@ -8,7 +8,7 @@ declare module "dos-config" {
     auth: string;
     mural: string;
   }
-  
+
   export interface ClientAppConfig {
     clientId: string;
     clientSecret: string;
@@ -20,12 +20,27 @@ declare module "dos-config" {
     refreshTokenUri?: string;
   }
 
+  interface HostConfig {
+    host: string;
+    secure: boolean;
+  }
+
+  interface EndpointConfig {
+    host: string;
+    port: number;
+    https?: {
+      cert: string,
+      key: string
+    }
+  }
+
   interface Config {
     appName: string;
-    serverPort: number;
+    server: EndpointConfig,
+    client: EndpointConfig,
     services: {
-      auth: string;
-      mural: string;
+      auth: HostConfig;
+      mural: HostConfig;
     };
     clientApp: ClientAppConfig;
   }
