@@ -20,12 +20,12 @@ declare module "dos-config" {
     refreshTokenUri?: string;
   }
 
-  interface HostConfig {
+  interface EndpointConfig {
     host: string;
     secure: boolean;
   }
 
-  interface EndpointConfig {
+  interface ServerConfig {
     host: string;
     port: number;
     https?: {
@@ -36,11 +36,11 @@ declare module "dos-config" {
 
   interface Config {
     appName: string;
-    server: EndpointConfig,
-    client: EndpointConfig,
+    server: ServerConfig,
+    client: ServerConfig,
     services: {
-      auth: HostConfig;
-      mural: HostConfig;
+      auth: EndpointConfig;
+      mural: EndpointConfig;
     };
     clientApp: ClientAppConfig;
   }
