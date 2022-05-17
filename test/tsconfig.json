@@ -1,0 +1,21 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "../out/",
+    "declarationDir": "../dist"
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx"
+  ],
+  "paths": {
+    "@muraldevkit/mural-integrations-mural-picker": "../packages/mural-picker",
+    "@muraldevkit/mural-integrations-mural-client": "../packages/mural-client",
+    "@muraldevkit/mural-integrations-mural-account-chooser": "../packages/mural-account-chooser",
+    "@muraldevkit/mural-integrations-mural-canvas": "../packages/mural-canvas"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

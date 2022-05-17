@@ -10,6 +10,10 @@
   },
   "name": "@muraldevkit/mural-integrations-sdk",
   "scripts": {
-    "lint": "eslint --ext ts,tsx,js --fix packages/"
+    "lint": "eslint --ext ts,tsx,js --fix packages/ test/"
+  },
+  "dependencies": {
+    "runtime": "file:runtimes/current",
+    "typescript": "4.6.4"
   }
 }
