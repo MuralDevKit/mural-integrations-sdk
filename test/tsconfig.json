@@ -8,7 +8,7 @@
   "paths": {
     "react": ["node_modules/react"],
     "react-dom": ["node_modules/react-dom"],
-    "@material-ui/core": ["node_modules/@material-ui/core"]
+    "@muraldevkit/mural-integrations-mural-picker": ["../packages/mural-picker/src"],
   },
   "include": [
     "./**/*.ts",

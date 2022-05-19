@@ -30,20 +30,18 @@
   },
   "homepage": "https://github.com/tactivos/mural-integrations-sdk/tree/packages/mural-picker",
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.11.0",
+    "@material-ui/lab": "4.0.0-alpha.58",
     "@muraldevkit/mural-integrations-common": "^2.0.0-alpha.0",
-    "@muraldevkit/mural-integrations-mural-client": "^2.0.1-alpha.0"
+    "@muraldevkit/mural-integrations-mural-client": "^2.0.1-alpha.0",
+    "moment": "^2.29.1"
   },
   "peerDependencies": {
-    "moment": "=>2.29.1",
     "react": ">=16.13.0",
-    "react-dom": ">=16.13.0",
-    "@material-ui/core": ">=4.11.0",
-    "@material-ui/icons": ">=4.11.0"
+    "react-dom": ">=16.13.0"
   },
   "devDependencies": {
-    "@material-ui/core": "4.11.4",
-    "@material-ui/icons": "4.11.2",
-    "@material-ui/lab": "4.0.0-alpha.58",
     "@rollup/plugin-commonjs": "^19.0.2",
     "@rollup/plugin-image": "^2.1.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
@@ -52,9 +50,6 @@
     "@types/react-dom": "16.9.8",
     "classnames": "^2.3.1",
     "lodash": "^4.17.21",
-    "moment": "^2.29.1",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
     "rollup": "^2.54.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.0",
