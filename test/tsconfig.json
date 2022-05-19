@@ -1,0 +1,20 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "../out/",
+    "declarationDir": "../dist"
+  },
+  "paths": {
+    "react": ["node_modules/react"],
+    "react-dom": ["node_modules/react-dom"],
+    "@material-ui/core": ["node_modules/@material-ui/core"]
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx"
+  ],
+  "exclude": [
+    "../node_modules"
+  ]
+}

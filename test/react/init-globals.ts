@@ -7,7 +7,7 @@ globalThis.localStorage = createFakeStorage(fakeLocalStorage);
 globalThis.sessionStorage = createFakeStorage(fakeSessionStorage);
 globalThis.crypto = {
   getRandomValues: <T>(_: T) => {
-    return ('123456' as any) as T;
+    return '123456' as any as T;
   },
 } as Crypto;
 globalThis.cancelAnimationFrame = () => {};
