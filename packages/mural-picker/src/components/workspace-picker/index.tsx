@@ -51,17 +51,19 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
 
   loadWorkspaces = async () => {
     this.setState({ isLoading: true });
-    try {
-      const workspaces = await this.props.apiClient.getWorkspaces();
-      if (workspaces?.length) {
-        let workspace;
-        if (this.props.initialWorkspaceId) {
-          workspace = workspaces.find(
-            w => w.id === this.props.initialWorkspaceId,
-          );
-        }
 
-        this.setState({ workspace, workspaces, isLoading: false });
+    try {
+      const eWorkspaces = await this.props.apiClient.getWorkspaces();
+      if (eWorkspaces.value.length) {
+        const workspace =
+          eWorkspaces.value.find(w => w.id === this.props.initialWorkspaceId) ||
+          eWorkspaces.value[0];
+
+        this.setState({
+          workspace,
+          workspaces: eWorkspaces.value,
+          isLoading: false,
+        });
       }
     } catch (e: any) {
       this.handleError(e, 'Error retrieving workspaces.');

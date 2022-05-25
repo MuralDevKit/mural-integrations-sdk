@@ -1,5 +1,5 @@
-import * as React from 'react';
 import Alert from '@material-ui/lab/Alert';
+import * as React from 'react';
 
 export interface PropTypes {
   error: string;
