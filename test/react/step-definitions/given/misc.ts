@@ -58,7 +58,6 @@ export default function registerGiven({
     });
   });
 
-  console.log('REGISTER');
   // USAGE:
   //
   // Given user principal name is test@email.com

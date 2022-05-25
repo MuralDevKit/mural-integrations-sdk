@@ -8,14 +8,14 @@ export const ROUTES = {
   ME: `glob:*/api/public/v1/users/me`,
   MURAL: `glob:*/api/public/v1/murals/*`,
   MURALLY_OAUTH_SESSION: `glob:*/api/v0/authenticate/oauth2/session/*`,
-  MURALS: `glob:*/api/public/v1/murals`,
-  ROOMS_MURALS: `glob:*/api/public/v1/rooms/*/murals`,
-  WORKSPACES: `glob:*/api/public/v1/workspaces`,
-  WORKSPACES_MURALS: `glob:*/api/public/v1/workspaces/*/murals`,
-  WORKSPACES_ROOMS: `glob:*/api/public/v1/workspaces/*/rooms`,
-  WORKSPACES_TEMPLATES: `glob:*/api/public/v1/workspaces/*/templates`,
-  TEMPLATES: 'glob:*/api/public/v1/templates',
-  TEMPLATES_MURALS: 'glob:*/api/public/v1/templates/*/murals',
+  MURALS: `glob:*/api/public/v1/murals*`,
+  ROOMS_MURALS: `glob:*/api/public/v1/rooms/*/murals*`,
+  WORKSPACES: `glob:*/api/public/v1/workspaces*`,
+  WORKSPACES_MURALS: `glob:*/api/public/v1/workspaces/*/murals*`,
+  WORKSPACES_ROOMS: `glob:*/api/public/v1/workspaces/*/rooms*`,
+  WORKSPACES_TEMPLATES: `glob:*/api/public/v1/workspaces/*/templates*`,
+  TEMPLATES: 'glob:*/api/public/v1/templates*',
+  TEMPLATES_MURALS: 'glob:*/api/public/v1/templates/*/murals*',
   SEARCH_ROOMS: `glob:*/api/public/v1/search/*/rooms*`,
 
   // Internal API
@@ -37,30 +37,37 @@ export const registerGlobalRoutes = () => {
   fetchMock.get(ROUTES.WORKSPACES_MURALS, async (url: string) => {
     const workspaceId = new URL(url).pathname.split('/')[5];
     const murals = await muralApiEntities.mural.findAllBy({ workspaceId });
+
     return { value: murals };
   });
 
   fetchMock.get(ROUTES.WORKSPACES_ROOMS, async (url: string) => {
     const workspaceId = new URL(url).pathname.split('/')[5];
     const rooms = await muralApiEntities.room.findAllBy({ workspaceId });
+
     return { value: rooms };
   });
 
   fetchMock.get(ROUTES.WORKSPACES_TEMPLATES, async (url: string) => {
     const workspaceId = new URL(url).pathname.split('/')[5];
-    const rooms = await muralApiEntities.template.findAllBy({ workspaceId });
-    return { value: rooms };
+    const templates = await muralApiEntities.template.findAllBy({
+      workspaceId,
+    });
+
+    return { value: templates };
   });
 
   fetchMock.get(ROUTES.ROOMS_MURALS, async (url: string) => {
     const roomId = new URL(url).pathname.split('/')[5];
     const murals = await muralApiEntities.mural.findAllBy({ roomId });
+
     return { value: murals };
   });
 
   fetchMock.get(ROUTES.MURAL, async (url: string) => {
     const muralId = new URL(url).pathname.split('/')[5];
     const mural = await muralApiEntities.mural.findBy({ id: muralId });
+
     return { value: mural };
   });
 

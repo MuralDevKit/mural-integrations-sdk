@@ -2,7 +2,7 @@ import { Mural } from '@muraldevkit/mural-integrations-mural-client';
 import {
   CreateMuralData,
   CreateMuralResult,
-  MuralPickerModal,
+  MuralPicker,
 } from '@muraldevkit/mural-integrations-mural-picker';
 import * as React from 'react';
 import { apiClient } from '../helpers/apiClient';
@@ -11,7 +11,7 @@ import { Page } from './types';
 const muralPicker: Page = {
   element: () => {
     return (
-      <MuralPickerModal
+      <MuralPicker
         apiClient={apiClient}
         onCreateMural={async (
           _: CreateMuralData,
@@ -25,8 +25,6 @@ const muralPicker: Page = {
     );
   },
   items: {
-    'choose mural button': 'choose-mural-button',
-    'mural picker modal': 'mural-picker-modal',
     'mural title': 'mural-title',
     'room select': 'room-select',
     'workspace select': 'workspace-select',

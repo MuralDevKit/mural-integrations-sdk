@@ -14,10 +14,7 @@ Feature: mural picker
     And a mural M4 with { "title": "mural4", "roomId": "${R3.id}", "workspaceId": "${W2.id}" }
     # Opening mural picker modal
     And I visit the "mural picker" route
-    And I click on [choose mural button]
-
-  Scenario: clicking on choose mural button open the modal
-    Then [mural picker modal] is shown
+    And the route has finished loading
 
   Scenario: the first workspace is selected by default and murals are shown
     Then the [mural title] at index 0 content is "${M1.title}"

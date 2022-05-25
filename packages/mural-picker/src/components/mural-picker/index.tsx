@@ -95,6 +95,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
     } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_WORKSPACES);
     }
+
     this.setState({ isLoading: false });
   }
 
@@ -111,11 +112,11 @@ export default class MuralPicker extends React.Component<PropTypes> {
     });
   };
 
-  onWorkspaceSelect = async (
+  onWorkspaceSelect = (
     _: React.ChangeEvent<{}>,
     workspace: Workspace | null,
   ) => {
-    await this.loadMuralsAndRoomsByWorkspace(workspace);
+    this.loadMuralsAndRoomsByWorkspace(workspace);
   };
 
   loadMuralsAndRoomsByWorkspace = async (workspace: Workspace | null) => {
@@ -137,6 +138,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
       const q = {
         workspaceId: workspace.id,
       };
+
       const [uponRooms, uponMurals] = await Promise.all([
         this.props.apiClient.getRoomsByWorkspace(q),
         this.props.apiClient.getMuralsByWorkspace(q),
@@ -155,6 +157,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
         room: null,
       });
     } catch (e: any) {
+      console.error(e);
       this.setState({ isLoading: false });
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_ROOM_AND_MURALS);
     }
