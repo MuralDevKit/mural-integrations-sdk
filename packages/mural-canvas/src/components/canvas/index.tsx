@@ -1,6 +1,7 @@
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { EventHandler } from '../../types';
+import RpcClient from '../../rpc';
 import './styles.scss';
 
 interface CanvasEvents {
@@ -28,11 +29,13 @@ export interface CanvasParams {
 
 export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
-  muralId: string;
-
-  authUrl?: URL | string;
   canvasParams?: CanvasParams;
+  muralId: string;
+  muralUrl: string;
+  iframeRef: React.Ref<HTMLIFrameElement>;
+  authUrl?: URL | string;
   state?: string;
+  rpcClient?: RpcClient;
 }
 
 export function muralSessionActivationUrl(
@@ -54,12 +57,14 @@ export function muralSessionActivationUrl(
 }
 
 export class CanvasHost extends React.Component<PropTypes> {
+  private iframeRef = React.createRef<HTMLIFrameElement>();
+
   handleMessage = async (evt: MessageEvent) => {
     const eventHandlerKey = MESSAGE_EVENT[evt.data.type];
     const eventHandler = this.props[eventHandlerKey] as EventHandler;
 
     if (eventHandler) {
-      await eventHandler.call(null);
+      await eventHandler.call(null, evt.data ?? null);
     }
 
     if (this.props.onMessage) {
@@ -68,38 +73,40 @@ export class CanvasHost extends React.Component<PropTypes> {
   };
 
   componentDidMount() {
+    const { rpcClient } = this.props;
+
+    if (rpcClient) {
+      rpcClient.init({
+        source: window,
+        target: this.iframeRef?.current?.contentWindow as any,
+      });
+    }
+
     window.addEventListener('message', this.handleMessage);
   }
 
+  componentDidUnmount() {
+    const { rpcClient } = this.props;
+
+    if (rpcClient) {
+      rpcClient.dispose();
+    }
+
+    window.removeEventListener('message', this.handleMessage);
+  }
+
   render() {
-    const { muralId, canvasParams, state } = this.props;
-    const { appId } = this.props.apiClient.config;
-    const [workspaceId, boardId] = muralId.split('.');
+    const { muralUrl, authUrl, apiClient } = this.props;
 
-    let muralPath = `/a/${appId}/t/${workspaceId}/m/${workspaceId}/${boardId}`;
-    if (state) muralPath += `/${state}`;
-
-    const muralUrl = this.props.apiClient.url(muralPath);
-
-    for (const [key, value] of Object.entries(canvasParams || {})) {
-      if (value) muralUrl.searchParams.set(key, value.toString());
-    }
-
-    let canvasUrl: string;
-    if (this.props.authUrl && this.props.apiClient.authenticated()) {
-      canvasUrl = muralSessionActivationUrl(
-        this.props.apiClient,
-        this.props.authUrl,
-        muralUrl,
-      );
-    } else {
-      // directly to the visitor flow
-      canvasUrl = muralUrl.href;
-    }
+    const canvasUrl: string =
+      authUrl && apiClient.authenticated()
+        ? muralSessionActivationUrl(apiClient, authUrl, muralUrl).toString()
+        : muralUrl;
 
     return (
       <iframe
         data-qa="mural-canvas"
+        ref={this.iframeRef}
         className="mural-canvas"
         src={canvasUrl}
         seamless

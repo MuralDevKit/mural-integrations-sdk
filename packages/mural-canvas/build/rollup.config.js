@@ -6,6 +6,12 @@ import typescript from 'rollup-plugin-typescript2';
 import styles from 'rollup-plugin-styles';
 import commonjs from '@rollup/plugin-commonjs';
 
+const truthy = value => {
+  ['t', 'true', '1', 'on', 'yes', 'y'].includes(value.toString().toLowerCase());
+};
+
+const DEBUG = truthy(process.env.DEBUG || false);
+
 export default [
   {
     input: 'src/index.ts',
@@ -26,6 +32,8 @@ export default [
       resolve(),
       commonjs(),
       typescript({
+        sourceMap: DEBUG,
+        inlineSources: DEBUG,
         tsconfig: path.resolve('./build/tsconfig.json'),
         useTsconfigDeclarationDir: true,
       }),

@@ -15,7 +15,7 @@ import {
 } from '@muraldevkit/mural-integrations-mural-picker';
 import * as React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import './App.css';
+import './app.css';
 
 declare const APP_ID: string;
 declare const SERVICES: any;
@@ -24,10 +24,11 @@ console.log(APP_ID);
 console.log(SERVICES);
 
 // --- Configuration ---
+const protocol = SERVICES.auth.secure ? 'https' : 'http';
 const tokenHandlerConfig = {
-  authorizeUri: new URL('/auth', `http://${SERVICES.auth}`).href,
-  requestTokenUri: new URL('/auth/token', `http://${SERVICES.auth}`).href,
-  refreshTokenUri: new URL('/auth/refresh', `http://${SERVICES.auth}`).href,
+  authorizeUri: new URL('/auth', `${protocol}://${SERVICES.auth.host}`).href,
+  requestTokenUri: new URL('/auth/token', `${protocol}://${SERVICES.auth.host}`).href,
+  refreshTokenUri: new URL('/auth/refresh', `${protocol}://${SERVICES.auth.host}`).href,
 };
 
 const authorize = authorizeHandler(tokenHandlerConfig);
@@ -37,7 +38,7 @@ const refreshToken = refreshTokenHandler(tokenHandlerConfig);
 // --- MURAL API client ---
 const clientConfig = buildClientConfig({
   appId: APP_ID,
-  muralHost: SERVICES.mural,
+  muralHost: SERVICES.mural.host,
   ...tokenHandlerConfig,
 });
 
@@ -57,6 +58,7 @@ type AppState = {
   segue: Segue;
   muralId: string | null;
   state: string | null;
+  muralUrl: string | null;
 };
 
 class App extends React.Component<{}, AppState> {
@@ -64,10 +66,11 @@ class App extends React.Component<{}, AppState> {
     segue: Segue.LOADING,
     muralId: null,
     state: null,
+    muralUrl: null,
   };
 
   handleMessage = (evt: MessageEvent) => {
-    console.log(evt);
+    console.log('[handleMessage]', evt);
   };
 
   handleMural = (mural: Mural) => {
@@ -78,6 +81,7 @@ class App extends React.Component<{}, AppState> {
       segue: Segue.CANVAS,
       muralId: mural.id,
       state,
+      muralUrl: mural._canvasLink,
     });
   };
 
@@ -88,7 +92,15 @@ class App extends React.Component<{}, AppState> {
     if (route.startsWith('/canvas')) {
       const muralId = params.get('muralId');
       const state = params.get('state');
-      this.setState({ segue: Segue.CANVAS, muralId, state });
+      const muralUrl = params.get('muralUrl');
+      console.log(
+        'this.setState({ segue: Segue.CANVAS });',
+        muralId,
+        state,
+        muralUrl,
+      );
+
+      this.setState({ segue: Segue.CANVAS, muralId, state, muralUrl });
     }
 
     // TODO: handle callback route
@@ -125,8 +137,6 @@ class App extends React.Component<{}, AppState> {
       handleError: handleError,
     };
 
-    const authUrl = new URL('/session', window.origin);
-
     switch (this.state.segue) {
       case Segue.LOADING: {
         return <h1>Loading...</h1>;
@@ -135,16 +145,23 @@ class App extends React.Component<{}, AppState> {
         return <MuralPicker {...muralPickerProps} />;
       }
       case Segue.CANVAS: {
+        const visitorUrl = new URL(
+          `/canvas?muralId=${this.state.muralId!}&state=${this.state
+            .state!}&muralUrl=${this.state.muralUrl}`,
+          window.origin,
+        );
+        console.log('visitor link:', visitorUrl.href);
+
         return (
           <Canvas
             apiClient={apiClient}
-            authUrl={authUrl}
             muralId={this.state.muralId!}
             state={this.state.state!}
             onVisitorAccessDenied={() => alert('ACCESS DENIED')}
             onError={() => alert('ERROR')}
             onMessage={this.handleMessage}
             onReady={() => console.log('READY')}
+            muralUrl={this.state.muralUrl}
           />
         );
       }
