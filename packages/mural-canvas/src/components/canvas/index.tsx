@@ -29,11 +29,10 @@ export interface CanvasParams {
 
 export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
-  canvasParams: CanvasParams;
+  canvasParams?: CanvasParams;
   muralId: string;
   muralUrl: string;
   iframeRef: React.Ref<HTMLIFrameElement>;
-
   authUrl?: URL | string;
   state?: string;
   rpcClient?: RpcClient;

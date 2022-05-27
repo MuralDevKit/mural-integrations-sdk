@@ -1,12 +1,10 @@
 body {
   height: 100vh;
-  display: flex;
-  flex: 1;
   overflow-y: hidden;
 }
 
 #root {
-  flex: 1;
+  height: 100%;
 }
 
 .App {

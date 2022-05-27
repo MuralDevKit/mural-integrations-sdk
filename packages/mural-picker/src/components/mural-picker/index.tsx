@@ -7,6 +7,7 @@ import {
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
+import CreateNewMural from '../create-new-mural';
 import MuralPickerError from '../error';
 import Header from '../header';
 import Loading from '../loading';
@@ -28,17 +29,14 @@ export interface CreateMuralResult {
 
 export interface PropTypes {
   apiClient: ApiClient;
+  onCreateMural: (mural: Mural) => void;
+  onMuralSelect: (mural: Mural) => void;
   handleError: (error: Error, message: string) => void;
   cardSize?: CardSize;
   hideLogo?: boolean;
   hideAddButton?: boolean;
   theme?: 'light' | 'dark';
   ListboxProps?: object | undefined;
-
-  onCreateMural: (
-    mural: CreateMuralData,
-  ) => Promise<CreateMuralResult | undefined>;
-  onMuralSelect: (mural: Mural) => void;
 }
 
 interface StateTypes {
@@ -55,6 +53,8 @@ interface StateTypes {
   error: string;
   workspace: Workspace | null;
   room: Room | null;
+  searchingRooms: boolean;
+  title: string;
 }
 
 const INITIAL_STATE: StateTypes = {
@@ -70,6 +70,8 @@ const INITIAL_STATE: StateTypes = {
   error: '',
   workspace: null,
   room: null,
+  searchingRooms: false,
+  title: 'Choose a mural',
 };
 
 export default class MuralPicker extends React.Component<PropTypes> {
@@ -78,20 +80,16 @@ export default class MuralPicker extends React.Component<PropTypes> {
   async componentDidMount() {
     this.setState({ isLoading: true });
     try {
-      const workspaces = await this.props.apiClient.getWorkspaces();
-      const lastActiveWorkspaceId =
-        await this.props.apiClient.getLastActiveWorkspaceId();
-      if (workspaces?.length) {
-        let workspace;
-        if (lastActiveWorkspaceId) {
-          workspace =
-            workspaces.find(
-              workspace => workspace.id === lastActiveWorkspaceId,
-            ) || workspaces[0];
-        } else {
-          workspace = workspaces[0];
-        }
-        this.setState({ workspaces, workspace });
+      const eWorkspaces = await this.props.apiClient.getWorkspaces();
+      const lastActiveWorkspaceId = (
+        await this.props.apiClient.getCurrentUser()
+      ).value.lastActiveWorkspace;
+      if (eWorkspaces.value.length) {
+        const workspace =
+          eWorkspaces.value.find(w => w.id === lastActiveWorkspaceId) ||
+          eWorkspaces.value[0];
+
+        this.setState({ workspaces: eWorkspaces.value, workspace });
         await this.loadMuralsAndRoomsByWorkspace(workspace);
       }
     } catch (e: any) {
@@ -136,21 +134,23 @@ export default class MuralPicker extends React.Component<PropTypes> {
     this.setState({ isLoading: true, error: '' });
 
     try {
-      const roomPromise = this.props.apiClient.getRoomsByWorkspace(
-        workspace.id,
-      );
-      const muralPromise = this.props.apiClient.getMuralsByWorkspace(
-        workspace.id,
-      );
-      const [rooms, murals] = await Promise.all([roomPromise, muralPromise]);
-      const sortedRooms: Room[] = rooms.sort((a, b) =>
+      const q = {
+        workspaceId: workspace.id,
+      };
+      const [uponRooms, uponMurals] = await Promise.all([
+        this.props.apiClient.getRoomsByWorkspace(q),
+        this.props.apiClient.getMuralsByWorkspace(q),
+      ]);
+
+      const rooms: Room[] = uponRooms.value.sort((a, b) =>
         b.type.localeCompare(a.type),
       );
+
       this.setState({
         isLoading: false,
         workspace,
-        workspaceRooms: sortedRooms,
-        murals,
+        workspaceRooms: rooms,
+        murals: uponMurals.value,
         roomId: '',
         room: null,
       });
@@ -221,8 +221,9 @@ export default class MuralPicker extends React.Component<PropTypes> {
       );
       return;
     }
+  };
 
-    // TODO: incorporate template selection when public API is ready
+  onCreateMuralButtonHandler = async () => {
     if (!this.state.workspace) {
       return this.setState({ error: MURAL_PICKER_ERRORS.ERR_SELECT_WORKSPACE });
     }
@@ -234,18 +235,25 @@ export default class MuralPicker extends React.Component<PropTypes> {
       error: '',
       isCreateSelected: true,
       mural: undefined,
+      title: 'Create a mural',
     });
+  };
 
-    const result = await this.props.onCreateMural({
-      roomId: this.state.room.id,
-      title: '', // leaving title blank for now
-      workspaceId: this.state.workspace.id,
+  setInitialState = () => {
+    this.setState(state => {
+      return { ...state, isCreateSelected: false, title: INITIAL_STATE.title };
     });
+  };
 
-    if (result?.error) {
-      this.setState({
-        error: result.error,
+  onFinishCreation = async (mural: Mural) => {
+    this.setInitialState();
+    this.props.onCreateMural(mural);
+
+    if (this.state.room) {
+      const murals = await this.props.apiClient.getMuralsByRoom({
+        roomId: this.state.room.id,
       });
+      this.setState({ murals: murals.value });
     }
   };
 
@@ -267,12 +275,21 @@ export default class MuralPicker extends React.Component<PropTypes> {
       palette: {
         type: currentTheme,
         text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
+        primary: {
+          main: '#FF0066',
+        },
+      },
+      typography: {
+        fontFamily: 'Proxima Nova',
       },
     });
 
     return (
       <ThemeProvider theme={muiTheme}>
-        <div className={`mural-picker-body ${theme}`} data-qa="mural-picker">
+        <div
+          className={`mural-picker-body ${currentTheme}`}
+          data-qa="mural-picker"
+        >
           <Header hideLogo={hideLogo} />
           <div className={'mural-picker-selects'}>
             <WorkspaceSelect
@@ -299,7 +316,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
           {/* TODO: add search */}
           {this.state.error && <MuralPickerError error={this.state.error} />}
           {this.state.isLoading && <Loading />}
-          {!this.state.isLoading && (
+          {!this.state.isCreateSelected && !this.state.isLoading && (
             <MuralList
               workspace={this.state.workspace}
               room={this.state.room}
@@ -307,14 +324,24 @@ export default class MuralPicker extends React.Component<PropTypes> {
               murals={this.state.murals}
               selectedMural={this.state.mural}
               onMuralSelect={this.onMuralSelect}
-              onCreateMural={this.onCreateMural}
+              onCreateMuralButtonHandler={this.onCreateMuralButtonHandler}
               handleError={this.handleError}
               cardSize={cardSize || 'normal'}
               hideAddButton={!!this.props.hideAddButton}
             />
           )}
 
-          {/* TODO: add create-new-mural flow */}
+          {this.state.isCreateSelected &&
+            this.state.room &&
+            this.state.workspace && (
+              <CreateNewMural
+                apiClient={this.props.apiClient}
+                roomId={this.state.room.id}
+                workspace={this.state.workspace}
+                onCreateMural={this.onFinishCreation}
+                onCancelAndGoBack={this.setInitialState}
+              />
+            )}
         </div>
       </ThemeProvider>
     );

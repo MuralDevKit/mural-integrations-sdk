@@ -1,4 +1,10 @@
-import { Card, CardActionArea, CardContent, Grid } from '@material-ui/core';
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  Container,
+  Grid,
+} from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import {
   Mural as MuralType,
@@ -17,7 +23,7 @@ interface PropTypes {
   murals: MuralType[];
   selectedMural?: MuralType;
   onMuralSelect: (mural: MuralType) => void;
-  onCreateMural: () => void;
+  onCreateMuralButtonHandler: () => void;
   handleError: (e: Error, displayMsg: string) => void;
   cardSize: CardSize;
   hideAddButton: boolean;
@@ -62,15 +68,14 @@ export default class MuralList extends React.Component<PropTypes> {
   };
 
   onCreateMural = () => {
-    this.setState({ isCreateSelected: true });
-    this.props.onCreateMural();
+    this.props.onCreateMuralButtonHandler();
   };
 
   renderFavoriteMurals = () => {
     return (
       <div>
         <h5 className="subsection-header">Your favorite murals</h5>
-        <Grid container className="column-gap" direction="row">
+        <Grid container className="mural-selector-grid" direction="row">
           {this.state.favorites.map((fave, i) => (
             <MuralCard
               mural={fave}
@@ -114,7 +119,7 @@ export default class MuralList extends React.Component<PropTypes> {
     }
 
     return (
-      <Grid item className="mural-preview">
+      <Grid item>
         <Card
           variant="outlined"
           className={classnames('mural-card', `${this.props.cardSize}-card`, {
@@ -139,32 +144,26 @@ export default class MuralList extends React.Component<PropTypes> {
       this.state.favorites.length
     ) {
       return (
-        <div className="mural-selector-container">
-          <Grid className="column-gap" container direction="row">
-            {this.renderCreateNewMuralButton()}
-          </Grid>
-          {this.renderFavoriteMurals()}
-          {/* TODO: scroll horizontally instead of rendering all */}
+        <Container className="mural-selector-container">
           <div>
             <h5 className="subsection-header">All murals</h5>
-            <Grid className="column-gap" container direction="row">
+            <Grid className="mural-grid" container direction="row">
+              {this.renderCreateNewMuralButton()}
               {this.renderMurals()}
             </Grid>
           </div>
-        </div>
+          {this.renderFavoriteMurals()}
+        </Container>
       );
     }
 
     return (
-      <Grid
-        container
-        direction="row"
-        className="mural-selector-container column-gap"
-      >
-        {this.renderCreateNewMuralButton()}
-        {this.renderMurals()}
-        {/* TODO: scroll horizontally instead of rendering all */}
-      </Grid>
+      <Container className="mural-selector-container">
+        <Grid className="mural-selector-grid" container direction="row">
+          {this.renderCreateNewMuralButton()}
+          {this.renderMurals()}
+        </Grid>
+      </Container>
     );
   }
 }

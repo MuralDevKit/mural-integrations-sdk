@@ -49,12 +49,13 @@ export default class RoomSelect extends React.Component<PropTypes> {
     if (this.props.workspace && title.length > 2) {
       try {
         this.setState({ isSearchingRooms: true });
-        const rooms: Room[] = await this.props.apiClient.searchRoomsByWorkspace(
-          this.props.workspace.id,
+        const eRooms = await this.props.apiClient.searchRoomsByWorkspace({
+          workspaceId: this.props.workspace.id,
           title,
-        );
+        });
+
         this.setState({ isSearchingRooms: false });
-        this.props.onRoomSearch(rooms);
+        this.props.onRoomSearch(eRooms.value);
       } catch (e: any) {
         this.setState({ isSearchingRooms: false });
         this.props.handleError(e, 'Error searching rooms.');
@@ -70,23 +71,28 @@ export default class RoomSelect extends React.Component<PropTypes> {
       if (this.props.workspace) {
         try {
           this.props.onLoading();
-          murals = await this.props.apiClient.getMuralsByWorkspace(
-            this.props.workspace.id,
-          );
+          const eMurals = await this.props.apiClient.getMuralsByWorkspace({
+            workspaceId: this.props.workspace.id,
+          });
+
+          murals = eMurals.value;
         } catch (e: any) {
           this.props.handleError(e, ERRORS.ERR_RETRIEVING_ROOM_AND_MURALS);
         }
       }
+
       this.props.onLoadingComplete();
       this.props.onRoomSelect(null, murals);
     } else {
       try {
         this.props.onLoading();
 
-        const murals = await this.props.apiClient.getMuralsByRoom(room.id);
+        const eMurals = await this.props.apiClient.getMuralsByRoom({
+          roomId: room.id,
+        });
 
         this.props.onLoadingComplete();
-        this.props.onRoomSelect(room, murals);
+        this.props.onRoomSelect(room, eMurals.value);
       } catch (e: any) {
         this.props.onLoadingComplete();
         this.props.handleError(e, ERRORS.ERR_RETRIEVING_ROOM_MURALS);

@@ -22,7 +22,7 @@ export default function MuralCard(props: PropTypes) {
       : mural.thumbnailUrl;
 
   return (
-    <Grid item className="mural-preview">
+    <Grid item>
       <Card
         variant="outlined"
         className={classnames('mural-card', `${cardSize}-card`, {
