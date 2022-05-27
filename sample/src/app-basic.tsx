@@ -1,7 +1,6 @@
 import {
   Canvas,
   SessionActivation,
-  RpcClient,
 } from '@muraldevkit/mural-integrations-mural-canvas';
 import buildApiClient, {
   authorizeHandler,
@@ -16,7 +15,7 @@ import {
 } from '@muraldevkit/mural-integrations-mural-picker';
 import * as React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import './App.css';
+import './app.css';
 
 declare const APP_ID: string;
 declare const SERVICES: any;
@@ -63,10 +62,6 @@ type AppState = {
 };
 
 class App extends React.Component<{}, AppState> {
-  private rpcClient = new RpcClient({
-    origin: apiClient.url('').origin,
-  });
-
   state: AppState = {
     segue: Segue.LOADING,
     muralId: null,
@@ -76,40 +71,6 @@ class App extends React.Component<{}, AppState> {
 
   handleMessage = (evt: MessageEvent) => {
     console.log('[handleMessage]', evt);
-  };
-
-  startRecordingBot = async () => {
-    const context = () => this.rpcClient.context;
-    console.log('[startRecordingBot] initial context:', context());
-
-    const visitorId = context().user?.visitorId;
-    if (!visitorId) {
-      console.log('[startRecordingBot] I am not a visitor');
-      return;
-    }
-
-    await Promise.all([
-      this.rpcClient.rpc('dispatcher.participants.update.visitor', visitorId, {
-        name: 'Recording Bot',
-        avatar:
-          'https://cdn.icon-icons.com/icons2/1371/PNG/512/robot02_90810.png',
-        color: '#FF0000',
-      }),
-      this.rpcClient.rpc('modal.close', 'visitor-modal'),
-    ]);
-
-    if (context().facilitators && context().facilitators.length > 0) {
-      const facilitatorUserName = context().facilitators[0].username;
-      this.rpcClient.rpc(
-        'dispatcher.facilitation.asParticipant.followParticipant',
-        facilitatorUserName,
-      );
-    }
-  };
-
-  // this is first incoming message - make RPC context call with params
-  onRpcReady = () => {
-    this.startRecordingBot();
   };
 
   handleMural = (mural: Mural) => {
@@ -127,15 +88,6 @@ class App extends React.Component<{}, AppState> {
   async componentDidMount() {
     const params = new URLSearchParams(window.location.search);
     const route = window.location.pathname;
-
-    this.rpcClient.on('rpc_callback', (...args: any[]) => {
-      console.log('RPC Callback', args);
-    });
-    this.rpcClient.on('rpc_context', (...args: any[]) =>
-      console.log('RPC Context', args),
-    );
-    this.rpcClient.on('rpc_dispatch', msg => console.log('RPC Dispatch', msg));
-    this.rpcClient.on('rpc_ready', this.startRecordingBot);
 
     if (route.startsWith('/canvas')) {
       const muralId = params.get('muralId');
@@ -209,7 +161,6 @@ class App extends React.Component<{}, AppState> {
             onError={() => alert('ERROR')}
             onMessage={this.handleMessage}
             onReady={() => console.log('READY')}
-            rpcClient={this.rpcClient}
             muralUrl={this.state.muralUrl}
           />
         );
