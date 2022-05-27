@@ -32,12 +32,13 @@
   "dependencies": {
     "@material-ui/core": "4.11.4",
     "@muraldevkit/mural-integrations-common": "^2.0.0-alpha.0",
-    "@muraldevkit/mural-integrations-mural-client": "^2.0.1-alpha.0",
-    "axios": "^0.26.0"
+    "@muraldevkit/mural-integrations-mural-client": "^2.0.1-alpha.0"
   },
   "peerDependencies": {
     "react": ">=16.13.0",
-    "react-dom": ">=16.13.0"
+    "react-dom": ">=16.13.0",
+    "axios": ">=0.26.0",
+    "typescript": ">=4.3.5"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^19.0.2",
@@ -45,8 +46,6 @@
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@types/react": "16.9.43",
     "@types/react-dom": "16.9.8",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
     "rollup": "^2.54.0",
     "rollup-plugin-imagetools": "^3.0.4",
     "rollup-plugin-peer-deps-external": "^2.2.4",
@@ -54,8 +53,7 @@
     "rollup-plugin-scss": "^3.0.0",
     "rollup-plugin-styles": "^3.14.1",
     "rollup-plugin-typescript2": "^0.30.0",
-    "sass": "^1.49.0",
-    "typescript": "^4.3.5"
+    "sass": "^1.49.0"
   },
   "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9"
 }

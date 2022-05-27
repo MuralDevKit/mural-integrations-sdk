@@ -1,0 +1,9 @@
+{
+  "name": "runtime",
+  "description": "Runtime for React 16.14.0",
+  "dependencies": {
+    "axios": "0.26.0",
+    "react": "16.14.0",
+    "react-dom": "16.14.0"
+  }
+}

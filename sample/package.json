@@ -1,6 +1,7 @@
 {
-  "name": "mural-integrations-sample",
+  "name": "@muraldevkit/sample",
   "version": "0.1.0",
+  "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.3",
     "@muraldevkit/mural-integrations-mural-canvas": "file:../packages/mural-canvas",

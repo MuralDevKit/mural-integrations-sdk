@@ -24,7 +24,7 @@ In order to run this application, you need to have a registered application crea
  - [x] Use this repository in `mural-integrations/lib`
  - [ ] Generalize build configuration and
  - [x] Generalize TypeScript configuration for all components
- - [ ] Add testing rig
+ - [x] Add testing rig
  - [x] Add sample application
  - [x] Add code quality tooling (prettier, eslint)
  - [ ] Changelog
@@ -33,9 +33,36 @@ In order to run this application, you need to have a registered application crea
 
 TDB
 
+### Testing
+
+The testing rig setup follows the conventional testing philosophy at MURAL — test behaviors, not implementation.
+We are using the Gherkin syntax to create high-level behavior description and assert that the components replicate it accurately.
+
+In order to develop and build, it is useful to use the _npm run build -- --watch_ command on the component you are currently developing for.
+
+```
+cd packages/<pkg>
+npm run build -- --watch
+```
+
+#### Running the tests
+
+Then, use the `test` package to run the testing rig on all the built components.
+
+```
+cd test
+npm run test:react [features, …]
+
+# conventionally, each component has a folder inside the features
+npm run test:react features/mural-picker
+```
+
 ### Building
 
 ```
+# select the runtime the component targets
+ln -sf runtimes/16.13.1 runtimes/current
+
 npm install
 npx lerna bootstrap
 npx lerna run build
