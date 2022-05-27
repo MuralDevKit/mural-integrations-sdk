@@ -85,7 +85,7 @@ export class CanvasHost extends React.Component<PropTypes> {
     window.addEventListener('message', this.handleMessage);
   }
 
-  componentDidUnmoun() {
+  componentDidUnmount() {
     const { rpcClient } = this.props;
 
     if (rpcClient) {
@@ -100,7 +100,7 @@ export class CanvasHost extends React.Component<PropTypes> {
 
     const canvasUrl: string =
       authUrl && apiClient.authenticated()
-        ? muralSessionActivationUrl(apiClient, authUrl, muralUrl)
+        ? muralSessionActivationUrl(apiClient, authUrl, muralUrl).toString()
         : muralUrl;
 
     return (
