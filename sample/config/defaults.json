@@ -15,7 +15,7 @@
   "clientApp": {
     "clientId": "<client-id>",
     "clientSecret": "<client-secret>",
-    "redirectUri": "https://localhost:2022/auth/callback",
+    "redirectUri": "http://localhost:2022/auth/callback",
     "scopes": [
       "murals:read",
       "murals:write",

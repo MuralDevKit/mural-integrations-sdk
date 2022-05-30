@@ -84,6 +84,7 @@ export default class MuralPicker extends React.Component<PropTypes> {
       const lastActiveWorkspaceId = (
         await this.props.apiClient.getCurrentUser()
       ).value.lastActiveWorkspace;
+
       if (eWorkspaces.value.length) {
         const workspace =
           eWorkspaces.value.find(w => w.id === lastActiveWorkspaceId) ||

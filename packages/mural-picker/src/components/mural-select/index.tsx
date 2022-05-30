@@ -5,7 +5,7 @@ import {
   Mural,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import * as React from 'react';
 import { DELAYS } from '../../common/delays';
 

@@ -10,6 +10,8 @@ export * from './components/mural-picker';
 export * from './components/room-picker';
 export * from './common/delays';
 
+import '@muraldevkit/mural-integrations-common/styles/fonts.css';
+
 export {
   MuralPicker,
   RoomPicker,

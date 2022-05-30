@@ -14,7 +14,7 @@ import {
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import * as React from 'react';
 import {
   PrimaryButton,

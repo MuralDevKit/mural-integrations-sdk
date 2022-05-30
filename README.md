@@ -22,7 +22,7 @@ In order to run this application, you need to have a registered application crea
 ### Roadmap
 
  - [x] Use this repository in `mural-integrations/lib`
- - [ ] Generalize build configuration and
+ - [x] Generalize build configuration and
  - [x] Generalize TypeScript configuration for all components
  - [x] Add testing rig
  - [x] Add sample application
@@ -65,10 +65,18 @@ ln -sf runtimes/16.13.1 runtimes/current
 
 npm install
 npx lerna bootstrap
-npx lerna run build
-npx lerna run pack
-ls -la dist/
+npm run build
+
+# or to watch the changes 
+npm run build:watch
 ```
+
+#### Advanced options
+
+|Variable|Default|Notes|
+|--------|-------|-----|
+|DEBUG|Off|Turn on inline source maps for all bundles. This will cause the bundles to be significantly larger, but enables debuging from the browser development tools.|
+|BUNDLE_STATS|Off|Outputs a `dist/stats.html` file alongside the bundle that describes the topology and imports.|
 
 ### Versioning
 

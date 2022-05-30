@@ -30,15 +30,16 @@
   },
   "homepage": "https://github.com/tactivos/mural-integrations-sdk/tree/packages/mural-canvas",
   "dependencies": {
-    "@material-ui/core": "4.11.4",
-    "@material-ui/icons": "4.11.2",
-    "@material-ui/lab": "4.0.0-alpha.58",
     "@muraldevkit/mural-integrations-common": "^2.0.0-alpha.0",
     "@muraldevkit/mural-integrations-mural-client": "^2.0.1-alpha.0",
     "classnames": "^2.3.1",
+		"lodash": "^4.17.21",
     "uuid": "^8.3.2"
   },
   "peerDependencies": {
+    "@material-ui/core": ">=4.11.4",
+    "@material-ui/icons": ">=4.11.2",
+    "@material-ui/lab": ">=4.0.0-alpha.58",
     "react": ">=16.13.0",
     "react-dom": ">=16.13.0",
     "react-router-dom": "^6.0.0"
@@ -48,8 +49,6 @@
     "@rollup/plugin-image": "^2.1.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@types/lodash": "^4.14.182",
-    "@types/react": "16.9.43",
-    "@types/react-dom": "16.9.8",
     "@types/uuid": "^8.3.4",
     "rollup": "^2.54.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
