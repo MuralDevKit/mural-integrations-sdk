@@ -2,6 +2,8 @@
   "name": "@muraldevkit/tests",
   "private": true,
   "scripts": {
+    "build": "lerna run build",
+    "build:watch": "lerna run build -- --watch",
     "test:react": "ENV=test TS_NODE_FILES=true cucumber-js --require-module tsconfig-paths/register --exit -r react/index.js"
   },
   "devDependencies": {

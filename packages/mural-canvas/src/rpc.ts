@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import { v4 as uuid } from 'uuid';
 
 export interface RpcContext {

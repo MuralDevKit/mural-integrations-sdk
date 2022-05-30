@@ -30,11 +30,11 @@
   },
   "homepage": "https://github.com/tactivos/mural-integrations-sdk/tree/packages/mural-account-chooser",
   "dependencies": {
-    "@material-ui/core": "4.11.4",
     "@muraldevkit/mural-integrations-common": "^2.0.0-alpha.0",
     "@muraldevkit/mural-integrations-mural-client": "^2.0.1-alpha.0"
   },
   "peerDependencies": {
+    "@material-ui/core": ">=4.11.4",
     "react": ">=16.13.0",
     "react-dom": ">=16.13.0",
     "axios": ">=0.26.0",
@@ -44,8 +44,6 @@
     "@rollup/plugin-commonjs": "^19.0.2",
     "@rollup/plugin-image": "^2.1.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
-    "@types/react": "16.9.43",
-    "@types/react-dom": "16.9.8",
     "rollup": "^2.54.0",
     "rollup-plugin-imagetools": "^3.0.4",
     "rollup-plugin-peer-deps-external": "^2.2.4",

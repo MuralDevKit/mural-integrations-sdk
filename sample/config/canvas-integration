@@ -1,0 +1,29 @@
+{
+  "appName": "SCAL-172",
+  "services": {
+    "auth": { "host": "localhost:4001", "secure": false },
+    "mural": { "host": "scl-172.mural.engineering", "secure": true }
+  },
+	"server": {
+		"host": "local.domain",
+		"port": 4001
+	},
+	"client": {
+		"host": "local.domain",
+		"port": 4002
+	},
+  "clientApp": {
+    "clientId": "b54bed6a-3723-4eac-9833-92992b269f8a",
+    "clientSecret": "cfb1ae28dc136d28d1f02fab776ce02ac711c65d183756e92b81bbb85ccf4de5885cee8a371d5b7afc8bb3a833d2baf0162acab620a9f9f0db14b57d05f7471e",
+    "redirectUri": "https://mural-app-mbergeron.ngrok.io/auth/callback",
+    "scopes": [
+      "murals:read",
+      "murals:write",
+      "rooms:read",
+      "workspaces:read",
+      "identity:read",
+			"templates:read"
+    ]
+  }
+}
+

@@ -1,16 +1,14 @@
-@import '@muraldevkit/mural-integrations-common/styles/fonts.css';
-
 $font-family: Proxima Nova, sans-serif;
 
 $secondary-text-color: #757575;
-$separator-color: #E5E5E5;
-$mural-color: #E8005A;
+$separator-color: #e5e5e5;
+$mural-color: #e8005a;
 
-$text-color: #2F2F2F;
-$text-color-dark-mode: #D0D0D0;
+$text-color: #2f2f2f;
+$text-color-dark-mode: #d0d0d0;
 
-$background: #FFFFFF;
-$background-dark-mode: #1F1F1F;
+$background: #ffffff;
+$background-dark-mode: #1f1f1f;
 
 .account-chooser {
   /* Flex */
@@ -129,7 +127,7 @@ $background-dark-mode: #1F1F1F;
       background: $separator-color;
 
       /* Other */
-      content: "";
+      content: '';
       z-index: -1;
     }
   }

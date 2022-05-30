@@ -1,7 +1,7 @@
 import { Card, CardActionArea, CardMedia, Grid } from '@material-ui/core';
 import { Mural } from '@muraldevkit/mural-integrations-mural-client';
 import classnames from 'classnames';
-import moment from 'moment';
+import humanize from 'humanize-duration';
 import * as React from 'react';
 import './styles.scss';
 
@@ -13,6 +13,13 @@ export interface PropTypes {
   onClickSelectMural: (mural: Mural) => void;
   cardSize: CardSize;
 }
+
+const dateMarker = (mural: Mural) => {
+  const span = Date.now() - mural.updatedOn;
+  const marker = humanize(span, { round: true, units: ['d', 'h'] });
+
+  return `Modified ${marker} ago`;
+};
 
 export default function MuralCard(props: PropTypes) {
   const { mural, isSelected, onClickSelectMural, cardSize } = props;
@@ -42,7 +49,7 @@ export default function MuralCard(props: PropTypes) {
               {mural.title ? mural.title : 'Untitled mural'}
             </div>
             <div className="mural-details" data-qa="mural-details">
-              Modified {moment(mural.updatedOn).fromNow()}
+              {dateMarker(mural)}
             </div>
           </div>
         </CardActionArea>
