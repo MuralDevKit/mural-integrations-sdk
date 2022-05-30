@@ -111,15 +111,25 @@ const isIntegration = (
 
 type Primitive = number | string | boolean | bigint;
 
-export type ResourceEndpoint<TResource, TParams = void, TOptions = null> = (
-  query: TParams,
-  options?: Partial<
-    (TOptions extends Sorted ? Sorted<TResource> : {}) &
-      (TOptions extends Paginated ? Paginated<TResource> : {}) &
-      (TOptions extends Integration ? Integration<TResource> : {}) &
-      TOptions
-  >,
-) => Promise<Envelope<TResource>>;
+type TResolvedOptions<TResource, TOptions> = Partial<
+  (TOptions extends Sorted ? Sorted<TResource> : {}) &
+    (TOptions extends Paginated ? Paginated<TResource> : {}) &
+    (TOptions extends Integration ? Integration<TResource> : {}) &
+    TOptions
+>;
+
+export type ResourceEndpoint<
+  TResource,
+  TParams = void,
+  TOptions = null,
+> = TParams extends void
+  ? (
+      options?: TResolvedOptions<TResource, TOptions>,
+    ) => Promise<Envelope<TResource>>
+  : (
+      query: TParams,
+      options?: TResolvedOptions<TResource, TOptions>,
+    ) => Promise<Envelope<TResource>>;
 
 const optionsParams = (
   options:
