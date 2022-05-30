@@ -13,10 +13,10 @@
     "@typescript-eslint/parser": "4.29.0"
   },
   "dependencies": {
-    "@muraldevkit/mural-integrations-mural-account-chooser": "v2.0.1-alpha.0",
-    "@muraldevkit/mural-integrations-mural-canvas": "v2.0.1-alpha.0",
-    "@muraldevkit/mural-integrations-mural-picker": "v2.0.1-alpha.0",
-    "@muraldevkit/mural-integrations-mural-client": "v2.0.1-alpha.0",
+    "@muraldevkit/mural-integrations-mural-account-chooser": "../packages/mural-account-chooser",
+    "@muraldevkit/mural-integrations-mural-canvas": "../packages/mural-canvas",
+    "@muraldevkit/mural-integrations-mural-picker": "../packages/mural-picker",
+    "@muraldevkit/mural-integrations-mural-client": "../packages/mural-client",
     "@testing-library/dom": "8.13.0",
     "@testing-library/react": "^11.2.0",
     "@testing-library/user-event": "^13.0.16",
