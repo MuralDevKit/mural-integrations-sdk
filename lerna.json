@@ -1,12 +1,15 @@
 {
   "command": {
     "bootstrap": {
-      "npmClientArgs": ["--omit", "peer"]
+      "npmClientArgs": [
+        "--omit",
+        "peer"
+      ]
     }
   },
   "packages": [
     "packages/*",
     "test"
   ],
-  "version": "2.0.1-alpha.0"
+  "version": "2.1.0"
 }
