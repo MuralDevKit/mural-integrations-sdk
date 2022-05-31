@@ -33,8 +33,8 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npx lerna bootstrap
-      - run: npx lerna run build
-      - run: cd test && npm run test:react
+      - run: npm run build
+      - run: cd test && npm ci --omit=peer && npm run test:react
       - run: npx lerna --no-verify-access publish from-git --yes
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

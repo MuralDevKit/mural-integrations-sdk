@@ -6,28 +6,34 @@ import { imagetools } from 'rollup-plugin-imagetools';
 import typescript from 'rollup-plugin-typescript2';
 import styles from 'rollup-plugin-styles';
 import commonjs from '@rollup/plugin-commonjs';
-import { visualizer } from "rollup-plugin-visualizer";
+import { visualizer } from 'rollup-plugin-visualizer';
 
 const truthy = value => {
-    ['t', 'true', '1', 'on', 'yes', 'y'].includes(value.toString().toLowerCase());
+  return ['t', 'true', '1', 'on', 'yes', 'y'].includes(value.toString().toLowerCase());
 };
 
 const DEBUG = truthy(process.env.DEBUG || false);
 const BUNDLE_STATS = truthy(process.env.BUNDLE_STATS || false);
 
+console.info('=== Build flags ===');
+console.info('DEBUG:', DEBUG);
+console.info('BUNDLE_STATS:', BUNDLE_STATS);
+
 /**
  * @param descriptor {
  *   name: string;
+ *   packageDir?: string;
  *   overrides: {};
  * }
  */
-const moduleConfig = (descriptor) => {
+export const moduleConfig = descriptor => {
   const bundleName = {
     commonjs: `${descriptor.name}.bundle.js`,
     esm: `${descriptor.name}.esm.js`,
-  }
+  };
 
-  const packageDir = path.resolve('./packages', descriptor.name)
+  const packageDir =
+    descriptor.packageDir || path.resolve('./packages', descriptor.name);
 
   const plugins = [
     peerDepsExternal({
@@ -44,13 +50,13 @@ const moduleConfig = (descriptor) => {
     styles(),
     image(),
     imagetools(),
-  ]
-  
+  ];
+
   if (BUNDLE_STATS) {
     plugins.push(
       visualizer({
         filename: path.resolve(packageDir, 'dist', 'stats.html'),
-      })
+      }),
     );
   }
 
@@ -69,13 +75,13 @@ const moduleConfig = (descriptor) => {
         sourcemap: true,
       },
     ],
-    plugins
-  }
-}
+    plugins,
+  };
+};
 
 export default [
   moduleConfig({ name: 'mural-client' }),
   moduleConfig({ name: 'mural-picker' }),
   moduleConfig({ name: 'mural-canvas' }),
   moduleConfig({ name: 'mural-account-chooser' }),
-]
+];
