@@ -55,10 +55,11 @@
       display: flex;
       flex: 0 0 70px;
       flex-direction: row;
-      justify-content: space-evenly;
+      justify-content: space-between;
 
       & .button {
         align-self: center;
+        margin-right: 0.5em;
       }
 
       & .new-mural-create {
