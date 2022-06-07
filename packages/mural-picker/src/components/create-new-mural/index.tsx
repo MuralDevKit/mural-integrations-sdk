@@ -235,7 +235,7 @@ export default class CreateNewMural extends React.Component<
   };
 
   render() {
-    if (this.state.loading && !this.state.templates.length) {
+    if (this.state.loading && this.state.templates.length <= 1) {
       return (
         <div className="mural-list-spinner">
           <CircularProgress />
