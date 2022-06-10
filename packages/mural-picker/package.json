@@ -1,6 +1,6 @@
 {
   "name": "@muraldevkit/mural-integrations-mural-picker",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Mural Picker component for MURAL integrations",
   "main": "dist/mural-picker.bundle.js",
   "module": "dist/mural-picker.esm.js",
