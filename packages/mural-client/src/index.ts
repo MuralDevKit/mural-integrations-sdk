@@ -64,6 +64,16 @@ export const getApiError = async (error: Error): Promise<ApiError | null> => {
   };
 };
 
+/**
+ * Create an ApiClient instance from the provided configuration.
+ *
+ * @param args.appId MURAL App `client_id`
+ * @param args.muralHost MURAL API service host (default: 'app.mural.co')
+ * @param args.secure Whether the client should use TLS (default: true)
+ * @param args.storage 'Storage' compatible store for the session management.
+ *
+ * @returns ApiClient
+ */
 export function buildClientConfig(args: BuildClientArgs): ClientConfig {
   const fetchFn = setupAuthenticatedFetch({
     authorizeFn: authorizeHandler(args),

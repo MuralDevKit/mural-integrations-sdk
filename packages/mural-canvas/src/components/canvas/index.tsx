@@ -1,7 +1,8 @@
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
+import RpcClient from '../../lib/rpc';
+import { muralSessionActivationUrl } from '../../lib/session-activation';
 import { EventHandler } from '../../types';
-import RpcClient from '../../rpc';
 import './styles.scss';
 
 interface CanvasEvents {
@@ -32,30 +33,28 @@ export interface PropTypes extends CanvasEvents {
   canvasParams?: CanvasParams;
   muralId: string;
   muralUrl: string;
-  iframeRef: React.Ref<HTMLIFrameElement>;
   authUrl?: URL | string;
   state?: string;
   rpcClient?: RpcClient;
 }
 
-export function muralSessionActivationUrl(
-  apiClient: ApiClient,
-  authUrl: URL | string,
-  muralUrl: URL | string,
-) {
-  const authURL = new URL(authUrl.toString());
-  const muralURL = new URL(muralUrl.toString());
-
-  const activateURL = new URL('/signin-code/authenticate', muralURL);
-
-  activateURL.searchParams.set('redirectUrl', muralURL.href);
-  activateURL.searchParams.set('authUrl', authURL.href);
-  activateURL.searchParams.set('clientId', apiClient.config.appId);
-  activateURL.searchParams.set('t', new Date().getTime().toString()); // disable any caching
-
-  return activateURL.href;
-}
-
+/**
+ * Hosts a MURAL canvas to be embedded in any web application.
+ *
+ * This component ensures the displayed MURAL will be allowed to
+ * be iframed within the current browsing context.
+ *
+ * If the `authUrl` parameter is supplied (see the SessionActivation
+ * component), then it will use the Canvas session activation flow
+ * to ensure the MURAL canvas will be properly authenticated.
+ *
+ * @techdebt
+ * @param muralUrl this should always match the MURAL `_canvasLink`
+ * property. Using a raw MURAL url will not properly load the mural.
+ *
+ * @experimental A RpcClient can also be wired to issue command to the
+ * MURAL canvas programatically.
+ */
 export class CanvasHost extends React.Component<PropTypes> {
   private iframeRef = React.createRef<HTMLIFrameElement>();
 
@@ -85,7 +84,7 @@ export class CanvasHost extends React.Component<PropTypes> {
     window.addEventListener('message', this.handleMessage);
   }
 
-  componentDidUnmount() {
+  componentWillUnmount() {
     const { rpcClient } = this.props;
 
     if (rpcClient) {
