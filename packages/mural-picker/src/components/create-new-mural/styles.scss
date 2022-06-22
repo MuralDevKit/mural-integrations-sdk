@@ -18,7 +18,8 @@
   }
 
   &-categories {
-    margin-right: 3em;
+    margin-right: 1em;
+    max-width: 20%;
   }
 
   &-items {
@@ -56,6 +57,7 @@
       flex: 0 0 70px;
       flex-direction: row;
       justify-content: space-between;
+      padding-top: 1em;
 
       & .button {
         align-self: center;
@@ -78,11 +80,13 @@
 
 .template-item {
   box-sizing: border-box;
-  width: _.$card-width;
-  height: _.$card-height;
+  min-width: _.$card-width;
+  min-height: _.$card-height;
 
   border-radius: 5px;
-  box-shadow: #eeeeee 0 0 5px;
+  box-shadow: #dedede 0 0 5px;
+  flex-grow: 1;
+  border: solid 1px #dedede;
 
   &-sfx {
     height: 100%;
@@ -101,9 +105,7 @@
   }
 
   &-selected {
-    .template-item-img-container {
-      border-color: #ff0066;
-    }
+    border-color: #ff0066;
 
     .template-item-typography-title {
       &:focus,
@@ -118,9 +120,7 @@
   &-img-container {
     box-sizing: border-box;
     flex-grow: 1;
-
     background-color: #e2e2e2;
-    border: 1px solid #d8d8d8;
 
     height: 65%;
 
@@ -167,19 +167,31 @@
   margin: 0.5em;
 }
 
-@media (max-width: 674px), (max-height: 600px) {
+.one-column {
+  max-width: calc(99% - 0.5em);
+}
+
+.two-column {
+  max-width: calc(47% - 0.5em);
+}
+
+.three-column {
+  max-width: calc(31% - 0.5em);
+}
+
+@media (max-width: 824px), (max-height: 600px) {
   .new-mural-categories {
     display: none !important;
   }
 }
 
-@media(min-width: 490px) {
+@media(min-width: 510px) {
   .content--lg {
     display: visible;
   }
 }
 
-@media(max-width: 490px) {
+@media(max-width: 510px) {
   .content--lg {
     display: none;
   }

@@ -24,6 +24,12 @@
     margin: 1em 0;
   }
 
+  @media(max-width:564px) {
+    .mural-picker-selects {
+      flex-direction: column;
+    }
+  }
+
   .mural-picker-select {
     font-weight: 400;
     flex: 1;

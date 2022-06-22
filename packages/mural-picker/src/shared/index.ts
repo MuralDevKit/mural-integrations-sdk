@@ -27,6 +27,7 @@ export const SecondaryButton = withStyles({
 
 export const ListSubheader = withStyles({
   root: {
+    marginTop: '1.2em',
     whiteSpace: 'nowrap',
     textTransform: 'uppercase',
     fontSize: 13,
@@ -42,9 +43,11 @@ export const ListItem = withStyles({
   root: {
     fontSize: 15,
     fontWeight: 400,
-    lineHeight: '27px',
+    lineHeight: '18px',
     color: '#333',
-    padding: 0,
+    padding: '0.4em',
+    marginBottom: '0.4em',
+    borderRight: 'solid 0.2em #ececec',
   },
   selected: {
     backgroundColor: 'transparent !important',
