@@ -101,6 +101,7 @@ export class CanvasHost extends React.Component<PropTypes> {
         className="mural-canvas"
         src={canvasUrl}
         seamless
+        referrerPolicy="origin"
       />
     );
   }
