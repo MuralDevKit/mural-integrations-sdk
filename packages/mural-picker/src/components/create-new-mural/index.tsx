@@ -45,15 +45,13 @@ const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
 const DEFAULT_BLANK_TEMPLATE_ID =
   'gh&rishIOpNm-thON^43D-O&(8&hHjPle$-(kplP&Nm-ujlK8*0^';
 
-const ONE_COLUMN = 'one-column';
-const TWO_COLUMN = 'two-column';
-const THREE_COLUMN = 'three-column';
+const BREAKPOINTS = {
+  'one-column': '(max-width:548px)',
+  'two-column': '(min-width:548px) and (max-width:1094px)',
+  'three-column': '(min-width:1094px)',
+};
 
-interface BreakPoints {
-  [ONE_COLUMN]: string;
-  [TWO_COLUMN]: string;
-  [THREE_COLUMN]: string;
-}
+type BreakPoints = keyof typeof BREAKPOINTS;
 
 const BLANK_TEMPLATE: Template = {
   id: DEFAULT_BLANK_TEMPLATE_ID,
@@ -96,7 +94,7 @@ interface StateTypes {
   selected: number;
   templates: Template[];
   title: string;
-  breakPoint: string | null;
+  breakPoint: BreakPoints | null;
 }
 
 const INITIAL_STATE: StateTypes = {
@@ -123,7 +121,6 @@ export default class CreateNewMural extends React.Component<
   titleRef: React.RefObject<HTMLInputElement>;
   scrollRef: React.RefObject<HTMLInputElement>;
   commonElementHeight: number;
-  breakPoints: BreakPoints;
 
   constructor(props: PropTypes) {
     super(props);
@@ -131,20 +128,12 @@ export default class CreateNewMural extends React.Component<
     this.titleRef = React.createRef();
     this.scrollRef = React.createRef();
     this.commonElementHeight = 0;
-    this.breakPoints = {
-      [ONE_COLUMN]: '(max-width:548px)',
-      [TWO_COLUMN]: '(min-width:548px) and (max-width:1094px)',
-      [THREE_COLUMN]: '(min-width:1094px)',
-    };
   }
 
   matchMediaQuery = () => {
-    for (const key of Object.keys(this.breakPoints)) {
-      if (
-        window.matchMedia(`${this.breakPoints[key as keyof BreakPoints]}`)
-          .matches
-      ) {
-        this.setState({ breakPoint: key });
+    for (const [breakPoint, mediaQuery] of Object.entries(BREAKPOINTS)) {
+      if (window.matchMedia(mediaQuery).matches) {
+        this.setState({ breakPoint: breakPoint as BreakPoints });
         return;
       }
     }
@@ -321,9 +310,7 @@ export default class CreateNewMural extends React.Component<
                     key={index}
                     className={classnames('template-item', {
                       'template-item-selected': isSelected,
-                      [ONE_COLUMN]: this.state.breakPoint === ONE_COLUMN,
-                      [TWO_COLUMN]: this.state.breakPoint === TWO_COLUMN,
-                      [THREE_COLUMN]: this.state.breakPoint === THREE_COLUMN,
+                      [this.state.breakPoint as string]: true,
                     })}
                   >
                     <RippleEffect
