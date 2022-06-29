@@ -21,7 +21,6 @@ import {
   SecondaryButton,
   ListItem,
   ListSubheader,
-  Divider,
 } from '../../shared';
 import './styles.scss';
 
@@ -46,6 +45,14 @@ const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
 const DEFAULT_BLANK_TEMPLATE_ID =
   'gh&rishIOpNm-thON^43D-O&(8&hHjPle$-(kplP&Nm-ujlK8*0^';
 
+const BREAKPOINTS = {
+  'one-column': '(max-width:548px)',
+  'two-column': '(min-width:548px) and (max-width:1094px)',
+  'three-column': '(min-width:1094px)',
+};
+
+type BreakPoints = keyof typeof BREAKPOINTS;
+
 const BLANK_TEMPLATE: Template = {
   id: DEFAULT_BLANK_TEMPLATE_ID,
   description: '',
@@ -64,6 +71,8 @@ export const RippleEffect = withStyles({
     flexDirection: 'column',
     textAlign: 'left',
     marginBottom: 16,
+    borderRadius: '5px',
+    border: 'solid 1px #ffffff',
   },
 })(ButtonBase);
 
@@ -85,6 +94,7 @@ interface StateTypes {
   selected: number;
   templates: Template[];
   title: string;
+  breakPoint: BreakPoints | null;
 }
 
 const INITIAL_STATE: StateTypes = {
@@ -96,6 +106,7 @@ const INITIAL_STATE: StateTypes = {
   selected: 0,
   templates: [BLANK_TEMPLATE],
   title: '',
+  breakPoint: null,
 };
 
 const LIMIT = 25;
@@ -118,6 +129,20 @@ export default class CreateNewMural extends React.Component<
     this.scrollRef = React.createRef();
     this.commonElementHeight = 0;
   }
+
+  matchMediaQuery = () => {
+    for (const [breakPoint, mediaQuery] of Object.entries(BREAKPOINTS)) {
+      if (window.matchMedia(mediaQuery).matches) {
+        this.setState({ breakPoint: breakPoint as BreakPoints });
+        return;
+      }
+    }
+  };
+
+  breakPointObserver = () => {
+    this.matchMediaQuery();
+    window.addEventListener('resize', this.matchMediaQuery);
+  };
 
   loadTemplates = async () => {
     if (this.state.loading) {
@@ -216,10 +241,12 @@ export default class CreateNewMural extends React.Component<
 
   componentDidMount() {
     this.loadTemplates();
+    this.breakPointObserver();
   }
 
   componentWillUnmount() {
     this.scrollRef.current?.removeEventListener('scroll', this.lazyLoadHandler);
+    window.removeEventListener('resize', this.matchMediaQuery);
   }
 
   onSelectTemplate = (index: number) => {
@@ -261,7 +288,6 @@ export default class CreateNewMural extends React.Component<
               <ListItem disableGutters button selected>
                 All templates
               </ListItem>
-              <Divider />
               <ListSubheader disableGutters>Browse by category</ListSubheader>
               {[
                 `Current workspace (${this.props.workspace.name})`,
@@ -284,6 +310,7 @@ export default class CreateNewMural extends React.Component<
                     key={index}
                     className={classnames('template-item', {
                       'template-item-selected': isSelected,
+                      [this.state.breakPoint as string]: true,
                     })}
                   >
                     <RippleEffect
