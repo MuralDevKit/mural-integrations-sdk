@@ -7,7 +7,16 @@ import setupAuthenticatedFetch, {
   TokenHandlerConfig,
 } from './fetch';
 import { setupSessionStore } from './session';
-import { Mural, Room, Template, User, Workspace } from './types';
+import {
+  CreateStickyNotePayload,
+  Mural,
+  Room,
+  StickyNote,
+  Tag,
+  Template,
+  User,
+  Workspace,
+} from './types';
 
 export * from './fetch';
 export * from './session';
@@ -91,6 +100,19 @@ export interface ApiClient {
     roomId: string,
     templateId: string,
   ) => Promise<{ value: Mural }>;
+  createMuralTag: (
+    muralId: string,
+    payload: {
+      text: string;
+      backgroundColor?: string;
+      borderColor?: string;
+      color?: string;
+    },
+  ) => Promise<{ value: Tag }>;
+  createStickyNote: (
+    muralId: string,
+    payload: CreateStickyNotePayload,
+  ) => Promise<StickyNote>;
   getCurrentUser: () => Promise<User>;
   getMural: (
     muralId: string,
@@ -98,6 +120,7 @@ export interface ApiClient {
   ) => Promise<Mural>;
   getMuralsByRoom: (roomId: string) => Promise<Mural[]>;
   getMuralsByWorkspace: (workspaceId: string) => Promise<Mural[]>;
+  getMuralTags: (muralId: string) => Promise<Tag[]>;
   getDefaultTemplates: () => Promise<Template[]>;
   getRoomsByWorkspace: (workspaceId: string) => Promise<Room[]>;
   getWorkspace: (id: string) => Promise<Workspace>;
@@ -166,6 +189,41 @@ export default (config: ClientConfig): ApiClient => {
       });
       return response.json();
     },
+    // https://developers.mural.co/public/reference/createmuraltag
+    createMuralTag: async (
+      muralId: string,
+      payload: {
+        text: string;
+        backgroundColor?: string;
+        borderColor?: string;
+        color?: string;
+      },
+    ) => {
+      const response = await fetchFn(api(`murals/${muralId}/tags`), {
+        body: JSON.stringify(payload),
+        headers: {
+          Accept: 'vnd.mural.preview',
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      });
+      return response.json();
+    },
+    // https://developers.mural.co/public/reference/createstickynote
+    createStickyNote: async (
+      muralId: string,
+      payload: CreateStickyNotePayload,
+    ) => {
+      const response = await fetchFn(
+        api(`murals/${muralId}/widgets/sticky-note`),
+        {
+          body: JSON.stringify(payload),
+          headers: { 'content-type': 'application/json' },
+          method: 'POST',
+        },
+      );
+      return response.json();
+    },
     // https://developers.mural.co/public/reference/getcurrentmember
     getCurrentUser: async (): Promise<User> => {
       const response = await fetchFn(api('users/me'), {
@@ -201,6 +259,14 @@ export default (config: ClientConfig): ApiClient => {
     getMuralsByWorkspace: async (workspaceId: string): Promise<Mural[]> => {
       const response = await fetchFn(api(`workspaces/${workspaceId}/murals`), {
         method: 'GET',
+      });
+      return (await response.json()).value;
+    },
+    // https://developers.mural.co/public/reference/getmuraltags
+    getMuralTags: async (muralId: string): Promise<Tag[]> => {
+      const response = await fetchFn(api(`murals/${muralId}/tags`), {
+        method: 'GET',
+        headers: { Accept: 'vnd.mural.preview' },
       });
       return (await response.json()).value;
     },
