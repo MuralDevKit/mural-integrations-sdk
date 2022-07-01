@@ -95,6 +95,7 @@ interface StateTypes {
   templates: Template[];
   title: string;
   breakPoint: BreakPoints | null;
+  userId?: string;
 }
 
 const INITIAL_STATE: StateTypes = {
@@ -216,6 +217,19 @@ export default class CreateNewMural extends React.Component<
         }
 
         this.props.onCreateMural(eMural.value);
+
+        this.props.apiClient.track(
+          'Created mural from picker',
+          this.state.userId,
+          {
+            browser: navigator.userAgent,
+            os: navigator.platform,
+            referrer: document.referrer,
+            origin: location.origin,
+            clientAppId: this.props.apiClient.config.appId,
+            template: template.name,
+          },
+        );
       } catch (exception) {
         this.setState({
           error: 'Error creating a new mural.',
@@ -239,7 +253,11 @@ export default class CreateNewMural extends React.Component<
     }
   }, 50);
 
-  componentDidMount() {
+  async componentDidMount() {
+    const currentUser = await this.props.apiClient.getCurrentUser();
+    const userId = currentUser.value.id;
+    this.setState({ userId });
+
     this.loadTemplates();
     this.breakPointObserver();
   }

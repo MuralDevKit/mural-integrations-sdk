@@ -193,6 +193,11 @@ export interface ApiClient {
   };
   fetch: FetchFunction;
   url: (path: string) => URL;
+  track: (
+    event: string,
+    userId?: string,
+    properties?: {},
+  ) => Promise<{ value: boolean }>;
   createMural: ResourceEndpoint<
     Mural,
     {
@@ -254,21 +259,41 @@ export interface ApiClient {
 export default (config: ClientConfig): ApiClient => {
   const { fetchFn } = config;
 
-  function url(path: string): URL {
+  function url(path: string, prefix?: string): URL {
     return new URL(
       path,
-      `http${config.secure ? 's' : ''}://${config.muralHost}`,
+      `http${config.secure ? 's' : ''}://${prefix ? prefix : ''}${
+        config.muralHost
+      }`,
     );
   }
 
   const baseUrl = url('/api/public/v1/');
   const api = (path: string) => new URL(path, baseUrl).href;
+  // const trackingUrl = url('/track', 'integrations.').href;
+  const trackingUrl = url(
+    'https://scal-216-integrations.mural.engineering/track',
+  ).href;
 
   const client: ApiClient = {
     authenticated,
     config,
     fetch: fetchFn,
     url,
+    track: async (event: string, userId?: string, properties?: {}) => {
+      console.log('ApiClient.track', event, userId, properties);
+      const body = {
+        event,
+        userId,
+        properties,
+      };
+      const response = await fetchFn(trackingUrl, {
+        body: JSON.stringify(body),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      });
+      return response.json();
+    },
     // https://developers.mural.co/public/reference/createmural
     createMural: async body => {
       const response = await fetchFn(api('murals'), {

@@ -1,5 +1,6 @@
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
+import { commonTrackingProperties } from '../../../../mural-picker/src/common/tracking-properties';
 import RpcClient from '../../lib/rpc';
 import { muralSessionActivationUrl } from '../../lib/session-activation';
 import { EventHandler } from '../../types';
@@ -82,6 +83,12 @@ export class CanvasHost extends React.Component<PropTypes> {
     }
 
     window.addEventListener('message', this.handleMessage);
+
+    this.props.apiClient.track('Mural canvas is opened', 'canvas_user_id', {
+      ...commonTrackingProperties,
+      clientAppId: this.props.apiClient.config.appId,
+      muralId: this.props.muralId,
+    });
   }
 
   componentWillUnmount() {
