@@ -1,6 +1,6 @@
 {
   "name": "@muraldevkit/mural-integrations-mural-canvas",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "Mural Canvas component for MURAL integrations",
   "main": "dist/mural-canvas.bundle.js",
   "module": "dist/mural-canvas.esm.js",
@@ -45,18 +45,19 @@
     "react-router-dom": "^6.0.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^19.0.2",
-    "@rollup/plugin-image": "^2.1.0",
-    "@rollup/plugin-node-resolve": "^13.0.4",
+    "@rollup/plugin-commonjs": "^22.0.1",
+    "@rollup/plugin-image": "^2.1.1",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "rollup": "^2.75.7",
+    "rollup-plugin-imagetools": "^3.0.5",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-scss": "^3.0.0",
+    "rollup-plugin-styles": "^4.0.0",
+    "rollup-plugin-typescript2": "^0.32.1",
+    "sass": "^1.53.0",
     "@types/lodash": "^4.14.182",
     "@types/uuid": "^8.3.4",
-    "rollup": "^2.54.0",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-postcss": "^4.0.0",
-    "rollup-plugin-scss": "^3.0.0",
-    "rollup-plugin-styles": "^3.14.1",
-    "rollup-plugin-typescript2": "^0.30.0",
-    "sass": "^1.49.0",
     "typescript": "^4.3.5"
   },
   "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9"
