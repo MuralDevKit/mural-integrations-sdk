@@ -30,8 +30,8 @@
   },
   "homepage": "https://github.com/tactivos/mural-integrations-sdk/tree/packages/mural-account-chooser",
   "dependencies": {
-    "@muraldevkit/mural-integrations-common": "^2.2.4",
-    "@muraldevkit/mural-integrations-mural-client": "^2.2.4"
+    "@muraldevkit/mural-integrations-common": "^2.2.5",
+    "@muraldevkit/mural-integrations-mural-client": "^2.2.5"
   },
   "peerDependencies": {
     "@material-ui/core": ">=4.11.4",
