@@ -14,24 +14,37 @@ export interface AccessTokenPayload {
   username: string;
 }
 
-export function setSession(session: Session, storage: Storage) {
-  storage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+export function setSession(
+  session: Session,
+  storage: Storage,
+  storageKey: string = SESSION_STORAGE_KEY,
+) {
+  storage.setItem(storageKey, JSON.stringify(session));
 }
 
-export function getSession(storage: Storage): Session | null {
-  const session = storage.getItem(SESSION_STORAGE_KEY);
+export function getSession(
+  storage: Storage,
+  storageKey: string = SESSION_STORAGE_KEY,
+): Session | null {
+  const session = storage.getItem(storageKey);
   if (session) return JSON.parse(session);
   return null;
 }
 
-export function deleteSession(storage: Storage) {
-  storage.removeItem(SESSION_STORAGE_KEY);
+export function deleteSession(
+  storage: Storage,
+  storageKey: string = SESSION_STORAGE_KEY,
+) {
+  storage.removeItem(storageKey);
 }
 
-export const setupSessionStore = (storage: Storage) => ({
-  get: () => getSession(storage),
-  set: (session: Session) => setSession(session, storage),
-  delete: () => deleteSession(storage),
+export const setupSessionStore = (
+  storage: Storage,
+  storageKey: string = SESSION_STORAGE_KEY,
+) => ({
+  get: () => getSession(storage, storageKey),
+  set: (session: Session) => setSession(session, storage, storageKey),
+  delete: () => deleteSession(storage, storageKey),
 });
 
 export function storeState(state: string) {
