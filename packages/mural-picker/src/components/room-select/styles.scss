@@ -1,12 +1,22 @@
-.mural-picker-modal {
-  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  margin-top: 2em;
+.room-select {
+  font-weight: 400;
+  flex: 1 180px;
+
+  .select-label {
+    padding: 0.6em;
+  }
+
+  .MuiTextField-root
+    .MuiOutlinedInput-root.Mui-focused
+    .MuiOutlinedInput-notchedOutline {
+    border: 1px solid #ff0066;
+  }
+
   .MuiInput-underline,
   .MuiInput-underline:after {
     border-color: #ff0066;
   }
+
   .MuiFormLabel-root,
   .MuiInputBase-root,
   .MuiInputBase-root {
@@ -14,8 +24,5 @@
       'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     font-weight: 400;
-  }
-  .MuiFormLabel-root {
-    color: #4c4c4c;
   }
 }

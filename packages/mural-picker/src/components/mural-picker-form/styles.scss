@@ -1,5 +1,3 @@
-@use '../styles.scss';
-
 .mural-picker-body {
   font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -7,28 +5,27 @@
   margin: auto;
   outline: 0;
 
+  .select-row {
+    display: flex;
+    flex-wrap: wrap;
+
+    .workspace-select,
+    .room-select {
+      margin-right: 0.2rem;
+    }
+  }
+
   &.dark {
     color: white;
   }
 
-  .mural-picker-selects {
-    display: flex;
-    justify-content: space-between;
-    align-items: stretch;
-    flex-wrap: wrap;
-  }
-
-  .mural-picker-select {
+  .mural-picker-controls {
     font-weight: 400;
     flex: 1 1 32%;
     .MuiTextField-root
       .MuiOutlinedInput-root.Mui-focused
       .MuiOutlinedInput-notchedOutline {
       border: 1px solid #ff0066;
-    }
-
-    .select-label {
-      padding: 0.6em;
     }
   }
 
@@ -54,46 +51,8 @@
     margin-top: 1em;
   }
 
-  .mural-list-spinner {
+  .card-list-spinner {
     padding-top: 2em;
     text-align: center;
-  }
-
-  .MuiInput-underline,
-  .MuiInput-underline:after {
-    border-color: #ff0066;
-  }
-
-  .MuiFormLabel-root,
-  .MuiInputBase-root,
-  .MuiInputBase-root {
-    font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-      'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    font-weight: 400;
-  }
-}
-
-.MuiButton-root .MuiButton-label {
-  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-}
-
-#room-select-popup,
-#workspace-select-popup {
-  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  font-weight: 400;
-
-  .MuiListSubheader-root {
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 0.8rem;
-  }
-
-  .MuiAutocomplete-groupUl {
-    font-size: 1rem;
   }
 }

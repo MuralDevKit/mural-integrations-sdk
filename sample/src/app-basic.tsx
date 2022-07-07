@@ -11,7 +11,8 @@ import buildApiClient, {
 } from '@muraldevkit/mural-integrations-mural-client';
 import {
   MuralPicker,
-  PropTypes,
+  RoomPicker,
+  WorkspacePicker,
 } from '@muraldevkit/mural-integrations-mural-picker';
 import * as React from 'react';
 import { Route, Routes } from 'react-router-dom';
@@ -169,21 +170,33 @@ class App extends React.Component<{}, AppState> {
   }
 
   render() {
-    const muralPickerProps: PropTypes = {
-      apiClient: apiClient,
-      onCreateMural: async _mural => {
-        return undefined;
-      },
-      onMuralSelect: this.handleMural,
-      handleError: handleError,
-    };
-
     switch (this.state.segue) {
       case Segue.LOADING: {
         return <h1>Loading...</h1>;
       }
       case Segue.PICKER: {
-        return <MuralPicker {...muralPickerProps} />;
+        return (
+          <div>
+            <WorkspacePicker
+              apiClient={apiClient}
+              onSelect={console.log}
+              onError={console.log}
+            />
+            <hr />
+            <RoomPicker
+              apiClient={apiClient}
+              onSelect={console.log}
+              onError={console.log}
+              buttonTitle="Select"
+            />
+            <hr />
+            <MuralPicker
+              apiClient={apiClient}
+              onSelect={this.handleMural}
+              onError={handleError}
+            />
+          </div>
+        );
       }
       case Segue.CANVAS: {
         return (

@@ -1,87 +1,34 @@
-@use '../styles.scss';
-
 .workspace-picker-body {
-  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  margin: auto;
-  padding-top: 2rem;
   outline: 0;
-  width: 100%;
-  max-width: 700px;
-  max-height: 240px;
+  padding-top: 2rem;
   justify-content: center;
   align-items: center;
-  &.dark {
-    color: white;
-  }
 
-  .mural-picker-error {
-    margin: 0.2rem 0.8rem;
-  }
   .select-row {
     display: flex;
-    width: 100%;
-  }
-  .workspace-picker-select {
-    font-weight: 400;
-    flex-grow: 3;
-    margin: 0.2rem 0.9375rem;
-
-    .MuiTextField-root
-      .MuiOutlinedInput-root.Mui-focused
-      .MuiOutlinedInput-notchedOutline {
-      border: 1px solid #ff0066;
-    }
-
-    .select-label {
-      padding: 0.6em;
-    }
+    flex-wrap: wrap;
   }
 
-  .workspace-picker-button-control {
-    flex-grow: 1;
+  .workspace-select {
+    flex-grow: 5;
+    margin-right: 0.2rem;
+  }
+
+  .workspace-picker-control {
+    flex: 1 5 25%;
     padding-top: 1.2rem;
-    margin: 0.2rem 0.9375rem;
   }
 
   .workspace-picker-button {
-    flex: auto;
-    background-color: #ff0066;
-    border: none;
-    border-radius: 5px;
-    color: #ffffff;
-    font-size: 1rem;
-    font-weight: 400;
-    text-align: center;
-    transition: background 0.1s linear;
-    cursor: pointer;
-    outline-style: none;
-
-    &:active,
-    &:focus,
-    &:hover {
-      background-color: #d60057;
-    }
+    height: 100%;
   }
 
-  .mural-list-spinner {
-    padding-top: 2em;
-    text-align: center;
+  .workspace-picker-error {
+    margin-top: 0.33em;
   }
 
-  .MuiInput-underline,
-  .MuiInput-underline:after {
-    border-color: #ff0066;
-  }
-
-  .MuiFormLabel-root,
-  .MuiInputBase-root,
-  .MuiInputBase-root {
-    font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-      'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    font-weight: 400;
+  &.dark {
+    color: white;
   }
 }
 

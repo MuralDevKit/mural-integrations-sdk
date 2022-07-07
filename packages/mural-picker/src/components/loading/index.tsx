@@ -4,7 +4,7 @@ import * as React from 'react';
 export default class Loading extends React.Component {
   render() {
     return (
-      <div className="mural-list-spinner">
+      <div className="card-list-spinner">
         <CircularProgress />
       </div>
     );

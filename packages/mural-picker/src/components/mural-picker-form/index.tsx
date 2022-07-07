@@ -1,6 +1,11 @@
 import Button from '@material-ui/core/Button';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import {
+  DeepPartial,
+  defaultBuilder,
+  EventHandler,
+} from '@muraldevkit/mural-integrations-common';
+import {
   ApiClient,
   Mural,
   Room,
@@ -8,6 +13,7 @@ import {
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
+import { ReactSlot } from '../../common/react';
 import MuralPickerError from '../error';
 import Header from '../header';
 import Loading from '../loading';
@@ -16,58 +22,58 @@ import RoomSelect from '../room-select';
 import WorkspaceSelect from '../workspace-select';
 import './styles.scss';
 
-export interface CreateMuralData {
-  roomId: string;
-  title: string;
-  workspaceId: string;
-}
+export type Slots = {
+  Header: Header['props']['slots'] & {
+    Self: ReactSlot<Header>;
+  };
 
-export interface CreateMuralResult {
-  error?: string;
-}
+  WorkspaceSelect?: WorkspaceSelect['props']['slots'];
+  RoomSelect?: RoomSelect['props']['slots'];
+};
 
 export interface PropTypes {
   apiClient: ApiClient;
-  handleError: (error: Error, message: string) => void;
+  onError: EventHandler<[error: Error, message: string]>;
+  onSelect: EventHandler<
+    [mural: Mural, room: Room | null, workspace: Workspace]
+  >;
+
   theme?: 'light' | 'dark';
   ListboxProps?: object | undefined;
-  onMuralSelect: (mural: Mural) => void;
-  hideLogo?: boolean;
+  slots?: DeepPartial<Slots>;
 }
 
 interface StateTypes {
   isLoading: boolean;
-  isSearchingMurals: boolean;
-  isSearchingRooms: boolean;
+
   workspaces: Workspace[];
   rooms: Room[];
-  workspaceRooms: Room[];
-  searchedRooms: Room[];
   murals: Mural[];
-  mural?: Mural;
+
   error: string;
   workspace: Workspace | null;
   room: Room | null;
-  searchedMurals: Mural[];
+  mural: Mural | null;
 }
 
-const INITIAL_STATE: StateTypes = {
-  isLoading: true,
-  isSearchingRooms: false,
-  isSearchingMurals: false,
-  workspaces: [],
-  rooms: [],
-  workspaceRooms: [],
-  searchedRooms: [],
-  murals: [],
-  error: '',
-  workspace: null,
-  room: null,
-  searchedMurals: [],
-};
+const useSlots = defaultBuilder<Slots>({
+  Header: { Self: Header },
+});
 
-export default class MuralPickerBase extends React.Component<PropTypes> {
-  state: StateTypes = INITIAL_STATE;
+export default class MuralPickerForm extends React.Component<
+  PropTypes,
+  StateTypes
+> {
+  state = {
+    isLoading: true,
+    workspaces: [],
+    rooms: [],
+    murals: [],
+    error: '',
+    workspace: null,
+    room: null,
+    mural: null,
+  };
 
   async componentDidMount() {
     this.onLoading();
@@ -76,7 +82,7 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
       if (eWorkspaces.value.length) {
         const workspace = eWorkspaces.value[0];
         this.setState({ workspaces: eWorkspaces.value, workspace });
-        await this.loadMuralsAndRoomsByWorkspace(workspace);
+        await this.handleWorkspaceSelect(workspace);
       }
     } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_WORKSPACES);
@@ -97,27 +103,18 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
     });
   };
 
-  onWorkspaceSelect = async (
-    _: React.ChangeEvent<{}>,
-    workspace: Workspace | null,
-  ) => {
-    await this.loadMuralsAndRoomsByWorkspace(workspace);
-  };
-
-  loadMuralsAndRoomsByWorkspace = async (workspace: Workspace | null) => {
+  handleWorkspaceSelect = async (workspace: Workspace | null) => {
     if (!workspace) {
       // clear selections
       return this.setState({
         workspace: null,
         murals: [],
         mural: null,
+        room: null,
         rooms: [],
-        roomId: '',
         error: '',
       });
     }
-
-    this.onLoading();
 
     try {
       const q = { workspaceId: workspace.id };
@@ -131,59 +128,63 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
       this.setState({
         isLoading: false,
         workspace,
-        workspaceRooms: eRooms.value.sort(byTypeAsc),
+        rooms: eRooms.value.sort(byTypeAsc),
         murals: eMurals.value,
-        roomId: '',
         room: null,
       });
     } catch (e: any) {
-      this.onLoadingComplete();
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_ROOM_AND_MURALS);
     }
   };
 
-  onRoomSelect = (room: Room | null, murals: Mural[]) => {
-    this.setState({
-      room,
-      murals,
-      isLoading: false,
-    });
-  };
+  handleRoomSelect = async (room: Room | null) => {
+    this.setState({ room });
 
-  /**
-   * Passed to child components to get room search results
-   */
-  onRoomSearch = (searchedRooms: Room[]) => {
-    this.setState({ searchedRooms, isSearchingRooms: false });
+    if (!room) {
+      // clear selections
+      return this.setState({
+        mural: null,
+        murals: [],
+        error: '',
+      });
+    }
+
+    try {
+      const q = { roomId: room.id };
+      const [eMurals] = await Promise.all([
+        this.props.apiClient.getMuralsByRoom(q),
+      ]);
+
+      this.setState({
+        isLoading: false,
+        murals: eMurals.value,
+      });
+    } catch (e: any) {
+      this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_ROOM_AND_MURALS);
+    }
   };
 
   /**
    * mural selected with intent to open.
    * Behavior on action with intent to open determined by parent component.
    */
-  onMuralSelect = () => {
+  handleSelect = () => {
     try {
       // send selected mural back to parent
-      this.props.onMuralSelect(this.state.mural!);
+      this.props.onSelect(
+        this.state.mural!,
+        this.state.room,
+        this.state.workspace!,
+      );
     } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL);
     }
   };
 
   /**
-   * Pass to child components to get mural search results
-   */
-  onMuralSearch = (searchedMurals: Mural[]) => {
-    this.setState({
-      searchedMurals,
-      isSearchingMurals: false,
-    });
-  };
-
-  /**
    * Pass to child component to get selected mural
    */
-  onMuralPick = (mural: Mural | null) => {
+  handleMuralSelect = (mural: Mural | null) => {
     this.setState({
       mural,
       error: '',
@@ -193,11 +194,13 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
   handleError = (e: Error, displayMsg: string) => {
     // display error and send back error data to caller
     this.setState({ error: displayMsg });
-    this.props.handleError(e, displayMsg);
+
+    if (this.props.onError) this.props.onError(e, displayMsg);
   };
 
   render() {
-    const { hideLogo, theme } = this.props;
+    const slots = useSlots(this.props.slots);
+    const { theme } = this.props;
     const currentTheme = theme || 'light';
     const muiTheme = createMuiTheme({
       palette: {
@@ -212,45 +215,36 @@ export default class MuralPickerBase extends React.Component<PropTypes> {
           className={`mural-picker-body ${currentTheme}`}
           data-qa="mural-picker"
         >
-          <Header hideLogo={hideLogo} />
-          <div className={'mural-picker-selects'}>
+          <slots.Header.Self slots={{ ...slots.Header }}>
+            Choose a mural
+          </slots.Header.Self>
+          <div className="select-row">
             <WorkspaceSelect
               workspace={this.state.workspace}
               workspaces={this.state.workspaces}
-              ListboxProps={this.props.ListboxProps}
-              onWorkspaceSelect={this.onWorkspaceSelect}
-            ></WorkspaceSelect>
-
+              onSelect={this.handleWorkspaceSelect}
+              slots={slots.WorkspaceSelect}
+            />
             <RoomSelect
-              apiClient={this.props.apiClient}
-              handleError={this.props.handleError}
               workspace={this.state.workspace}
               room={this.state.room}
-              workspaceRooms={this.state.workspaceRooms}
-              searchedRooms={this.state.searchedRooms}
-              isSearchingRooms={this.state.isSearchingRooms}
-              onRoomSelect={this.onRoomSelect}
-              onRoomSearch={this.onRoomSearch}
-              onLoading={this.onLoading}
-              onLoadingComplete={this.onLoadingComplete}
-            ></RoomSelect>
+              rooms={this.state.rooms}
+              onSelect={this.handleRoomSelect}
+              slots={slots.RoomSelect}
+            />
             <MuralSelect
               apiClient={this.props.apiClient}
-              onMuralSearch={this.onMuralSearch}
-              onMuralPick={this.onMuralPick}
               workspace={this.state.workspace}
-              disabled={!this.state.workspace}
               murals={this.state.murals}
-              searchedMurals={this.state.searchedMurals}
-              isSearchingMurals={this.state.isSearchingMurals}
-              handleError={this.props.handleError}
-            ></MuralSelect>
+              onError={this.handleError}
+              onSelect={this.handleMuralSelect}
+            />
           </div>
           <Button
-            className="mural-select-button"
+            className="mural-button mural-select-button"
             data-qa="mural-select-button"
             disabled={!this.state.mural}
-            onClick={this.onMuralSelect}
+            onClick={this.handleSelect}
             color="secondary"
             size="large"
             variant="contained"

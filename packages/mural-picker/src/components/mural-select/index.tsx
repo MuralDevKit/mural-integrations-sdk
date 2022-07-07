@@ -1,5 +1,6 @@
 import { FormControl, InputLabel, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { EventHandler } from '@muraldevkit/mural-integrations-common/src/types';
 import {
   ApiClient,
   Mural,
@@ -8,18 +9,19 @@ import {
 import debounce from 'lodash/debounce';
 import * as React from 'react';
 import { DELAYS } from '../../common/delays';
+import './styles.scss';
 
 interface PropTypes {
   apiClient: ApiClient;
   workspace: Workspace | null;
   murals: Mural[];
-  mural?: Mural;
-  searchedMurals: Mural[];
-  isSearchingMurals: boolean;
-  onMuralPick: (mural: Mural | null) => void;
-  onMuralSearch: (searchedMurals: Mural[]) => void;
-  handleError: (e: Error, displayMsg: string) => void;
-  disabled: boolean;
+
+  // TODO: handle in state?
+  onSelect: EventHandler<[mural: Mural | null]>;
+  onError: EventHandler<[e: Error, displayMsg: string]>;
+
+  disabled?: boolean;
+  mural?: Mural | null;
 }
 
 // eslint-disable-next-line no-shadow
@@ -32,92 +34,89 @@ enum ERRORS {
 export default class MuralSelect extends React.Component<PropTypes> {
   state = {
     isSearchingMurals: false,
+    searchedMurals: [],
   };
 
-  onMuralPick = (_: React.ChangeEvent<{}>, mural: Mural | null) => {
+  handleChange = (_: React.ChangeEvent<{}>, mural: Mural | null) => {
     if (!mural) {
-      this.props.onMuralPick(null);
+      this.props.onSelect(null);
     } else {
       try {
-        this.props.onMuralPick(mural);
+        this.props.onSelect(mural);
       } catch (e: any) {
-        this.props.handleError(e, ERRORS.ERROR_SELECTING_MURAL);
+        this.props.onError(e, ERRORS.ERROR_SELECTING_MURAL);
       }
     }
   };
 
-  onMuralSearch = debounce(async (title: string) => {
-    if (this.props.workspace && title.length > 2) {
-      try {
-        this.setState({ isSearchingMurals: true });
-        const eMurals = await this.props.apiClient.searchMuralsByWorkspace({
-          workspaceId: this.props.workspace.id,
-          title,
-        });
+  // TODO — handle the room ID
+  handleSearch = debounce(async (title: string) => {
+    if (!this.props.workspace) return;
+    if (title.length <= 2) return;
 
-        this.setState({
-          searchedMurals: eMurals.value,
-          isSearchingMurals: false,
-        });
+    try {
+      this.setState({ isSearchingMurals: true });
+      const eMurals = await this.props.apiClient.searchMuralsByWorkspace({
+        workspaceId: this.props.workspace.id,
+        title,
+      });
 
-        this.props.onMuralSearch(eMurals.value);
-      } catch (e: any) {
-        this.setState({ isSearchingMurals: false });
-        this.props.handleError(e, ERRORS.ERR_SEARCH_MURALS);
-      }
-    } else {
-      this.props.onMuralSearch([]);
+      this.setState({
+        searchedMurals: eMurals.value,
+      });
+    } catch (e: any) {
+      this.props.onError(e, ERRORS.ERR_SEARCH_MURALS);
+    } finally {
       this.setState({ isSearchingMurals: false });
     }
   }, DELAYS.DEBOUNCE_SEARCH);
 
+  cancelSearch = () => {
+    this.setState({ isSearchingMurals: false, searchedMurals: [] });
+  };
+
   render() {
     return (
-      <React.Fragment>
-        <FormControl className="mural-picker-select" data-qa="mural-select">
-          <div className="select-label">
-            <InputLabel shrink>MURAL</InputLabel>
-          </div>
-          <div>
-            <Autocomplete
-              id="mural-select"
-              options={
-                this.props.searchedMurals.length === 0
-                  ? this.props.murals
-                  : this.props.searchedMurals
+      <FormControl className="mural-select" data-qa="mural-select">
+        <div className="select-label">
+          <InputLabel shrink>MURAL</InputLabel>
+        </div>
+        <div>
+          <Autocomplete
+            id="mural-select"
+            options={
+              this.state.searchedMurals.length === 0
+                ? this.props.murals
+                : this.state.searchedMurals
+            }
+            getOptionLabel={option => {
+              return option.title || 'Untitled Mural';
+            }}
+            renderInput={params => (
+              <TextField
+                {...params}
+                placeholder="Find a mural..."
+                variant="outlined"
+              />
+            )}
+            value={this.props.mural}
+            disabled={!this.props.workspace || this.props.disabled}
+            onChange={this.handleChange}
+            onInputChange={(event: React.ChangeEvent<{}>, input: string) => {
+              if (event?.type === 'change') {
+                this.handleSearch(input);
               }
-              getOptionLabel={option => {
-                return option.title || 'Untitled Mural';
-              }}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  placeholder="Find a mural..."
-                  variant="outlined"
-                />
-              )}
-              value={this.props.mural}
-              disabled={this.props.disabled}
-              onChange={this.onMuralPick}
-              onInputChange={(event: React.ChangeEvent<{}>, input: string) => {
-                if (event?.type === 'change') {
-                  this.onMuralSearch(input);
-                }
-              }}
-              onClose={(_event: React.ChangeEvent<{}>, _reason: string) => {
-                // clear searched murals on autocomplete close
-                this.props.onMuralSearch([]);
-              }}
-              getOptionSelected={(option: Mural, value: Mural) =>
-                option.id === value.id
-              }
-              loading={this.state.isSearchingMurals}
-              clearOnEscape={true}
-              noOptionsText={'No results'}
-            />
-          </div>
-        </FormControl>
-      </React.Fragment>
+            }}
+            onClose={this.cancelSearch}
+            getOptionSelected={(option: Mural, value: Mural) =>
+              option.id === value.id
+            }
+            loading={this.state.isSearchingMurals}
+            clearOnEscape={true}
+            noOptionsText={'No results'}
+          />
+        </div>
+      </FormControl>
     );
   }
 }

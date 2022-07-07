@@ -1,4 +1,12 @@
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import {
+  ThemeOptions as MuiThemeOptions,
+  ThemeProvider,
+} from '@material-ui/core/styles';
+import {
+  DeepPartial,
+  defaultBuilder,
+  EventHandler,
+} from '@muraldevkit/mural-integrations-common';
 import {
   ApiClient,
   Mural,
@@ -8,79 +16,118 @@ import {
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
-import CreateNewMural from '../create-new-mural';
+import CardList from '../card-list';
+import { CardSize } from '../card-list-item';
 import MuralPickerError from '../error';
 import Header from '../header';
 import Loading from '../loading';
-import { CardSize } from '../mural-card';
-import MuralList from '../mural-list';
+import MuralCreate from '../mural-create';
 import RoomSelect from '../room-select';
 import WorkspaceSelect from '../workspace-select';
 import './styles.scss';
+import createTheme, { Preset } from '../theme';
+import { ReactSlot } from '../../common/react';
 
-export interface CreateMuralData {
-  roomId: string;
-  title: string;
-  workspaceId: string;
-}
+export type ThemeOptions = {
+  preset: Preset;
+  cardSize: CardSize;
+  overrides?: MuiThemeOptions;
+};
 
-export interface CreateMuralResult {
-  error?: string;
-}
+export type Slots = {
+  AddButton?: ReactSlot;
 
-export interface PropTypes {
+  Header: Header['props']['slots'] & {
+    Self: ReactSlot<Header>;
+  };
+
+  WorkspaceSelect?: WorkspaceSelect['props']['slots'];
+  RoomSelect?: RoomSelect['props']['slots'];
+
+  CardList?: CardList['props']['slots'];
+  MuralCreate?: MuralCreate['props']['slots'];
+};
+
+interface PropTypes {
   apiClient: ApiClient;
-  onCreateMural: (mural: Mural) => void;
-  onMuralSelect: (mural: Mural) => void;
-  handleError: (error: Error, message: string) => void;
-  cardSize?: CardSize;
-  hideLogo?: boolean;
-  hideAddButton?: boolean;
-  theme?: 'light' | 'dark';
-  ListboxProps?: object | undefined;
+  onError: EventHandler<[error: Error, message: string]>;
+  onSelect: EventHandler<
+    [mural: Mural, room: Room | null, workspace: Workspace]
+  >;
+
+  theme?: DeepPartial<ThemeOptions>;
+  slots?: DeepPartial<Slots>;
 }
 
 interface StateTypes {
-  isCreateSelected: boolean;
-  isLoading: boolean;
-  isSearchingRooms: boolean;
+  segue: Segue;
 
   workspaces: Workspace[];
   rooms: Room[];
-  workspaceRooms: Room[];
-  searchedRooms: Room[];
   murals: Mural[];
-  mural?: Mural;
-  error: string;
-  workspace: Workspace | null;
+
+  /** Currently selected mural */
+  mural: Mural | null;
+
+  /** Currently selected room */
   room: Room | null;
-  searchingRooms: boolean;
-  title: string;
+
+  /** Currently selected workspace */
+  workspace: Workspace | null;
+
+  error: string;
 }
 
-const INITIAL_STATE: StateTypes = {
-  isCreateSelected: false,
-  isLoading: true,
-  isSearchingRooms: false,
+enum Segue {
+  CREATING = 'creating',
+  LOADING = 'loading',
+  SEARCHING = 'searching',
+  PICKING = 'picking',
+}
 
-  workspaces: [],
-  rooms: [],
-  workspaceRooms: [],
-  searchedRooms: [],
-  murals: [],
-  error: '',
-  workspace: null,
-  room: null,
-  searchingRooms: false,
-  title: 'Choose a mural',
-};
+const useThemeOptions = defaultBuilder<ThemeOptions>({
+  preset: 'light',
+  cardSize: 'normal',
+});
 
-export default class MuralPicker extends React.Component<PropTypes> {
-  state: StateTypes = INITIAL_STATE;
+const useSlots = defaultBuilder<Slots>({
+  Header: { Self: Header },
+});
+
+export default class MuralPicker extends React.Component<
+  PropTypes,
+  StateTypes
+> {
+  state: StateTypes = {
+    segue: Segue.LOADING,
+
+    workspaces: [],
+    rooms: [],
+    murals: [],
+
+    mural: null,
+    room: null,
+    workspace: null,
+
+    error: '',
+  };
+
+  useTransition = (to: Segue) => () => this.transition(to);
+
+  transition = (to: Segue) => this.setState({ segue: to });
+
+  trackDisplay = () => {
+    this.props.apiClient.track('Mural picker displayed', {
+      ...getCommonTrackingProperties(),
+      clientAppId: this.props.apiClient.config.appId,
+      workspace: this.state.workspace?.name,
+    });
+  };
 
   async componentDidMount() {
-    this.setState({ isLoading: true });
     try {
+      this.transition(Segue.LOADING);
+
       const eWorkspaces = await this.props.apiClient.getWorkspaces();
       const currentUser = await this.props.apiClient.getCurrentUser();
       const lastActiveWorkspaceId = currentUser.value.lastActiveWorkspace;
@@ -90,43 +137,21 @@ export default class MuralPicker extends React.Component<PropTypes> {
           eWorkspaces.value.find(w => w.id === lastActiveWorkspaceId) ||
           eWorkspaces.value[0];
 
-        this.setState({ workspaces: eWorkspaces.value, workspace });
-        await this.loadMuralsAndRoomsByWorkspace(workspace);
+        this.setState(
+          { workspaces: eWorkspaces.value, workspace },
+          this.trackDisplay,
+        );
+
+        await this.handleWorkspaceSelect(workspace);
       }
     } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_WORKSPACES);
+    } finally {
+      this.transition(Segue.PICKING);
     }
-
-    this.setState({ isLoading: false });
-
-    this.props.apiClient.track('Mural picker displayed', {
-      ...getCommonTrackingProperties(),
-      clientAppId: this.props.apiClient.config.appId,
-      workspace: this.state.workspace?.name,
-    });
   }
 
-  onLoading = () => {
-    this.setState({
-      isLoading: true,
-      error: '',
-    });
-  };
-
-  onLoadingComplete = () => {
-    this.setState({
-      isLoading: false,
-    });
-  };
-
-  onWorkspaceSelect = (
-    _: React.ChangeEvent<{}>,
-    workspace: Workspace | null,
-  ) => {
-    this.loadMuralsAndRoomsByWorkspace(workspace);
-  };
-
-  loadMuralsAndRoomsByWorkspace = async (workspace: Workspace | null) => {
+  handleWorkspaceSelect = async (workspace: Workspace | null) => {
     if (!workspace) {
       // clear selections
       return this.setState({
@@ -134,14 +159,14 @@ export default class MuralPicker extends React.Component<PropTypes> {
         murals: [],
         mural: null,
         rooms: [],
-        roomId: '',
+        room: null,
         error: '',
       });
     }
 
-    this.setState({ isLoading: true, error: '' });
-
     try {
+      this.transition(Segue.LOADING);
+
       const q = {
         workspaceId: workspace.id,
       };
@@ -156,60 +181,48 @@ export default class MuralPicker extends React.Component<PropTypes> {
       );
 
       this.setState({
-        isLoading: false,
         workspace,
-        workspaceRooms: rooms,
+        rooms: rooms,
         murals: uponMurals.value,
-        roomId: '',
+
+        // Reset the currently selected room
         room: null,
       });
     } catch (e: any) {
-      console.error(e);
-      this.setState({ isLoading: false });
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_ROOM_AND_MURALS);
+    } finally {
+      this.transition(Segue.PICKING);
     }
   };
 
-  onRoomSelect = (room: Room | null, murals: Mural[]) => {
-    this.setState({
-      room,
-      murals,
-      isLoading: false,
-    });
-  };
-
-  /**
-   * Passed to child components to get room search results
-   */
-  onRoomSearch = (searchedRooms: Room[]) => {
-    this.setState({ searchedRooms, isSearchingRooms: false });
-  };
-
-  /**
-   * mural selected via grid/cards
-   */
-  onMuralSelect = (mural: Mural) => {
-    /*
-     * Despite the types making this.props.onMuralSelect required in cases where components using this method are rendered,
-     * it is possible that with updates it could be invoked when not defined.
-     */
-    if (!this.props.onMuralSelect) {
-      this.handleError(
-        new Error(
-          'onMuralSelect was invoked when not passed as prop from parent',
-        ),
-        MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL,
-      );
-      return;
+  handleRoomSelect = async (room: Room | null) => {
+    if (!room) {
+      return this.handleWorkspaceSelect(this.state.workspace);
     }
 
     try {
-      // send selected mural back to parent
-      this.props.onMuralSelect(mural);
+      this.transition(Segue.LOADING);
+      const q = {
+        roomId: room.id,
+      };
+
+      const eMurals = await this.props.apiClient.getMuralsByRoom(q);
 
       this.setState({
+        room: room,
+        murals: eMurals.value,
+      });
+    } catch (e: any) {
+      this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_MURALS);
+    } finally {
+      this.transition(Segue.PICKING);
+    }
+  };
+
+  handleMuralSelect = (mural: Mural) => {
+    try {
+      this.setState({
         error: '',
-        isCreateSelected: false,
         mural,
       });
       this.props.apiClient.track('Selected mural from picker', {
@@ -218,65 +231,50 @@ export default class MuralPicker extends React.Component<PropTypes> {
         workspace: this.state.workspace?.name,
         muralId: mural.id,
       });
+      this.props.onSelect(mural, this.state.room, this.state.workspace!);
     } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL);
     }
   };
 
-  onCreateMural = async (_?: string) => {
-    /*
-     * Despite the types making this.props.onCreateMural required in cases where components using this method are rendered,
-     * it is possible that with updates it could be invoked when not defined.
-     */
-    if (!this.props.onCreateMural) {
-      this.handleError(
-        new Error(
-          'onCreateMural was invoked when not passed as prop from parent',
-        ),
-        MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL,
-      );
-      return;
-    }
-  };
-
-  onCreateMuralButtonHandler = async () => {
+  handleCreate = async () => {
     if (!this.state.workspace) {
       return this.setState({ error: MURAL_PICKER_ERRORS.ERR_SELECT_WORKSPACE });
     }
+
     if (!this.state.room) {
       return this.setState({ error: MURAL_PICKER_ERRORS.ERR_SELECT_ROOM });
     }
 
     this.setState({
       error: '',
-      isCreateSelected: true,
-      mural: undefined,
-      title: 'Create a mural',
+      segue: Segue.CREATING,
+      mural: null,
     });
   };
 
   setInitialState = () => {
-    this.setState(state => {
-      return { ...state, isCreateSelected: false, title: INITIAL_STATE.title };
-    });
+    this.setState({ segue: Segue.PICKING });
   };
 
-  onFinishCreation = async (mural: Mural) => {
+  handleFinishCreation = async (mural: Mural) => {
     this.setInitialState();
-    this.props.onCreateMural(mural);
 
-    if (this.state.room) {
-      const murals = await this.props.apiClient.getMuralsByRoom({
-        roomId: this.state.room.id,
-      });
-      this.setState({ murals: murals.value });
-    }
+    // Let's add this new mural to our list of displayed mural
+    this.setState(state => ({
+      mural,
+      murals: [mural, ...state.murals],
+    }));
+
+    this.props.onSelect(mural, this.state.room, this.state.workspace!);
   };
 
-  handleError = (e: Error, displayMsg: string) => {
-    // display error and send back error data to caller
+  handleError = async (e: Error, displayMsg: string) => {
     this.setState({ error: displayMsg });
-    this.props.handleError(e, displayMsg);
+
+    if (this.props.onError) {
+      this.props.onError(e, displayMsg);
+    }
   };
 
   getRoomGroup = (room?: Room) => {
@@ -285,77 +283,63 @@ export default class MuralPicker extends React.Component<PropTypes> {
   };
 
   render() {
-    const { cardSize, hideLogo, theme } = this.props;
-    const currentTheme = theme || 'light';
-    const muiTheme = createMuiTheme({
-      palette: {
-        type: currentTheme,
-        text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
-        primary: {
-          main: '#FF0066',
-        },
-      },
-      typography: {
-        fontFamily: 'Proxima Nova',
-      },
-    });
+    const { preset, cardSize } = useThemeOptions(this.props.theme);
+    const slots = useSlots(this.props.slots);
+    const theme = createTheme(preset);
+
+    const title =
+      this.state.segue === Segue.CREATING ? 'Create a mural' : 'Choose a mural';
 
     return (
-      <ThemeProvider theme={muiTheme}>
-        <div
-          className={`mural-picker-body ${currentTheme}`}
-          data-qa="mural-picker"
-        >
-          <Header hideLogo={hideLogo} />
+      <ThemeProvider theme={theme}>
+        <div className={`mural-picker-body ${preset}`} data-qa="mural-picker">
+          <slots.Header.Self slots={{ ...slots.Header }}>
+            {title}
+          </slots.Header.Self>
           <div className={'mural-picker-selects'}>
             <WorkspaceSelect
               workspace={this.state.workspace}
               workspaces={this.state.workspaces}
-              ListboxProps={this.props.ListboxProps}
-              onWorkspaceSelect={this.onWorkspaceSelect}
-            ></WorkspaceSelect>
-
+              onSelect={this.handleWorkspaceSelect}
+              slots={slots.WorkspaceSelect}
+            />
             <RoomSelect
-              apiClient={this.props.apiClient}
-              handleError={this.props.handleError}
-              isSearchingRooms={this.state.isSearchingRooms}
               workspace={this.state.workspace}
               room={this.state.room}
-              workspaceRooms={this.state.workspaceRooms}
-              searchedRooms={this.state.searchedRooms}
-              onRoomSelect={this.onRoomSelect}
-              onRoomSearch={this.onRoomSearch}
-              onLoading={this.onLoading}
-              onLoadingComplete={this.onLoadingComplete}
-            ></RoomSelect>
+              rooms={this.state.rooms}
+              onSelect={this.handleRoomSelect}
+              slots={slots.RoomSelect}
+            />
           </div>
-          {/* TODO: add search */}
+
           {this.state.error && <MuralPickerError error={this.state.error} />}
-          {this.state.isLoading && <Loading />}
-          {!this.state.isCreateSelected && !this.state.isLoading && (
-            <MuralList
+          {this.state.segue === Segue.LOADING && <Loading />}
+          {this.state.segue === Segue.PICKING && (
+            <CardList
               workspace={this.state.workspace}
               room={this.state.room}
-              isCreateSelected={this.state.isCreateSelected}
               murals={this.state.murals}
               selectedMural={this.state.mural}
-              onMuralSelect={this.onMuralSelect}
-              onCreateMuralButtonHandler={this.onCreateMuralButtonHandler}
-              handleError={this.handleError}
-              cardSize={cardSize || 'normal'}
-              hideAddButton={!!this.props.hideAddButton}
+              cardSize={cardSize}
+              hideAddButton={!slots.AddButton === null}
+              onSelect={this.handleMuralSelect}
+              onCreate={this.handleCreate}
+              onError={this.handleError}
+              slots={slots.CardList}
             />
           )}
 
-          {this.state.isCreateSelected &&
+          {this.state.segue === Segue.CREATING &&
             this.state.room &&
             this.state.workspace && (
-              <CreateNewMural
+              <MuralCreate
                 apiClient={this.props.apiClient}
-                roomId={this.state.room.id}
+                room={this.state.room}
                 workspace={this.state.workspace}
-                onCreateMural={this.onFinishCreation}
-                onCancelAndGoBack={this.setInitialState}
+                onError={this.handleError}
+                onCreate={this.handleFinishCreation}
+                onCancel={this.setInitialState}
+                slots={slots.MuralCreate}
               />
             )}
         </div>

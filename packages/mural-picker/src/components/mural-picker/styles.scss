@@ -1,9 +1,4 @@
-@use '../styles.scss';
-
 .mural-picker-body {
-  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   margin: auto;
   outline: 0;
 
@@ -19,14 +14,18 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    column-gap: 1em;
+    column-gap: 0.33em;
     min-height: fit-content;
-    margin: 1em 0;
-  }
+    margin: 0.33em 0;
 
-  @media(max-width:564px) {
-    .mural-picker-selects {
-      flex-direction: column;
+    flex-wrap: wrap;
+
+    .workspace-select {
+      flex: 1 180px;
+    }
+
+    .room-select {
+      flex: 1 180px;
     }
   }
 
@@ -38,14 +37,14 @@
       .MuiOutlinedInput-notchedOutline {
       border: 1px solid #ff0066;
     }
+  }
 
-    .select-label {
-      padding: 0.6em;
-    }
+  .mural-picker-header {
+    margin: 0.33em 0;
   }
 
   .choose-mural-logo {
-    margin-right: 1em;
+    margin-right: 0.66em;
   }
 
   .choose-mural-title {
@@ -59,10 +58,15 @@
 
   // TODO: How to apply a fade to a scrollable modal?
   .mural-picker-error {
-    margin-top: 0.6em;
+    margin-top: 0.33em;
   }
 
-  .mural-list-spinner {
+  .mural-selector-container {
+    margin: 0.33em 0;
+    padding: 0;
+  }
+
+  .card-list-spinner {
     padding-top: 2em;
     text-align: center;
   }
