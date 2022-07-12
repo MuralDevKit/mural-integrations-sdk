@@ -1,6 +1,6 @@
 {
   "name": "@muraldevkit/sample",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "private": true,
   "dependencies": {
     "@babel/helper-create-class-features-plugin": "^7.18.0",
