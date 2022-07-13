@@ -1,6 +1,6 @@
 {
   "name": "@muraldevkit/mural-integrations-mural-picker",
-  "version": "2.2.6",
+  "version": "2.2.5",
   "description": "Mural Picker component for MURAL integrations",
   "main": "dist/mural-picker.bundle.js",
   "module": "dist/mural-picker.esm.js",
@@ -29,8 +29,8 @@
   },
   "homepage": "https://github.com/tactivos/mural-integrations-sdk/tree/packages/mural-picker",
   "dependencies": {
-    "@muraldevkit/mural-integrations-common": "^2.2.6",
-    "@muraldevkit/mural-integrations-mural-client": "^2.2.6",
+    "@muraldevkit/mural-integrations-common": "^2.2.5",
+    "@muraldevkit/mural-integrations-mural-client": "^2.2.5",
     "humanize-duration": "^3.27.2",
     "lodash": "^4.17.21"
   },
