@@ -10,7 +10,8 @@
   },
   "services": {
     "auth": { "host": "localhost:5005", "secure": false },
-    "mural": { "host": "app.mural.co", "secure": true }
+    "mural": { "host": "app.mural.co", "secure": true },
+    "integrations": { "host": "integrations.mural.co", "secure": true }
   },
   "clientApp": {
     "clientId": "<client-id>",
