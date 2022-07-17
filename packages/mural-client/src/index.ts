@@ -24,6 +24,7 @@ export type ClientConfig = {
   appId: string;
   fetchFn: FetchFunction;
   muralHost: string;
+  integrationsHost: string;
   secure: boolean;
 };
 
@@ -42,12 +43,14 @@ export type PaginatedOptions = {
 
 const DEFAULT_CONFIG = {
   muralHost: 'app.mural.co',
+  integrationsHost: 'integrations.mural.co',
   secure: true,
 };
 
 export type BuildClientArgs = {
   appId: string;
   muralHost?: string;
+  integrationsHost?: string;
   secure?: boolean;
   storage?: Storage;
 } & TokenHandlerConfig;
@@ -69,6 +72,7 @@ export const getApiError = async (error: Error): Promise<ApiError | null> => {
  *
  * @param args.appId MURAL App `client_id`
  * @param args.muralHost MURAL API service host (default: 'app.mural.co')
+ * @param args.integrationsHost MURAL integrations API service host (default: 'integrations.mural.co')
  * @param args.secure Whether the client should use TLS (default: true)
  * @param args.storage 'Storage' compatible store for the session management.
  *
@@ -189,10 +193,16 @@ export interface ApiClient {
   config: {
     appId: string;
     muralHost: string;
+    integrationsHost: string;
     secure: boolean;
   };
   fetch: FetchFunction;
   url: (path: string) => URL;
+  track: (
+    event: string,
+    userId?: string,
+    properties?: {},
+  ) => Promise<{ value: boolean }>;
   createMural: ResourceEndpoint<
     Mural,
     {
@@ -261,14 +271,35 @@ export default (config: ClientConfig): ApiClient => {
     );
   }
 
+  function integrationsUrl(path: string): URL {
+    return new URL(
+      path,
+      `http${config.secure ? 's' : ''}://${config.integrationsHost}`,
+    );
+  }
+
   const baseUrl = url('/api/public/v1/');
   const api = (path: string) => new URL(path, baseUrl).href;
+  const trackingUrl = integrationsUrl('/track').href;
 
   const client: ApiClient = {
     authenticated,
     config,
     fetch: fetchFn,
     url,
+    track: async (event: string, userId?: string, properties?: {}) => {
+      const body = {
+        event,
+        userId,
+        properties,
+      };
+      const response = await fetchFn(trackingUrl, {
+        body: JSON.stringify(body),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      });
+      return response.json();
+    },
     // https://developers.mural.co/public/reference/createmural
     createMural: async body => {
       const response = await fetchFn(api('murals'), {

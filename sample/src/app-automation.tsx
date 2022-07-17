@@ -74,6 +74,7 @@ const refreshToken = refreshTokenHandler(tokenHandlerConfig);
 const clientConfig = buildClientConfig({
   appId: APP_ID,
   muralHost: SERVICES.mural.host,
+  integrationsHost: SERVICES.integrations.host,
   ...tokenHandlerConfig,
 });
 

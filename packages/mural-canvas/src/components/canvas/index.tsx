@@ -1,5 +1,6 @@
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
+import { commonTrackingProperties } from '../../common/tracking-properties';
 import RpcClient from '../../lib/rpc';
 import { muralSessionActivationUrl } from '../../lib/session-activation';
 import { EventHandler } from '../../types';
@@ -71,7 +72,7 @@ export class CanvasHost extends React.Component<PropTypes> {
     }
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { rpcClient } = this.props;
 
     if (rpcClient) {
@@ -82,6 +83,18 @@ export class CanvasHost extends React.Component<PropTypes> {
     }
 
     window.addEventListener('message', this.handleMessage);
+
+    const userId = this.props.apiClient.authenticated()
+      ? await (
+          await this.props.apiClient.getCurrentUser()
+        ).value.id
+      : '';
+
+    this.props.apiClient.track('Mural canvas is opened', userId, {
+      ...commonTrackingProperties,
+      clientAppId: this.props.apiClient.config.appId,
+      muralId: this.props.muralId,
+    });
   }
 
   componentWillUnmount() {
