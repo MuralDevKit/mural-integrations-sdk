@@ -7,7 +7,7 @@ import {
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
-import { commonTrackingProperties } from '../../common/tracking-properties';
+import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import CreateNewMural from '../create-new-mural';
 import MuralPickerError from '../error';
 import Header from '../header';
@@ -56,7 +56,6 @@ interface StateTypes {
   room: Room | null;
   searchingRooms: boolean;
   title: string;
-  userId?: string;
 }
 
 const INITIAL_STATE: StateTypes = {
@@ -85,14 +84,13 @@ export default class MuralPicker extends React.Component<PropTypes> {
       const eWorkspaces = await this.props.apiClient.getWorkspaces();
       const currentUser = await this.props.apiClient.getCurrentUser();
       const lastActiveWorkspaceId = currentUser.value.lastActiveWorkspace;
-      const userId = currentUser.value.id;
 
       if (eWorkspaces.value.length) {
         const workspace =
           eWorkspaces.value.find(w => w.id === lastActiveWorkspaceId) ||
           eWorkspaces.value[0];
 
-        this.setState({ workspaces: eWorkspaces.value, workspace, userId });
+        this.setState({ workspaces: eWorkspaces.value, workspace });
         await this.loadMuralsAndRoomsByWorkspace(workspace);
       }
     } catch (e: any) {
@@ -101,8 +99,8 @@ export default class MuralPicker extends React.Component<PropTypes> {
 
     this.setState({ isLoading: false });
 
-    this.props.apiClient.track('Mural picker displayed', this.state.userId, {
-      ...commonTrackingProperties,
+    this.props.apiClient.track('Mural picker displayed', {
+      ...getCommonTrackingProperties(),
       clientAppId: this.props.apiClient.config.appId,
       workspace: this.state.workspace?.name,
     });
@@ -214,16 +212,12 @@ export default class MuralPicker extends React.Component<PropTypes> {
         isCreateSelected: false,
         mural,
       });
-      this.props.apiClient.track(
-        'Selected mural from picker',
-        this.state?.userId,
-        {
-          ...commonTrackingProperties,
-          clientAppId: this.props.apiClient.config.appId,
-          workspace: this.state.workspace?.name,
-          muralId: mural.id,
-        },
-      );
+      this.props.apiClient.track('Selected mural from picker', {
+        ...getCommonTrackingProperties(),
+        clientAppId: this.props.apiClient.config.appId,
+        workspace: this.state.workspace?.name,
+        muralId: mural.id,
+      });
     } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL);
     }

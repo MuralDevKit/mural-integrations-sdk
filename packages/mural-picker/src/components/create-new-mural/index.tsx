@@ -16,7 +16,7 @@ import {
 import classnames from 'classnames';
 import debounce from 'lodash/debounce';
 import * as React from 'react';
-import { commonTrackingProperties } from '../../common/tracking-properties';
+import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import {
   PrimaryButton,
   SecondaryButton,
@@ -96,7 +96,6 @@ interface StateTypes {
   templates: Template[];
   title: string;
   breakPoint: BreakPoints | null;
-  userId?: string;
 }
 
 const INITIAL_STATE: StateTypes = {
@@ -219,15 +218,11 @@ export default class CreateNewMural extends React.Component<
 
         this.props.onCreateMural(eMural.value);
 
-        this.props.apiClient.track(
-          'Created mural from picker',
-          this.state.userId,
-          {
-            ...commonTrackingProperties,
-            clientAppId: this.props.apiClient.config.appId,
-            template: template.name,
-          },
-        );
+        this.props.apiClient.track('Created mural from picker', {
+          ...getCommonTrackingProperties(),
+          clientAppId: this.props.apiClient.config.appId,
+          template: template.name,
+        });
       } catch (exception) {
         this.setState({
           error: 'Error creating a new mural.',
@@ -251,11 +246,7 @@ export default class CreateNewMural extends React.Component<
     }
   }, 50);
 
-  async componentDidMount() {
-    const currentUser = await this.props.apiClient.getCurrentUser();
-    const userId = currentUser.value.id;
-    this.setState({ userId });
-
+  componentDidMount() {
     this.loadTemplates();
     this.breakPointObserver();
   }

@@ -198,11 +198,7 @@ export interface ApiClient {
   };
   fetch: FetchFunction;
   url: (path: string) => URL;
-  track: (
-    event: string,
-    userId?: string,
-    properties?: {},
-  ) => Promise<{ value: boolean }>;
+  track: (event: string, properties?: {}) => Promise<{ value: boolean }>;
   createMural: ResourceEndpoint<
     Mural,
     {
@@ -280,19 +276,19 @@ export default (config: ClientConfig): ApiClient => {
 
   const baseUrl = url('/api/public/v1/');
   const api = (path: string) => new URL(path, baseUrl).href;
-  const trackingUrl = integrationsUrl('/track').href;
+  const trackingUrl = integrationsUrl('/integrations/api/v0/track').href;
 
   const client: ApiClient = {
     authenticated,
     config,
     fetch: fetchFn,
     url,
-    track: async (event: string, userId?: string, properties?: {}) => {
+    track: async (event: string, properties?: {}) => {
       const body = {
         event,
-        userId,
         properties,
       };
+      console.log('tracking:', trackingUrl, body);
       const response = await fetchFn(trackingUrl, {
         body: JSON.stringify(body),
         headers: { 'content-type': 'application/json' },
