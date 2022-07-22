@@ -60,7 +60,7 @@
     "@types/react": "^17.0.15",
     "@types/react-dom": "^17.0.9",
     "jsonwebtoken": "^8.5.1",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "react-router-dom": "^6.2.1"
   }
 }
