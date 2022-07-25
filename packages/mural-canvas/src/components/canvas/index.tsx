@@ -4,22 +4,24 @@ import { EventHandler } from '../../types';
 import './styles.scss';
 
 interface CanvasEvents {
-  onMessage?: EventHandler<MessageEvent>;
-  onMemberAccessDenied?: EventHandler;
-  onVisitorAccessDenied?: EventHandler;
-  onGuestAccessDenied?: EventHandler;
-  onMuralUnavailable?: EventHandler;
+  onBack?: EventHandler;
   onError?: EventHandler;
+  onGuestAccessDenied?: EventHandler;
+  onMemberAccessDenied?: EventHandler;
+  onMessage?: EventHandler<MessageEvent>;
+  onMuralUnavailable?: EventHandler;
   onReady?: EventHandler;
+  onVisitorAccessDenied?: EventHandler;
 }
 
 const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
-  'mural.member_access_denied': 'onMemberAccessDenied',
-  'mural.visitor_access_denied': 'onVisitorAccessDenied',
-  'mural.guest_access_denied': 'onGuestAccessDenied',
-  'mural.mural_unavailable': 'onMuralUnavailable',
   'mural.error': 'onError',
+  'mural.guest_access_denied': 'onGuestAccessDenied',
+  'mural.integrated_client.back_event': 'onBack',
+  'mural.member_access_denied': 'onMemberAccessDenied',
+  'mural.mural_unavailable': 'onMuralUnavailable',
   'mural.ready': 'onReady',
+  'mural.visitor_access_denied': 'onVisitorAccessDenied',
 };
 
 export interface CanvasParams {
@@ -29,7 +31,7 @@ export interface CanvasParams {
 export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
   authUrl?: URL | string;
-  canvasParams: CanvasParams;
+  canvasParams?: CanvasParams;
   muralId: string;
   state?: string;
 }
@@ -71,7 +73,7 @@ export class CanvasHost extends React.Component<PropTypes> {
   }
 
   render() {
-    const { muralId, canvasParams, state } = this.props;
+    const { muralId, canvasParams, state, onBack } = this.props;
     const { appId } = this.props.apiClient.config;
     const [workspaceId, boardId] = muralId.split('.');
 
@@ -79,9 +81,11 @@ export class CanvasHost extends React.Component<PropTypes> {
     if (state) muralPath += `/${state}`;
 
     const muralUrl = this.props.apiClient.url(muralPath);
-    for (const [key, value] of Object.entries(canvasParams)) {
+    for (const [key, value] of Object.entries(canvasParams || {})) {
       if (value) muralUrl.searchParams.set(key, value.toString());
     }
+    if (onBack && (!canvasParams || !canvasParams.backUri))
+      muralUrl.searchParams.set('backUri', 'mural:back-event');
 
     let canvasUrl: string;
     if (this.props.authUrl && this.props.apiClient.authenticated()) {
