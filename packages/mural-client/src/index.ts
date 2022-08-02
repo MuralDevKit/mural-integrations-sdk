@@ -198,7 +198,7 @@ export interface ApiClient {
   };
   fetch: FetchFunction;
   url: (path: string) => URL;
-  track: (event: string, properties?: {}) => Promise<{ value: boolean }>;
+  track: (event: string, properties?: {}) => void;
   createMural: ResourceEndpoint<
     Mural,
     {
@@ -284,17 +284,23 @@ export default (config: ClientConfig): ApiClient => {
     fetch: fetchFn,
     url,
     track: async (event: string, properties?: {}) => {
-      const body = {
-        event,
-        properties,
-      };
-      console.log('tracking:', trackingUrl, body);
-      const response = await fetchFn(trackingUrl, {
-        body: JSON.stringify(body),
-        headers: { 'content-type': 'application/json' },
-        method: 'POST',
-      });
-      return response.json();
+      try {
+        const body = {
+          event,
+          properties,
+        };
+        fetchFn(trackingUrl, {
+          body: JSON.stringify(body),
+          credentials: 'include',
+          mode: 'cors',
+          headers: {
+            'content-type': 'application/json',
+          },
+          method: 'POST',
+        });
+      } catch (err) {
+        // suppress any error in tracking
+      }
     },
     // https://developers.mural.co/public/reference/createmural
     createMural: async body => {
