@@ -16,6 +16,7 @@ import {
 import classnames from 'classnames';
 import debounce from 'lodash/debounce';
 import * as React from 'react';
+import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import {
   PrimaryButton,
   SecondaryButton,
@@ -216,6 +217,12 @@ export default class CreateNewMural extends React.Component<
         }
 
         this.props.onCreateMural(eMural.value);
+
+        this.props.apiClient.track('Created mural from picker', {
+          ...getCommonTrackingProperties(),
+          clientAppId: this.props.apiClient.config.appId,
+          template: template.name,
+        });
       } catch (exception) {
         this.setState({
           error: 'Error creating a new mural.',

@@ -7,6 +7,7 @@ import {
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
+import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import CreateNewMural from '../create-new-mural';
 import MuralPickerError from '../error';
 import Header from '../header';
@@ -81,9 +82,8 @@ export default class MuralPicker extends React.Component<PropTypes> {
     this.setState({ isLoading: true });
     try {
       const eWorkspaces = await this.props.apiClient.getWorkspaces();
-      const lastActiveWorkspaceId = (
-        await this.props.apiClient.getCurrentUser()
-      ).value.lastActiveWorkspace;
+      const currentUser = await this.props.apiClient.getCurrentUser();
+      const lastActiveWorkspaceId = currentUser.value.lastActiveWorkspace;
 
       if (eWorkspaces.value.length) {
         const workspace =
@@ -98,6 +98,12 @@ export default class MuralPicker extends React.Component<PropTypes> {
     }
 
     this.setState({ isLoading: false });
+
+    this.props.apiClient.track('Mural picker displayed', {
+      ...getCommonTrackingProperties(),
+      clientAppId: this.props.apiClient.config.appId,
+      workspace: this.state.workspace?.name,
+    });
   }
 
   onLoading = () => {
@@ -205,6 +211,12 @@ export default class MuralPicker extends React.Component<PropTypes> {
         error: '',
         isCreateSelected: false,
         mural,
+      });
+      this.props.apiClient.track('Selected mural from picker', {
+        ...getCommonTrackingProperties(),
+        clientAppId: this.props.apiClient.config.appId,
+        workspace: this.state.workspace?.name,
+        muralId: mural.id,
       });
     } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL);

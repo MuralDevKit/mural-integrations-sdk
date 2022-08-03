@@ -1,5 +1,6 @@
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
+import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import RpcClient from '../../lib/rpc';
 import { muralSessionActivationUrl } from '../../lib/session-activation';
 import { EventHandler } from '../../types';
@@ -82,6 +83,12 @@ export class CanvasHost extends React.Component<PropTypes> {
     }
 
     window.addEventListener('message', this.handleMessage);
+
+    this.props.apiClient.track('Mural canvas is opened', {
+      ...getCommonTrackingProperties(),
+      clientAppId: this.props.apiClient.config.appId,
+      muralId: this.props.muralId,
+    });
   }
 
   componentWillUnmount() {
@@ -96,18 +103,24 @@ export class CanvasHost extends React.Component<PropTypes> {
 
   render() {
     const { muralUrl, authUrl, apiClient } = this.props;
-
-    const canvasUrl: string =
+    if (!muralUrl && !authUrl) {
+      return null;
+    }
+    const canvasUrl =
       authUrl && apiClient.authenticated()
-        ? muralSessionActivationUrl(apiClient, authUrl, muralUrl).toString()
-        : muralUrl;
+        ? muralSessionActivationUrl(apiClient, authUrl, muralUrl)
+        : new URL(muralUrl);
+
+    // add UTM parameters to track canvas events in iframe
+    canvasUrl.searchParams.set('utm_source', 'mural-canvas');
+    canvasUrl.searchParams.set('utm_content', apiClient.config.appId);
 
     return (
       <iframe
         data-qa="mural-canvas"
         ref={this.iframeRef}
         className="mural-canvas"
-        src={canvasUrl}
+        src={canvasUrl.href}
         seamless
       />
     );

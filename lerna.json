@@ -9,7 +9,8 @@
   },
   "packages": [
     "packages/*",
-    "test"
+    "test",
+    "sample"
   ],
   "version": "2.2.5"
 }
