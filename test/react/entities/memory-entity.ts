@@ -52,7 +52,8 @@ const generate = <T, Tid extends keyof T>(
     },
     update: async (record, update) => {
       const entity = await entityMethods.findById(record);
-      return Object.assign(entity, update);
+      // @ts-ignore
+      return Object.assign(entity, update) as T;
     },
   };
 

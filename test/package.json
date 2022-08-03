@@ -17,6 +17,7 @@
     "@muraldevkit/mural-integrations-mural-canvas": "file:../packages/mural-canvas",
     "@muraldevkit/mural-integrations-mural-picker": "file:../packages/mural-picker",
     "@muraldevkit/mural-integrations-mural-client": "file:../packages/mural-client",
+    "@muraldevkit/mural-integrations-common": "file:../packages/mural-common",
     "@testing-library/dom": "8.13.0",
     "@testing-library/react": "^11.2.0",
     "@testing-library/user-event": "^13.0.16",

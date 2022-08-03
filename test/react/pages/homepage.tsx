@@ -8,9 +8,8 @@ const homePage: Page = {
     return (
       <MuralPicker
         apiClient={null as any}
-        handleError={() => {}}
-        onCreateMural={console.log as any}
-        onMuralSelect={console.log}
+        onError={() => {}}
+        onSelect={console.log}
       />
     );
   },
