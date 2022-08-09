@@ -150,9 +150,9 @@ export default class MuralPickerForm extends React.Component<
     }
 
     try {
-      const q = { roomId: room.id };
+      const query = { roomId: room.id };
       const [eMurals] = await Promise.all([
-        this.props.apiClient.getMuralsByRoom(q),
+        this.props.apiClient.getMuralsByRoom(query),
       ]);
 
       this.setState({

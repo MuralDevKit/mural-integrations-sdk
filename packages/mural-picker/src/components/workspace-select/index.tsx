@@ -20,7 +20,6 @@ interface PropTypes {
   onSelect: EventHandler<[workspace: Workspace | null]>;
 
   slots?: DeepPartial<Slots>;
-  ListboxProps?: object | undefined;
 }
 
 const useSlots = defaultBuilder<Slots>({

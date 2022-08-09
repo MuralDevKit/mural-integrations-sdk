@@ -42,8 +42,6 @@ const TEMPLATE_CATEGORIES = [
   'Agile',
 ] as const;
 
-//const TEMPLATE_CATEGORIES = [] as const;
-
 const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
 const DEFAULT_BLANK_TEMPLATE_ID =
   'gh&rishIOpNm-thON^43D-O&(8&hHjPle$-(kplP&Nm-ujlK8*0^';
