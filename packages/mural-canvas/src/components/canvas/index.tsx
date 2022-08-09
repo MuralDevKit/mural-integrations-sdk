@@ -31,11 +31,10 @@ export interface CanvasParams {
 
 export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
-  canvasParams?: CanvasParams;
-  muralId: string;
-  muralUrl: string;
+  canvasLink: string;
+
   authUrl?: URL | string;
-  state?: string;
+  canvasParams?: CanvasParams;
   rpcClient?: RpcClient;
 }
 
@@ -49,8 +48,7 @@ export interface PropTypes extends CanvasEvents {
  * component), then it will use the Canvas session activation flow
  * to ensure the MURAL canvas will be properly authenticated.
  *
- * @techdebt
- * @param muralUrl this should always match the MURAL `_canvasLink`
+ * @param canvasLink this should always match the MURAL `_canvasLink`
  * property. Using a raw MURAL url will not properly load the mural.
  *
  * @experimental A RpcClient can also be wired to issue command to the
@@ -87,7 +85,7 @@ export class CanvasHost extends React.Component<PropTypes> {
     this.props.apiClient.track('Mural canvas is opened', {
       ...getCommonTrackingProperties(),
       clientAppId: this.props.apiClient.config.appId,
-      muralId: this.props.muralId,
+      canvasLink: this.props.canvasLink,
     });
   }
 
@@ -102,14 +100,14 @@ export class CanvasHost extends React.Component<PropTypes> {
   }
 
   render() {
-    const { muralUrl, authUrl, apiClient } = this.props;
-    if (!muralUrl && !authUrl) {
-      return null;
-    }
+    const { canvasLink, authUrl, apiClient } = this.props;
+    if (!canvasLink)
+      throw new Error(`Cannot render the supplied 'canvasLink': ${canvasLink}`);
+
     const canvasUrl =
       authUrl && apiClient.authenticated()
-        ? muralSessionActivationUrl(apiClient, authUrl, muralUrl)
-        : new URL(muralUrl);
+        ? muralSessionActivationUrl(apiClient, authUrl, canvasLink)
+        : new URL(canvasLink);
 
     // add UTM parameters to track canvas events in iframe
     canvasUrl.searchParams.set('utm_source', 'mural-canvas');
@@ -121,6 +119,7 @@ export class CanvasHost extends React.Component<PropTypes> {
         ref={this.iframeRef}
         className="mural-canvas"
         src={canvasUrl.href}
+        referrerPolicy="origin"
         seamless
       />
     );

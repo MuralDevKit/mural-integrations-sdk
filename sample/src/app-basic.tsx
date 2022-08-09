@@ -92,17 +92,13 @@ enum Segue {
 
 type AppState = {
   segue: Segue;
-  muralId: string | null;
-  state: string | null;
-  muralUrl: string | null;
+  canvasLink: string | null;
 };
 
 class App extends React.Component<{}, AppState> {
   state: AppState = {
     segue: Segue.LOADING,
-    muralId: null,
-    state: null,
-    muralUrl: null,
+    canvasLink: null,
   };
 
   handleMessage = (evt: MessageEvent) => {
@@ -110,14 +106,9 @@ class App extends React.Component<{}, AppState> {
   };
 
   handleMural = (mural: Mural) => {
-    const parts = mural.visitorsSettings.link.split('/');
-    const state = parts[parts.length - 1];
-
     this.setState({
       segue: Segue.CANVAS,
-      muralId: mural.id,
-      state,
-      muralUrl: mural._canvasLink,
+      canvasLink: mural._canvasLink,
     });
   };
 
@@ -126,40 +117,31 @@ class App extends React.Component<{}, AppState> {
     const route = window.location.pathname;
 
     if (route.startsWith('/canvas')) {
-      const muralId = params.get('muralId');
-      const state = params.get('state');
-      const muralUrl = params.get('muralUrl');
-      console.log(
-        'this.setState({ segue: Segue.CANVAS });',
-        muralId,
-        state,
-        muralUrl,
-      );
-
-      this.setState({ segue: Segue.CANVAS, muralId, state, muralUrl });
+      this.setState({
+        segue: Segue.CANVAS,
+        canvasLink: params.get('canvasLink'),
+      });
     }
 
     // This is how we handle the MURAL OAuth callback to our `redirectUri`
     //
     // Most of the logic is handled by our `requestToken` handler
-    if (route.startsWith('/auth/callback') && params.has('code')) {
+    else if (route.startsWith('/auth/callback') && params.has('code')) {
       const code = params.get('code');
       const state = params.get('state');
       await requestToken(code, state, { store: true });
 
-      this.setState({ segue: Segue.PICKER });
-      return;
+      return this.setState({ segue: Segue.PICKER });
     }
 
     // This is how we start the authorization process, unless we have
     // a valid session already.
     //
     // Another option would be to use `apiClient.authenticated()`
-    if (route.startsWith('/auth')) {
+    else if (route.startsWith('/auth')) {
       try {
         await refreshToken({ store: true });
-        this.setState({ segue: Segue.PICKER });
-        return;
+        return this.setState({ segue: Segue.PICKER });
       } catch (err) {
         const authorizeUrl = await authorize(null, { storeState: true });
         window.location.replace(authorizeUrl);
@@ -202,13 +184,8 @@ class App extends React.Component<{}, AppState> {
         return (
           <Canvas
             apiClient={apiClient}
-            muralId={this.state.muralId!}
-            state={this.state.state!}
-            onVisitorAccessDenied={() => alert('ACCESS DENIED')}
-            onError={() => alert('ERROR')}
             onMessage={this.handleMessage}
-            onReady={() => console.log('READY')}
-            muralUrl={this.state.muralUrl}
+            canvasLink={this.state.canvasLink}
           />
         );
       }
