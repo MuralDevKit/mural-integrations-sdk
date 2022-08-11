@@ -1,5 +1,6 @@
 import {
-  Button as BaseButton,
+  Button,
+  ButtonBase,
   ListItem as BaseListItem,
   ListSubheader as BaseListSubheader,
   Divider as BaseDivider,
@@ -14,7 +15,7 @@ export const PrimaryButton = withStyles({
     color: '#fff',
     textTransform: 'uppercase',
   },
-})(BaseButton);
+})(Button);
 
 export const SecondaryButton = withStyles({
   label: {
@@ -23,7 +24,18 @@ export const SecondaryButton = withStyles({
     color: '#393939',
     fontWeight: 700,
   },
-})(BaseButton);
+})(Button);
+
+export const Ripple = withStyles({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    textAlign: 'left',
+    marginBottom: 16,
+    borderRadius: '5px',
+    border: 'solid 1px #ffffff',
+  },
+})(ButtonBase);
 
 export const ListSubheader = withStyles({
   root: {

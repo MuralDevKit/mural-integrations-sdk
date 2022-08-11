@@ -1,103 +1,74 @@
 import { FormControl, InputLabel, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
-  ApiClient,
-  Mural,
-  Room,
-  Workspace,
-} from '@muraldevkit/mural-integrations-mural-client';
+  DeepPartial,
+  defaultBuilder,
+  EventHandler,
+} from '@muraldevkit/mural-integrations-common';
+import { Room, Workspace } from '@muraldevkit/mural-integrations-mural-client';
 import debounce from 'lodash/debounce';
 import * as React from 'react';
 import { DELAYS } from '../../common/delays';
+import { ReactSlot } from '../../common/react';
+import './styles.scss';
 
-// TODO: move to common file
-// eslint-disable-next-line no-shadow
-enum ERRORS {
-  ERR_RETRIEVING_MURALS = 'Error retrieving murals.',
-  ERR_RETRIEVING_WORKSPACES = 'Error retrieving workspaces.',
-  ERR_RETRIEVING_ROOM_AND_MURALS = 'Error retrieving room and murals.',
-  ERR_RETRIEVING_ROOM_MURALS = 'Error retrieving room murals.',
-  ERR_SELECTING_MURAL = 'Error selecting mural.',
-  ERR_SELECT_WORKSPACE = 'Please select a workspace.',
-  ERR_SELECT_ROOM = 'Please select a room.',
-  ERR_SELECT_MURAL = 'Please select a mural.',
-  ERR_SEARCH_NO_MURALS_FOUND = 'No murals found.',
-  ERR_SEARCH_MURALS = 'Error searching for murals.',
+interface Slots {
+  LabelText: ReactSlot;
 }
 
 interface PropTypes {
-  apiClient: ApiClient;
-  handleError: (error: Error, message: string) => void;
   workspace: Workspace | null;
   room: Room | null;
-  workspaceRooms: Room[];
-  searchedRooms: Room[];
-  isSearchingRooms: boolean;
+  rooms: Room[];
+
+  onSelect: EventHandler<[room: Room | null]>;
+
+  onSearchQuery?: EventHandler<
+    [query: { workspaceId: string; title: string } | false]
+  >;
   ListboxProps?: object | undefined;
-  onRoomSelect: (room: Room | null, murals: Mural[]) => void;
-  onRoomSearch: (searchedRooms: Room[]) => void;
-  onLoading: () => void;
-  onLoadingComplete: () => void;
+  disabled?: boolean;
+
+  slots?: DeepPartial<Slots>;
 }
 
-export default class RoomSelect extends React.Component<PropTypes> {
+interface StateTypes {
+  isSearchingRooms: boolean;
+}
+
+const useSlots = defaultBuilder<Slots>({
+  LabelText: () => <span>ROOM</span>,
+});
+
+export default class RoomSelect extends React.Component<PropTypes, StateTypes> {
   state = {
     isSearchingRooms: false,
   };
 
-  onRoomSearch = debounce(async (title: string) => {
-    if (this.props.workspace && title.length > 2) {
-      try {
-        this.setState({ isSearchingRooms: true });
-        const eRooms = await this.props.apiClient.searchRoomsByWorkspace({
-          workspaceId: this.props.workspace.id,
-          title,
-        });
+  handleSelect = async (_: React.ChangeEvent<{}>, room: Room | null) => {
+    this.props.onSelect(room);
+  };
 
-        this.setState({ isSearchingRooms: false });
-        this.props.onRoomSearch(eRooms.value);
-      } catch (e: any) {
-        this.setState({ isSearchingRooms: false });
-        this.props.handleError(e, 'Error searching rooms.');
-      }
-    } else {
-      this.props.onRoomSearch([]);
+  handleInputChange = async (event: React.ChangeEvent<{}>, input: string) => {
+    if (!this.props.onSearchQuery) return;
+    if (!this.props.workspace) return;
+    if (event?.type !== 'change') return;
+
+    try {
+      this.setState({ isSearchingRooms: true });
+      await this.props.onSearchQuery({
+        workspaceId: this.props.workspace.id,
+        title: input,
+      });
+    } finally {
+      this.setState({ isSearchingRooms: false });
     }
-  }, DELAYS.DEBOUNCE_SEARCH);
+  };
 
-  onRoomSelect = async (_: React.ChangeEvent<{}>, room: Room | null) => {
-    if (!room || !this.props.workspace) {
-      let murals: Mural[] = [];
-      if (this.props.workspace) {
-        try {
-          this.props.onLoading();
-          const eMurals = await this.props.apiClient.getMuralsByWorkspace({
-            workspaceId: this.props.workspace.id,
-          });
+  handleInputClose = () => {
+    if (!this.props.onSearchQuery) return;
 
-          murals = eMurals.value;
-        } catch (e: any) {
-          this.props.handleError(e, ERRORS.ERR_RETRIEVING_ROOM_AND_MURALS);
-        }
-      }
-
-      this.props.onLoadingComplete();
-      this.props.onRoomSelect(null, murals);
-    } else {
-      try {
-        this.props.onLoading();
-
-        const eMurals = await this.props.apiClient.getMuralsByRoom({
-          roomId: room.id,
-        });
-
-        this.props.onLoadingComplete();
-        this.props.onRoomSelect(room, eMurals.value);
-      } catch (e: any) {
-        this.props.onLoadingComplete();
-        this.props.handleError(e, ERRORS.ERR_RETRIEVING_ROOM_MURALS);
-      }
-    }
+    this.props.onSearchQuery(false);
   };
 
   getRoomGroup = (room?: Room) => {
@@ -106,55 +77,49 @@ export default class RoomSelect extends React.Component<PropTypes> {
   };
 
   render() {
+    const slots = useSlots(this.props.slots);
+
     return (
-      <React.Fragment>
-        <FormControl className="mural-picker-select" data-qa="room-select">
-          <div className="select-label">
-            <InputLabel shrink>ROOM</InputLabel>
-          </div>
-          <Autocomplete
-            id="room-select"
-            options={
-              this.props.searchedRooms.length === 0
-                ? this.props.workspaceRooms
-                : this.props.searchedRooms
-            }
-            ListboxProps={this.props.ListboxProps}
-            getOptionLabel={option => {
-              return option?.name || '';
-            }}
-            renderInput={params => (
-              <TextField
-                {...params}
-                placeholder="Find a room..."
-                variant="outlined"
-                inputProps={{
-                  ...params.inputProps,
-                  'data-qa': 'input-room-select',
-                }}
-              />
-            )}
-            value={this.props.room}
-            disabled={!this.props.workspace}
-            groupBy={this.getRoomGroup}
-            onChange={this.onRoomSelect}
-            onInputChange={(event: React.ChangeEvent<{}>, input: string) => {
-              if (event?.type === 'change') {
-                this.onRoomSearch(input);
-              }
-            }}
-            onClose={(_event: React.ChangeEvent<{}>, _reason: string) => {
-              // clear searched rooms on autocomplete close
-              this.props.onRoomSearch([]);
-            }}
-            getOptionSelected={(option: Room, value: Room) =>
-              option.id === value.id
-            }
-            loading={this.state.isSearchingRooms}
-            noOptionsText={'No results'}
-          />
-        </FormControl>
-      </React.Fragment>
+      <FormControl className="room-select" data-qa="room-select">
+        <div className="select-label">
+          <InputLabel shrink>
+            <slots.LabelText />
+          </InputLabel>
+        </div>
+        <Autocomplete
+          id="room-select"
+          options={this.props.rooms}
+          ListboxProps={this.props.ListboxProps}
+          getOptionLabel={option => {
+            return option?.name || '';
+          }}
+          renderInput={params => (
+            <TextField
+              {...params}
+              placeholder="Find a room..."
+              variant="outlined"
+              inputProps={{
+                ...params.inputProps,
+                'data-qa': 'input-room-select',
+              }}
+            />
+          )}
+          value={this.props.room}
+          disabled={!this.props.workspace}
+          groupBy={this.getRoomGroup}
+          onChange={this.handleSelect}
+          onInputChange={debounce(
+            this.handleInputChange,
+            DELAYS.DEBOUNCE_SEARCH,
+          )}
+          onClose={this.handleInputClose}
+          getOptionSelected={(option: Room, value: Room) =>
+            option.id === value.id
+          }
+          loading={this.state.isSearchingRooms}
+          noOptionsText={'No results'}
+        />
+      </FormControl>
     );
   }
 }

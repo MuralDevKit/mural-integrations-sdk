@@ -1,98 +1,34 @@
-@use '../styles.scss';
-
 .room-picker-body {
-  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  margin: auto;
-  outline: 0;
-  width: 100%;
-  max-width: 700px;
-  display: inline-block;
   justify-content: center;
   align-items: center;
+
+  .select-row {
+    display: flex;
+    flex-wrap: wrap;
+
+    .workspace-select,
+    .room-select {
+      flex-grow: 5;
+      margin-right: 0.2rem;
+    }
+  }
+
   &.dark {
     color: white;
   }
 
-  .mural-picker-error {
-    margin: 0.2rem 0.8rem;
-  }
-  .select-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-  }
-  .room-picker-select {
-    font-weight: 400;
-    width: 48%;
-    max-width: 350px;
-    margin: 0.2rem;
-
-    .MuiTextField-root
-      .MuiOutlinedInput-root.Mui-focused
-      .MuiOutlinedInput-notchedOutline {
-      border: 1px solid #ff0066;
-    }
-
-    .select-label {
-      padding: 0.6em;
-    }
-  }
-
-  .workspace-button {
-    width: 100%;
-    display: inline-block;
-    text-align: center;
+  .room-picker-control {
+    flex: 1 5 20%;
+    padding-top: 1.2rem;
   }
 
   .room-picker-button {
-    background-color: #ff0066;
-    border: none;
-    border-radius: 5px;
-    color: #ffffff;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    line-height: 2.25rem;
-    margin: 0.9375rem auto;
-    padding: 0 0.875rem;
-    text-align: center;
-    transition: background 0.1s linear;
-    cursor: pointer;
-    outline-style: none;
-
-    &:active,
-    &:focus,
-    &:hover {
-      background-color: #d60057;
-    }
+    height: 100%;
   }
 
-  .mural-list-spinner {
-    padding-top: 2em;
-    text-align: center;
+  .room-picker-error {
+    margin-top: 0.33em;
   }
-
-  .MuiInput-underline,
-  .MuiInput-underline:after {
-    border-color: #ff0066;
-  }
-
-  .MuiFormLabel-root,
-  .MuiInputBase-root,
-  .MuiInputBase-root {
-    font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-      'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    font-weight: 400;
-  }
-}
-
-.MuiButton-root .MuiButton-label {
-  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
 }
 
 #room-select-popup,

@@ -3,16 +3,8 @@ import { Mural } from '@muraldevkit/mural-integrations-mural-client';
 import classnames from 'classnames';
 import humanize from 'humanize-duration';
 import * as React from 'react';
+import { PropTypes as ItemPropTypes } from './types';
 import './styles.scss';
-
-export type CardSize = 'small' | 'normal';
-
-export interface PropTypes {
-  mural: Mural;
-  isSelected: boolean;
-  onClickSelectMural: (mural: Mural) => void;
-  cardSize: CardSize;
-}
 
 const dateMarker = (mural: Mural) => {
   const span = Date.now() - mural.updatedOn;
@@ -21,8 +13,12 @@ const dateMarker = (mural: Mural) => {
   return `Modified ${marker} ago`;
 };
 
-export default function MuralCard(props: PropTypes) {
-  const { mural, isSelected, onClickSelectMural, cardSize } = props;
+export type PropTypes = {
+  mural: Mural;
+} & ItemPropTypes;
+
+export default (props: PropTypes) => {
+  const { mural, isSelected, onClick, cardSize } = props;
   const thumbnailUrl =
     mural.thumbnailUrl === 'https://app.mural.co/static/images/mural-thumb.svg'
       ? ''
@@ -32,10 +28,10 @@ export default function MuralCard(props: PropTypes) {
     <Grid item>
       <Card
         variant="outlined"
-        className={classnames('mural-card', `${cardSize}-card`, {
+        className={classnames('card-list-item', `${cardSize}-card`, {
           'selected-card': isSelected,
         })}
-        onClick={() => onClickSelectMural(mural)}
+        onClick={onClick}
       >
         <CardActionArea>
           <CardMedia
@@ -56,4 +52,4 @@ export default function MuralCard(props: PropTypes) {
       </Card>
     </Grid>
   );
-}
+};

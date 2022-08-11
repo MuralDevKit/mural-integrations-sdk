@@ -1,46 +1,46 @@
-import {
-  Box,
-  ButtonBase,
-  CircularProgress,
-  TextField,
-  List,
-} from '@material-ui/core';
+import { Box, CircularProgress, List, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { withStyles } from '@material-ui/styles';
+import {
+  DeepPartial,
+  defaultBuilder,
+} from '@muraldevkit/mural-integrations-common';
+import { EventHandler } from '@muraldevkit/mural-integrations-common/src/types';
 import {
   ApiClient,
-  Template,
   Mural,
+  Room,
+  Template,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
 import classnames from 'classnames';
 import debounce from 'lodash/debounce';
 import * as React from 'react';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
+import { ReactSlot } from '../../common/react';
 import {
-  PrimaryButton,
-  SecondaryButton,
   ListItem,
   ListSubheader,
-} from '../../shared';
+  PrimaryButton,
+  Ripple,
+  SecondaryButton,
+} from '../common';
+import { ErrorHandler } from '../types';
 import './styles.scss';
 
-/* Once we have the proper template lookup in the public API, we should showcase
+/*
+ * Once we have the proper template lookup in the public API, we should showcase
  * all of the template categories to enable filtering.
- *
- *const TEMPLATE_CATEGORIES = [
- *  'Icebreaker',
- *  'Understand',
- *  'Empathize',
- *  'Brainstorm',
- *  'Design',
- *  'Evaluate',
- *  'Plan',
- *  'Agile',
- *] as const;
  */
-
-const TEMPLATE_CATEGORIES = [] as const;
+const TEMPLATE_CATEGORIES = [
+  'Icebreaker',
+  'Understand',
+  'Empathize',
+  'Brainstorm',
+  'Design',
+  'Evaluate',
+  'Plan',
+  'Agile',
+] as const;
 
 const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
 const DEFAULT_BLANK_TEMPLATE_ID =
@@ -66,24 +66,49 @@ const BLANK_TEMPLATE: Template = {
   viewLink: '',
 } as const;
 
-export const RippleEffect = withStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    textAlign: 'left',
-    marginBottom: 16,
-    borderRadius: '5px',
-    border: 'solid 1px #ffffff',
-  },
-})(ButtonBase);
+const TemplateCardItem = (props: any) => (
+  <Ripple
+    className={classnames(['template-item', 'template-item-sfx'], {
+      'template-item-selected': props.isSelected,
+    })}
+    onClick={props.onClick}
+  >
+    <div className="template-item-img-container">
+      {!props.isBlank && (
+        <img
+          className="template-item-img"
+          src={props.template.thumbUrl}
+          alt="thumbnail"
+        />
+      )}
+    </div>
+    <div className={'template-item-typography-container'}>
+      <div className="template-item-typography-title">
+        {props.template.name}
+      </div>
+      {/* TODO: property 'createdBy' is missing in 'Template' interface */}
+      <div className="template-item-typography-subtitle">
+        {props.isBlank ? '' : `${props.workspace.name} Template`}
+      </div>
+    </div>
+  </Ripple>
+);
+
+interface Slots {
+  // @TECHDEBT: converge all card items to the same format
+  TemplateCardItem: ReactSlot<typeof TemplateCardItem>;
+}
 
 export interface PropTypes {
   apiClient: ApiClient;
-  roomId: string;
+  room: Room;
   workspace: Workspace;
 
-  onCancelAndGoBack: () => void;
-  onCreateMural: (mural: Mural) => void;
+  onCancel: EventHandler;
+  onCreate: EventHandler<[mural: Mural]>;
+  onError: ErrorHandler;
+
+  slots?: DeepPartial<Slots>;
 }
 
 interface StateTypes {
@@ -113,22 +138,23 @@ const INITIAL_STATE: StateTypes = {
 const LIMIT = 25;
 const THRESHOLD = 0.8;
 
-export default class CreateNewMural extends React.Component<
+const useSlots = defaultBuilder<Slots>({
+  TemplateCardItem,
+});
+
+export default class MuralCreate extends React.Component<
   PropTypes,
   StateTypes
 > {
   state: StateTypes = INITIAL_STATE;
-  containerRef: React.RefObject<HTMLDivElement>;
   titleRef: React.RefObject<HTMLInputElement>;
   scrollRef: React.RefObject<HTMLInputElement>;
-  commonElementHeight: number;
 
   constructor(props: PropTypes) {
     super(props);
-    this.containerRef = React.createRef();
+
     this.titleRef = React.createRef();
     this.scrollRef = React.createRef();
-    this.commonElementHeight = 0;
   }
 
   matchMediaQuery = () => {
@@ -190,13 +216,10 @@ export default class CreateNewMural extends React.Component<
 
   createMural = () => {
     let { title } = this.state;
-    const { roomId, workspace } = this.props;
+    const { room, workspace } = this.props;
     const template = this.state.templates[this.state.selected];
 
-    if (!title) {
-      title = 'Untitled mural';
-    }
-
+    title = title || 'Untitled mural';
     if (!template) return this.setState({ error: 'Please select a template.' });
 
     this.setState({ btnLoading: true }, async () => {
@@ -206,17 +229,17 @@ export default class CreateNewMural extends React.Component<
           eMural = await this.props.apiClient.createMural({
             title,
             workspaceId: workspace.id,
-            roomId,
+            roomId: room.id,
           });
         } else {
           eMural = await this.props.apiClient.createMuralFromTemplate({
             title,
-            roomId,
+            roomId: room.id,
             templateId: template.id,
           });
         }
 
-        this.props.onCreateMural(eMural.value);
+        this.props.onCreate(eMural.value);
 
         this.props.apiClient.track('Created mural from picker', {
           ...getCommonTrackingProperties(),
@@ -268,10 +291,81 @@ export default class CreateNewMural extends React.Component<
     );
   };
 
+  renderTemplateCategories = () => {
+    // TODO: enable this when the public API supports categories
+    return null;
+
+    return (
+      <div className="new-mural-categories">
+        <List component="nav" disablePadding>
+          <ListItem disableGutters button selected>
+            All templates
+          </ListItem>
+          <ListSubheader disableGutters>Browse by category</ListSubheader>
+          {[
+            `Current workspace (${this.props.workspace.name})`,
+            ...TEMPLATE_CATEGORIES,
+          ].map((category, index) => (
+            <ListItem key={index} disableGutters button>
+              {category}
+            </ListItem>
+          ))}
+        </List>
+      </div>
+    );
+  };
+
+  renderTemplateCardItems = () => {
+    const slots = useSlots(this.props.slots);
+    if (slots.TemplateCardItem === null) return null;
+
+    return (
+      <div className="new-mural-container">
+        {this.renderTemplateCategories()}
+
+        <div ref={this.scrollRef} className="new-mural-items">
+          <div className="new-mural-items-container">
+            {this.state.templates.map((template: Template, index) => {
+              const isSelected = this.state.selected === index;
+              const isBlank = index === 0;
+
+              return (
+                <div
+                  key={index}
+                  className={classnames({
+                    [this.state.breakPoint as string]: true,
+                  })}
+                >
+                  <slots.TemplateCardItem
+                    onClick={() => this.onSelectTemplate(index)}
+                    workspace={this.props.workspace}
+                    template={template}
+                    isSelected={isSelected}
+                    isBlank={isBlank}
+                  />
+                </div>
+              );
+            })}
+            {this.state.nextToken && (
+              <div key="_next" className="template-item">
+                <Ripple
+                  className="template-item-sfx template-item-sfx--button"
+                  onClick={this.loadTemplates}
+                >
+                  Load more…
+                </Ripple>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   render() {
     if (this.state.loading && this.state.templates.length <= 1) {
       return (
-        <div className="mural-list-spinner">
+        <div className="card-list-spinner">
           <CircularProgress />
         </div>
       );
@@ -289,87 +383,14 @@ export default class CreateNewMural extends React.Component<
           )}
         </div>
 
-        <div className="new-mural-container">
-          <div className="new-mural-categories">
-            <List component="nav" disablePadding>
-              <ListItem disableGutters button selected>
-                All templates
-              </ListItem>
-              <ListSubheader disableGutters>Browse by category</ListSubheader>
-              {[
-                `Current workspace (${this.props.workspace.name})`,
-                ...TEMPLATE_CATEGORIES,
-              ].map((category, index) => (
-                <ListItem key={index} disableGutters button>
-                  {category}
-                </ListItem>
-              ))}
-            </List>
-          </div>
-          <div ref={this.scrollRef} className="new-mural-items">
-            <div ref={this.containerRef} className="new-mural-items-container">
-              {this.state.templates.map((template: Template, index) => {
-                const isSelected = this.state.selected === index;
-                const isBlank = template.id === DEFAULT_BLANK_TEMPLATE_ID;
+        {this.renderTemplateCardItems()}
 
-                return (
-                  <div
-                    key={index}
-                    className={classnames('template-item', {
-                      'template-item-selected': isSelected,
-                      [this.state.breakPoint as string]: true,
-                    })}
-                  >
-                    <RippleEffect
-                      className="template-item-sfx"
-                      onClick={() => this.onSelectTemplate(index)}
-                    >
-                      <div className="template-item-img-container">
-                        {!isBlank && (
-                          <img
-                            className="template-item-img"
-                            src={template.thumbUrl}
-                            alt="thumbnail"
-                          />
-                        )}
-                      </div>
-                      <div className={'template-item-typography-container'}>
-                        <div className="template-item-typography-title">
-                          {template.name}
-                        </div>
-                        {/* TODO: property 'createdBy' is missing in 'Template' interface */}
-                        <div className="template-item-typography-subtitle">
-                          {isBlank
-                            ? ''
-                            : `${this.props.workspace.name} Template`}
-                        </div>
-                      </div>
-                    </RippleEffect>
-                  </div>
-                );
-              })}
-              {
-                /* LOAD MORE */
-                this.state.nextToken && (
-                  <div key="_next" className="template-item">
-                    <RippleEffect
-                      className="template-item-sfx template-item-sfx--button"
-                      onClick={this.loadTemplates}
-                    >
-                      Load more…
-                    </RippleEffect>
-                  </div>
-                )
-              }
-            </div>
-          </div>
-        </div>
         <Box className="new-mural-buttons-container">
           <div className="new-mural-items-mask" />
           <SecondaryButton
             className="button"
             variant="text"
-            onClick={this.props.onCancelAndGoBack}
+            onClick={this.props.onCancel}
           >
             Cancel<span className="content--lg">&nbsp;& go back</span>
           </SecondaryButton>

@@ -9,7 +9,9 @@ import commonjs from '@rollup/plugin-commonjs';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 const truthy = value => {
-  return ['t', 'true', '1', 'on', 'yes', 'y'].includes(value.toString().toLowerCase());
+  return ['t', 'true', '1', 'on', 'yes', 'y'].includes(
+    value.toString().toLowerCase(),
+  );
 };
 
 const DEBUG = truthy(process.env.DEBUG || false);
@@ -80,6 +82,7 @@ export const moduleConfig = descriptor => {
 };
 
 export default [
+  moduleConfig({ name: 'mural-common' }),
   moduleConfig({ name: 'mural-client' }),
   moduleConfig({ name: 'mural-picker' }),
   moduleConfig({ name: 'mural-canvas' }),

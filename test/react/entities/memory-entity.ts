@@ -52,6 +52,11 @@ const generate = <T, Tid extends keyof T>(
     },
     update: async (record, update) => {
       const entity = await entityMethods.findById(record);
+      if (!entity) {
+        const entityId = isObj(record) ? record[idField] : record;
+        throw new Error(`Entity not found for id: ${entityId}`);
+      }
+
       return Object.assign(entity, update);
     },
   };

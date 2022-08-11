@@ -6,9 +6,9 @@
     "@babel/helper-create-class-features-plugin": "^7.18.0",
     "@babel/helper-create-regexp-features-plugin": "^7.17.12",
     "@craco/craco": "^6.4.3",
-    "@muraldevkit/mural-integrations-mural-canvas": "2.2.4",
-    "@muraldevkit/mural-integrations-mural-client": "2.2.4",
-    "@muraldevkit/mural-integrations-mural-picker": "2.2.4",
+    "@muraldevkit/mural-integrations-mural-canvas": "2.2.5",
+    "@muraldevkit/mural-integrations-mural-client": "2.2.5",
+    "@muraldevkit/mural-integrations-mural-picker": "2.2.5",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -61,6 +61,7 @@
     "@types/react-dom": "^17.0.9",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.4",
+    "react-error-overlay": "6.0.9",
     "react-router-dom": "^6.2.1"
   }
 }

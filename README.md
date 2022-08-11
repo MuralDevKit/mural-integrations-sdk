@@ -33,6 +33,20 @@ In order to run this application, you need to have a registered application crea
 
 TDB
 
+### Building
+
+```
+# select the runtime the component targets
+ln -sf runtimes/16.13.1 runtimes/current
+
+npm install
+npx lerna bootstrap
+npm run build
+
+# or to watch the changes 
+npm run build:watch
+```
+
 ### Testing
 
 The testing rig setup follows the conventional testing philosophy at MURAL — test behaviors, not implementation.
@@ -51,24 +65,11 @@ Then, use the `test` package to run the testing rig on all the built components.
 
 ```
 cd test
+npm install --omit=peer
 npm run test:react [features, …]
 
 # conventionally, each component has a folder inside the features
 npm run test:react features/mural-picker
-```
-
-### Building
-
-```
-# select the runtime the component targets
-ln -sf runtimes/16.13.1 runtimes/current
-
-npm install
-npx lerna bootstrap
-npm run build
-
-# or to watch the changes 
-npm run build:watch
 ```
 
 #### Advanced options
