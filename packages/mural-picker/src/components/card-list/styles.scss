@@ -1,7 +1,12 @@
 .mural-selector {
+  &-grid {
+    position: absolute;
+  }
+
   &-container {
-    padding-top: 2em;
-    overflow-y: auto;
+    position: relative;
+    flex: 1;
+    overflow-y: scroll;
 
     .subsection-header {
       font-weight: bold;

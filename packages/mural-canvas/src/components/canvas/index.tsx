@@ -7,22 +7,24 @@ import { EventHandler } from '../../types';
 import './styles.scss';
 
 interface CanvasEvents {
-  onMessage?: EventHandler<MessageEvent>;
-  onMemberAccessDenied?: EventHandler;
-  onVisitorAccessDenied?: EventHandler;
-  onGuestAccessDenied?: EventHandler;
-  onMuralUnavailable?: EventHandler;
+  onBack?: EventHandler;
   onError?: EventHandler;
+  onGuestAccessDenied?: EventHandler;
+  onMemberAccessDenied?: EventHandler;
+  onMessage?: EventHandler<MessageEvent>;
+  onMuralUnavailable?: EventHandler;
   onReady?: EventHandler;
+  onVisitorAccessDenied?: EventHandler;
 }
 
 const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
-  'mural.member_access_denied': 'onMemberAccessDenied',
-  'mural.visitor_access_denied': 'onVisitorAccessDenied',
-  'mural.guest_access_denied': 'onGuestAccessDenied',
-  'mural.mural_unavailable': 'onMuralUnavailable',
   'mural.error': 'onError',
+  'mural.guest_access_denied': 'onGuestAccessDenied',
+  'mural.integrated_client.back_event': 'onBack',
+  'mural.member_access_denied': 'onMemberAccessDenied',
+  'mural.mural_unavailable': 'onMuralUnavailable',
   'mural.ready': 'onReady',
+  'mural.visitor_access_denied': 'onVisitorAccessDenied',
 };
 
 export interface CanvasParams {
@@ -31,7 +33,7 @@ export interface CanvasParams {
 
 export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
-  canvasLink: string;
+  canvasLink: URL | string;
 
   authUrl?: URL | string;
   canvasParams?: CanvasParams;
@@ -100,18 +102,29 @@ export class CanvasHost extends React.Component<PropTypes> {
   }
 
   render() {
-    const { canvasLink, authUrl, apiClient } = this.props;
+    const { apiClient, authUrl, canvasLink, canvasParams, onBack } = this.props;
     if (!canvasLink)
       throw new Error(`Cannot render the supplied 'canvasLink': ${canvasLink}`);
 
-    const canvasUrl =
-      authUrl && apiClient.authenticated()
-        ? muralSessionActivationUrl(apiClient, authUrl, canvasLink)
-        : new URL(canvasLink);
+    // Add the canvasParams to the URL
+    let canvasUrl = new URL(canvasLink);
+    for (const [key, value] of Object.entries(canvasParams || {})) {
+      if (value) canvasUrl.searchParams.set(key, value.toString());
+    }
 
-    // add UTM parameters to track canvas events in iframe
+    // Wire up the `onBack` handler if it is specified
+    if (onBack) {
+      canvasUrl.searchParams.set('backUri', 'mural:back-event');
+    }
+
+    // Add UTM parameters to track canvas events in iframe
     canvasUrl.searchParams.set('utm_source', 'mural-canvas');
     canvasUrl.searchParams.set('utm_content', apiClient.config.appId);
+
+    // Convert the url to the session activation link if supported
+    if (authUrl && apiClient.authenticated()) {
+      canvasUrl = muralSessionActivationUrl(apiClient, authUrl, canvasUrl);
+    }
 
     return (
       <iframe

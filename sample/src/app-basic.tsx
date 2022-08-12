@@ -158,7 +158,7 @@ class App extends React.Component<{}, AppState> {
       }
       case Segue.PICKER: {
         return (
-          <div>
+          <>
             <WorkspacePicker
               apiClient={apiClient}
               onSelect={console.log}
@@ -177,7 +177,7 @@ class App extends React.Component<{}, AppState> {
               onSelect={this.handleMural}
               onError={handleError}
             />
-          </div>
+          </>
         );
       }
       case Segue.CANVAS: {
