@@ -8,7 +8,7 @@
     "lib": [
       "es6", "dom", "es2015.promise", "es2016.array.include"
     ],
-    "module": "ES2015",
+    "module": "es2015",
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
@@ -17,14 +17,14 @@
     "sourceMap": true,
     "strict": true,
     "strictNullChecks": true,
-    "target": "es5"
+    "target": "es2018"
   },
-  "include": [
-    "./packages/**/*.ts",
-    "./packages/**/*.tsx",
-    "*.d.ts"
-  ],
-  "exclude": [
-    "./node_modules"
-  ]
+	"include": [
+		"./packages/**/*.ts",
+		"./packages/**/*.tsx",
+		"*.d.ts"
+	],
+	"exclude": [
+		"./node_modules"
+	]
 }

@@ -1,0 +1,24 @@
+.mural-button {
+  background-color: #ff0066;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: center;
+  transition: background 0.1s linear;
+  cursor: pointer;
+  outline-style: none;
+
+  &:active,
+  &:focus,
+  &:hover {
+    background-color: #d60057;
+  }
+}
+
+.mural-typo {
+  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}

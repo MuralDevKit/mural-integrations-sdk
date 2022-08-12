@@ -1,5 +1,8 @@
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
+import { getCommonTrackingProperties } from '../../common/tracking-properties';
+import RpcClient from '../../lib/rpc';
+import { muralSessionActivationUrl } from '../../lib/session-activation';
 import { EventHandler } from '../../types';
 import './styles.scss';
 
@@ -30,37 +33,38 @@ export interface CanvasParams {
 
 export interface PropTypes extends CanvasEvents {
   apiClient: ApiClient;
+  canvasLink: URL | string;
+
   authUrl?: URL | string;
   canvasParams?: CanvasParams;
-  muralId: string;
-  state?: string;
+  rpcClient?: RpcClient;
 }
 
-export function muralSessionActivationUrl(
-  apiClient: ApiClient,
-  authUrl: URL | string,
-  muralUrl: URL | string,
-) {
-  const authURL = new URL(authUrl.toString());
-  const muralURL = new URL(muralUrl.toString());
-
-  const activateURL = new URL('/signin-code/authenticate', muralURL);
-
-  activateURL.searchParams.set('redirectUrl', muralURL.href);
-  activateURL.searchParams.set('authUrl', authURL.href);
-  activateURL.searchParams.set('clientId', apiClient.config.appId);
-  activateURL.searchParams.set('t', new Date().getTime().toString()); // disable any caching
-
-  return activateURL.href;
-}
-
+/**
+ * Hosts a MURAL canvas to be embedded in any web application.
+ *
+ * This component ensures the displayed MURAL will be allowed to
+ * be iframed within the current browsing context.
+ *
+ * If the `authUrl` parameter is supplied (see the SessionActivation
+ * component), then it will use the Canvas session activation flow
+ * to ensure the MURAL canvas will be properly authenticated.
+ *
+ * @param canvasLink this should always match the MURAL `_canvasLink`
+ * property. Using a raw MURAL url will not properly load the mural.
+ *
+ * @experimental A RpcClient can also be wired to issue command to the
+ * MURAL canvas programatically.
+ */
 export class CanvasHost extends React.Component<PropTypes> {
+  private iframeRef = React.createRef<HTMLIFrameElement>();
+
   handleMessage = async (evt: MessageEvent) => {
     const eventHandlerKey = MESSAGE_EVENT[evt.data.type];
     const eventHandler = this.props[eventHandlerKey] as EventHandler;
 
     if (eventHandler) {
-      await eventHandler.call(null);
+      await eventHandler.call(null, evt.data ?? null);
     }
 
     if (this.props.onMessage) {
@@ -69,41 +73,66 @@ export class CanvasHost extends React.Component<PropTypes> {
   };
 
   componentDidMount() {
+    const { rpcClient } = this.props;
+
+    if (rpcClient) {
+      rpcClient.init({
+        source: window,
+        target: this.iframeRef?.current?.contentWindow as any,
+      });
+    }
+
     window.addEventListener('message', this.handleMessage);
+
+    this.props.apiClient.track('Mural canvas is opened', {
+      ...getCommonTrackingProperties(),
+      clientAppId: this.props.apiClient.config.appId,
+      canvasLink: this.props.canvasLink,
+    });
+  }
+
+  componentWillUnmount() {
+    const { rpcClient } = this.props;
+
+    if (rpcClient) {
+      rpcClient.dispose();
+    }
+
+    window.removeEventListener('message', this.handleMessage);
   }
 
   render() {
-    const { muralId, canvasParams, state, onBack } = this.props;
-    const { appId } = this.props.apiClient.config;
-    const [workspaceId, boardId] = muralId.split('.');
+    const { apiClient, authUrl, canvasLink, canvasParams, onBack } = this.props;
+    if (!canvasLink)
+      throw new Error(`Cannot render the supplied 'canvasLink': ${canvasLink}`);
 
-    let muralPath = `/a/${appId}/t/${workspaceId}/m/${workspaceId}/${boardId}`;
-    if (state) muralPath += `/${state}`;
-
-    const muralUrl = this.props.apiClient.url(muralPath);
+    // Add the canvasParams to the URL
+    let canvasUrl = new URL(canvasLink);
     for (const [key, value] of Object.entries(canvasParams || {})) {
-      if (value) muralUrl.searchParams.set(key, value.toString());
+      if (value) canvasUrl.searchParams.set(key, value.toString());
     }
-    if (onBack && (!canvasParams || !canvasParams.backUri))
-      muralUrl.searchParams.set('backUri', 'mural:back-event');
 
-    let canvasUrl: string;
-    if (this.props.authUrl && this.props.apiClient.authenticated()) {
-      canvasUrl = muralSessionActivationUrl(
-        this.props.apiClient,
-        this.props.authUrl,
-        muralUrl,
-      );
-    } else {
-      // directly to the visitor flow
-      canvasUrl = muralUrl.href;
+    // Wire up the `onBack` handler if it is specified
+    if (onBack) {
+      canvasUrl.searchParams.set('backUri', 'mural:back-event');
+    }
+
+    // Add UTM parameters to track canvas events in iframe
+    canvasUrl.searchParams.set('utm_source', 'mural-canvas');
+    canvasUrl.searchParams.set('utm_content', apiClient.config.appId);
+
+    // Convert the url to the session activation link if supported
+    if (authUrl && apiClient.authenticated()) {
+      canvasUrl = muralSessionActivationUrl(apiClient, authUrl, canvasUrl);
     }
 
     return (
       <iframe
         data-qa="mural-canvas"
+        ref={this.iframeRef}
         className="mural-canvas"
-        src={canvasUrl}
+        src={canvasUrl.href}
+        referrerPolicy="origin"
         seamless
       />
     );

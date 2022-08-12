@@ -1,0 +1,36 @@
+{
+  "name": "@muraldevkit/tests",
+  "private": true,
+  "scripts": {
+    "build": "lerna run build",
+    "build:watch": "lerna run build -- --watch",
+    "test:react": "ENV=test TS_NODE_FILES=true cucumber-js --require-module tsconfig-paths/register --exit -r react/index.js"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/qs": "^6.9.7",
+    "@types/react-router-dom": "^5.1.5",
+    "@typescript-eslint/parser": "4.29.0"
+  },
+  "dependencies": {
+    "@muraldevkit/mural-integrations-mural-account-chooser": "file:../packages/mural-account-chooser",
+    "@muraldevkit/mural-integrations-mural-canvas": "file:../packages/mural-canvas",
+    "@muraldevkit/mural-integrations-mural-picker": "file:../packages/mural-picker",
+    "@muraldevkit/mural-integrations-mural-client": "file:../packages/mural-client",
+    "@muraldevkit/mural-integrations-common": "file:../packages/mural-common",
+    "@testing-library/dom": "8.13.0",
+    "@testing-library/react": "^11.2.0",
+    "@testing-library/user-event": "^13.0.16",
+    "fetch-mock": "^9.11.0",
+    "jsdom": "^16.4.0",
+    "jsdom-global": "^3.0.2",
+    "jsonwebtoken": "^8.5.1",
+    "npm": "^7.24.2",
+    "pickled-cucumber": "^3.3.1",
+    "qs": "^6.10.3",
+    "react-router": "5.2.0",
+    "react-router-dom": "5.2.0",
+    "ts-node": "^10.7.0",
+    "tsconfig-paths": "^4.0.0"
+  }
+}

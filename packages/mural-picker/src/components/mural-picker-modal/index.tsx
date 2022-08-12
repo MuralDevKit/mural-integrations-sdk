@@ -1,20 +1,29 @@
 import { Button, Modal } from '@material-ui/core';
-import { Mural } from '@muraldevkit/mural-integrations-mural-client';
+import {
+  Mural,
+  Room,
+  Workspace,
+} from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
-import MuralPicker, { PropTypes as MuralPickerProps } from '../mural-picker';
+import MuralPicker from '../mural-picker';
 
 import './styles.scss';
 
-const MuralPickerModal: React.FC<MuralPickerProps> = ({
-  onMuralSelect,
+const MuralPickerModal: React.FC<MuralPicker['props']> = ({
+  onSelect,
   ...props
 }) => {
   const [isLaunchButtonDisabled, setIsLaunchButtonDisabled] =
     React.useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
 
-  const handleSelectMural = (mural: Mural) => {
-    onMuralSelect(mural);
+  const handleSelect = (
+    mural: Mural,
+    room: Room | null,
+    workspace: Workspace,
+  ) => {
+    onSelect(mural, room, workspace);
+
     setIsLaunchButtonDisabled(true);
     toggleModal();
   };
@@ -39,7 +48,7 @@ const MuralPickerModal: React.FC<MuralPickerProps> = ({
         className="mural-picker-modal"
         data-qa="mural-picker-modal"
       >
-        <MuralPicker {...props} onMuralSelect={handleSelectMural} />
+        <MuralPicker {...props} onSelect={handleSelect} />
       </Modal>
     </div>
   );

@@ -1,4 +1,5 @@
 import { CircularProgress } from '@material-ui/core';
+import '@muraldevkit/mural-integrations-common/styles/fonts.css';
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import {
@@ -7,16 +8,15 @@ import {
   getAuthMode,
   getMuralRealm,
 } from '../../common/realm';
-import AccountChoice from './account-choice';
-import './styles.scss';
-import { AuthorizeParams } from './types';
-
-// @ts-ignore
-import MuralLogo from '../../images/mural-logo.png?w=130';
 // @ts-ignore
 import GoogleIcon from '../../images/google-icon.png?w=32&h=32';
 // @ts-ignore
 import MicrosoftIcon from '../../images/microsoft-icon.png?w=32&h=32';
+// @ts-ignore
+import MuralLogo from '../../images/mural-logo.png?w=130';
+import AccountChoice from './account-choice';
+import './styles.scss';
+import { AuthorizeParams } from './types';
 
 const AUTH_MODE_ICONS = {
   [AuthMode.GOOGLE]: GoogleIcon,
@@ -51,10 +51,10 @@ interface StateTypes {
 }
 
 export enum ACCOUNT_CHOOSER_ACTION {
- SIGN_IN = 'SIGN_IN',
- SIGN_UP = 'SIGN_UP',
- NEW_ACCOUNT = 'NEW_ACCOUNT',
- ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
+  SIGN_IN = 'SIGN_IN',
+  SIGN_UP = 'SIGN_UP',
+  NEW_ACCOUNT = 'NEW_ACCOUNT',
+  ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
 }
 
 export default class AccountChooser extends React.Component<
@@ -166,10 +166,16 @@ export default class AccountChooser extends React.Component<
     );
 
   useAnotherAccount = async () =>
-    this.onSelection(await this.props.getAuthUrl(), ACCOUNT_CHOOSER_ACTION.ANOTHER_ACCOUNT);
+    this.onSelection(
+      await this.props.getAuthUrl(),
+      ACCOUNT_CHOOSER_ACTION.ANOTHER_ACCOUNT,
+    );
 
   createNewAccount = async () =>
-    this.onSelection(await this.props.getAuthUrl({ signup: true }), ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT);
+    this.onSelection(
+      await this.props.getAuthUrl({ signup: true }),
+      ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT,
+    );
 
   render() {
     const { activeSession, hint, theme, visitor } = this.props;

@@ -1,25 +1,28 @@
 {
-  "appName": "",
-  "serverPort": 4001,
-  "endpoints": {
-		"server": "http://localhost:4001",
-    "webapp": "https://app.mural.co"
-	},
-	"services": {
-	  "auth": "localhost:4001",
-		"mural": "app.mural.co"
-	},
+  "appName": "Sample app",
+  "server": {
+    "host": "localhost",
+    "port": 5005
+  },
+  "client": {
+    "host": "localhost",
+    "port": 2022
+  },
+  "services": {
+    "auth": { "host": "localhost:5005", "secure": false },
+    "mural": { "host": "app.mural.co", "secure": true },
+    "integrations": { "host": "integrations.mural.co", "secure": true }
+  },
   "clientApp": {
-    "clientId": "",
-    "clientSecret": "",
-    "redirectUri": "http://localhost:4002/auth/callback",
+    "clientId": "<client-id>",
+    "clientSecret": "<client-secret>",
+    "redirectUri": "http://localhost:2022/auth/callback",
     "scopes": [
       "murals:read",
       "murals:write",
       "rooms:read",
       "workspaces:read",
-      "identity:read",
-			"restricted:login"
+      "identity:read"
     ]
   }
 }

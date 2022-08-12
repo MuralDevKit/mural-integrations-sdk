@@ -1,14 +1,23 @@
 {
   "name": "@muraldevkit/mural-integrations-common",
-  "version": "2.0.0-alpha.0",
+  "version": "2.2.5",
   "description": "MURAL integration basic components and assets.",
-  "main": "index.js",
+  "main": "dist/mural-common.bundle.js",
+  "module": "dist/mural-common.esm.js",
+  "types": "dist/index.d.ts",
   "files": [
     "assets/*",
     "fonts/*",
-    "styles/*"
+    "styles/*",
+    "dist/"
   ],
-  "scripts": {},
+  "scripts": {
+    "pack": "npm pack --pack-destination ../../dist/",
+    "build": "npx rollup --config build/rollup.config.mjs",
+    "compile": "npx tsc --project build/tsconfig.json",
+    "test": "npm run test",
+    "clean": "rm -rf dist out"
+  },
   "keywords": [
     "mural",
     "common",
@@ -19,5 +28,11 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9"
+  "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.182"
+  }
 }

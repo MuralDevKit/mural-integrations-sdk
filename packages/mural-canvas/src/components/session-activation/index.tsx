@@ -1,6 +1,7 @@
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { useEffect } from 'react';
+import { muralSessionClaimUrl } from '../../lib/session-activation';
 import { EventHandler } from '../../types';
 import './styles.scss';
 
@@ -9,26 +10,15 @@ interface PropTypes {
   onError?: EventHandler;
 }
 
-export async function getMuralSessionClaimUrl(
-  apiClient: ApiClient,
-  muralUrl: URL | string,
-  code: string,
-): Promise<URL> {
-  const redirectUrl = new URL(muralUrl.toString());
-  const claimRequestUrl = apiClient.url(
-    `/api/v0/authenticate/oauth2/session/${code}`,
-  );
-
-  claimRequestUrl.searchParams.set('redirectUrl', redirectUrl.href);
-
-  const res: Response = await apiClient.fetch(claimRequestUrl.href, {
-    method: 'PUT',
-  });
-
-  const claimUrl = await res.json();
-  return new URL(claimUrl);
-}
-
+/**
+ * Session activation handler
+ * This component should be mounted in a well-known URL that you will be required
+ * as the `authUrl` parameter on the `Canvas` component.
+ *
+ * Alternatively, you can use the `muralSessionClaimUrl` helper manually and
+ * redirect the user manually, or even use a HTTP redirect from a back-end route
+ * to the same effect.
+ */
 const SessionActivation: React.FC<PropTypes> = ({ apiClient, onError }) => {
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');
@@ -43,11 +33,7 @@ const SessionActivation: React.FC<PropTypes> = ({ apiClient, onError }) => {
     const redirectUrl = new URL(rawRedirectUrl);
 
     try {
-      const claimUrl = await getMuralSessionClaimUrl(
-        apiClient,
-        redirectUrl,
-        code,
-      );
+      const claimUrl = await muralSessionClaimUrl(apiClient, redirectUrl, code);
 
       window.location.replace(claimUrl.href);
     } catch (e: any) {

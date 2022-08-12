@@ -1,36 +1,41 @@
-import {
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  TextField,
-} from '@material-ui/core';
+import { CircularProgress, FormControl } from '@material-ui/core';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {
+  DeepPartial,
+  defaultBuilder,
+  EventHandler,
+} from '@muraldevkit/mural-integrations-common';
 import {
   ApiClient,
   Room,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
+import { MURAL_PICKER_ERRORS } from '../../common/errors';
+import { ReactSlot } from '../../common/react';
+import RoomSelect from '../room-select';
+import WorkspaceSelect from '../workspace-select';
 import './styles.scss';
 
-export interface RoomPickerData {
-  roomId: string;
-  workspaceId: string;
+interface Slots {
+  WorkspaceSelect: WorkspaceSelect['props']['slots'] & {
+    Self: ReactSlot<WorkspaceSelect>;
+  };
+  RoomSelect: RoomSelect['props']['slots'] & {
+    Self: ReactSlot<RoomSelect>;
+  };
 }
 
-export interface RoomSelectResult {
-  error?: string;
-}
-
-export interface RoomPickerPropTypes {
+export interface PropTypes {
   apiClient: ApiClient;
-  onRoomSelect: (data: RoomPickerData) => Promise<RoomSelectResult | undefined>;
-  handleError: (error: Error, message: string) => void;
-  hideLogo?: boolean;
+  onSelect: EventHandler<[room: Room, workspace: Workspace]>;
+
+  buttonTitle?: string;
+  onError?: EventHandler<[error: Error, message: string]>;
   theme?: 'light' | 'dark';
-  buttonTitle: string;
+
+  slots?: DeepPartial<Slots>;
 }
 
 interface StateTypes {
@@ -40,18 +45,29 @@ interface StateTypes {
   error: string;
   workspace: Workspace | null;
   room: Room | null;
+  searchedRooms: Room[] | null;
 }
 
 const INITIAL_STATE: StateTypes = {
   isLoading: true,
   workspaces: [],
   rooms: [],
+  searchedRooms: null,
   error: '',
   workspace: null,
   room: null,
 };
 
-export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
+const useSlots = defaultBuilder<Slots>({
+  WorkspaceSelect: {
+    Self: WorkspaceSelect,
+  },
+  RoomSelect: {
+    Self: RoomSelect,
+  },
+});
+
+export default class RoomPicker extends React.Component<PropTypes> {
   state: StateTypes = INITIAL_STATE;
 
   async componentDidMount() {
@@ -61,22 +77,14 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
   loadWorkspaces = async () => {
     this.setState({ isLoading: true });
     try {
-      const workspaces = await this.props.apiClient.getWorkspaces();
-      if (workspaces?.length) {
-        this.setState({ workspaces, isLoading: false });
+      const eWorkspaces = await this.props.apiClient.getWorkspaces();
+      if (eWorkspaces.value.length) {
+        this.setState({ workspaces: eWorkspaces.value, isLoading: false });
       }
     } catch (e: any) {
       this.handleError(e, 'Error retrieving workspaces.');
       this.setState({ isLoading: false });
     }
-  };
-
-  onWorkspaceSelect = async (
-    _: React.ChangeEvent<{}>,
-    workspace: Workspace | null,
-  ) => {
-    this.setState({ workspace, error: '' });
-    await this.loadRoomsByWorkspace(workspace);
   };
 
   loadRoomsByWorkspace = async (workspace: Workspace | null) => {
@@ -89,14 +97,14 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
     }
     try {
       this.setState({ isLoading: true });
-      const rooms = await this.props.apiClient.getRoomsByWorkspace(
-        workspace.id,
-      );
-      const sortedRooms = rooms.sort((a, b) => b.type.localeCompare(a.type));
+      const eRooms = await this.props.apiClient.getRoomsByWorkspace({
+        workspaceId: workspace.id,
+      });
+      const rooms = eRooms.value.sort((a, b) => b.type.localeCompare(a.type));
       this.setState({
         isLoading: false,
         workspace,
-        rooms: sortedRooms,
+        rooms: rooms,
         roomId: '',
         room: null,
       });
@@ -108,7 +116,10 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
 
   handleError = (e: Error, displayMsg: string) => {
     this.setState({ error: displayMsg });
-    this.props.handleError(e, displayMsg);
+
+    if (this.props.onError) {
+      this.props.onError(e, displayMsg);
+    }
   };
 
   getRoomGroup = (room?: Room) => {
@@ -116,11 +127,34 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
     return room.type === 'private' ? 'PRIVATE ROOMS' : 'OPEN ROOMS';
   };
 
-  onRoomSelect = async (_: React.ChangeEvent<{}>, room: Room | null) => {
+  handleRoomsSearch = async (query: any) => {
+    if (!query) {
+      return this.setState({ searchedRooms: null });
+    }
+
+    if (!this.state.workspace) return;
+    if (query.title.length <= 2) return;
+
+    try {
+      const eRooms = await this.props.apiClient.searchRoomsByWorkspace(query);
+      this.setState({ searchedRooms: eRooms.value });
+    } catch (e: any) {
+      if (!this.props.onError) throw e;
+
+      this.props.onError(e, MURAL_PICKER_ERRORS.ERR_SEARCH_MURALS);
+    }
+  };
+
+  handleWorkspaceSelect = async (workspace: Workspace | null) => {
+    this.setState({ workspace, error: '' });
+    await this.loadRoomsByWorkspace(workspace);
+  };
+
+  handleRoomSelect = async (room: Room | null) => {
     this.setState({ room, error: '' });
   };
 
-  onSubmit = async () => {
+  handleSubmit = async () => {
     if (!this.state.workspace) {
       return this.setState({ error: 'Please select a workspace.' });
     }
@@ -128,26 +162,32 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
       return this.setState({ error: 'Please select a room.' });
     }
 
-    const result = await this.props.onRoomSelect({
-      roomId: this.state.room.id,
-      workspaceId: this.state.workspace.id,
-    });
-
-    if (result?.error) {
-      this.setState({
-        error: result.error,
-      });
-    }
+    this.props.onSelect(this.state.room, this.state.workspace);
   };
 
   render() {
     const { theme, buttonTitle } = this.props;
     const { error, isLoading } = this.state;
+    const slots = useSlots(this.props.slots);
+
+    const controlGlyph = isLoading ? (
+      <CircularProgress />
+    ) : (
+      buttonTitle ?? 'Select'
+    );
+
+    // @TECHDEBT: use the main theme
     const currentTheme = theme || 'light';
     const muiTheme = createMuiTheme({
       palette: {
         type: currentTheme,
         text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
+        primary: {
+          main: '#FF0066',
+        },
+      },
+      typography: {
+        fontFamily: 'Proxima Nova',
       },
     });
 
@@ -155,80 +195,40 @@ export default class RoomPicker extends React.Component<RoomPickerPropTypes> {
       <ThemeProvider theme={muiTheme}>
         <div className={`room-picker-body ${theme}`}>
           <div className="select-row">
-            <FormControl
-              className="room-picker-select"
-              data-qa="workspace-select"
-            >
-              <div className="select-label">
-                <InputLabel shrink>WORKSPACE</InputLabel>
-              </div>
-              <div className="workspace-list">
-                <Autocomplete
-                  id="workspace-select"
-                  options={this.state.workspaces}
-                  getOptionLabel={option => {
-                    return option.name || '';
-                  }}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      placeholder="Find a workspace..."
-                      variant="outlined"
-                    />
-                  )}
-                  value={this.state.workspace}
-                  groupBy={() => 'SWITCH TO'}
-                  onChange={this.onWorkspaceSelect}
-                />
-              </div>
-            </FormControl>
-            <FormControl className="room-picker-select" data-qa="room-select">
-              <div className="select-label">
-                <InputLabel shrink>ROOM</InputLabel>
-              </div>
-              <div className="room-list">
-                <Autocomplete
-                  id="room-select"
-                  options={this.state.rooms}
-                  getOptionLabel={option => {
-                    return option?.name || '';
-                  }}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      placeholder="Find a room..."
-                      variant="outlined"
-                    />
-                  )}
-                  value={this.state.room}
-                  disabled={!this.state.workspace}
-                  groupBy={this.getRoomGroup}
-                  onChange={this.onRoomSelect}
-                />
-              </div>
+            <slots.WorkspaceSelect.Self
+              workspace={this.state.workspace}
+              workspaces={this.state.workspaces}
+              onSelect={this.handleWorkspaceSelect}
+              slots={slots.WorkspaceSelect}
+            />
+
+            <slots.RoomSelect.Self
+              workspace={this.state.workspace}
+              room={this.state.room}
+              rooms={this.state.searchedRooms || this.state.rooms}
+              onSearchQuery={this.handleRoomsSearch}
+              onSelect={this.handleRoomSelect}
+              slots={slots.RoomSelect}
+            />
+
+            <FormControl className="room-picker-control">
+              <button
+                className="mural-button room-picker-button"
+                data-qa="room-picker-button"
+                onClick={this.handleSubmit}
+              >
+                {controlGlyph}
+              </button>
             </FormControl>
           </div>
           {error && (
-            <div data-qa="room-picker-error">
-              <Alert severity="error" className="mural-picker-error">
-                {error}
-              </Alert>
-            </div>
-          )}
-          <FormControl className="workspace-button">
-            <button
-              className="room-picker-button"
-              data-qa="room-picker-button"
-              onClick={this.onSubmit}
+            <Alert
+              severity="error"
+              className="room-picker-error"
+              data-qa="room-picker-error"
             >
-              {buttonTitle}
-            </button>
-          </FormControl>
-
-          {isLoading && (
-            <div className="mural-list-spinner">
-              <CircularProgress />
-            </div>
+              {error}
+            </Alert>
           )}
         </div>
       </ThemeProvider>

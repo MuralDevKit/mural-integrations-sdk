@@ -6,6 +6,6 @@ scripts/**/*
 public/**/*
 assets/**/*
 .storybook/*
-builds/**/*
+build/**/*
 **/dist/**/*
 **/out/**/*

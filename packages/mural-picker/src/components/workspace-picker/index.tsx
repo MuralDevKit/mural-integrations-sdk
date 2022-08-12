@@ -1,31 +1,30 @@
-import {
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  TextField,
-} from '@material-ui/core';
+import { CircularProgress, FormControl } from '@material-ui/core';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import {
   ApiClient,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
+import { CardSize } from '../card-list-item';
+import { Preset } from '../theme';
+import WorkspaceSelect from '../workspace-select';
 import './styles.scss';
 
-export interface WorkspacePickerData {
-  workspaceId: string;
-}
+export type ThemeOptions = {
+  preset: Preset;
+  cardSize: CardSize;
+};
 
 export interface WorkspacePickerPropTypes {
   apiClient: ApiClient;
-  buttonTitle?: string;
-  handleError: (error: Error, message: string) => void;
-  hideLogo?: boolean;
-  initialWorkspaceId?: string;
-  onWorkspaceSelect: (workspace: Workspace) => void;
+  onSelect: EventHandler<[workspace: Workspace]>;
+  onError: EventHandler<[error: Error, message: string]>;
+
   theme?: 'light' | 'dark';
+  buttonTitle?: string;
+  initialWorkspaceId?: string;
 }
 
 interface StateTypes {
@@ -51,17 +50,19 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
 
   loadWorkspaces = async () => {
     this.setState({ isLoading: true });
-    try {
-      const workspaces = await this.props.apiClient.getWorkspaces();
-      if (workspaces?.length) {
-        let workspace;
-        if (this.props.initialWorkspaceId) {
-          workspace = workspaces.find(
-            w => w.id === this.props.initialWorkspaceId,
-          );
-        }
 
-        this.setState({ workspace, workspaces, isLoading: false });
+    try {
+      const eWorkspaces = await this.props.apiClient.getWorkspaces();
+      if (eWorkspaces.value.length) {
+        const workspace =
+          eWorkspaces.value.find(w => w.id === this.props.initialWorkspaceId) ||
+          eWorkspaces.value[0];
+
+        this.setState({
+          workspace,
+          workspaces: eWorkspaces.value,
+          isLoading: false,
+        });
       }
     } catch (e: any) {
       this.handleError(e, 'Error retrieving workspaces.');
@@ -72,22 +73,20 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
     }
   };
 
-  onWorkspaceSelect = async (
-    _: React.ChangeEvent<{}>,
-    workspace: Workspace | null,
-  ) => {
+  onWorkspaceSelect = async (workspace: Workspace | null) => {
     this.setState({ workspace, error: '' });
   };
 
   handleError = (e: Error, displayMsg: string) => {
     this.setState({ error: displayMsg });
-    this.props.handleError(e, displayMsg);
+    this.props.onError(e, displayMsg);
   };
 
   onSubmit = async () => {
     if (!this.state.workspace)
       return this.setState({ error: 'Please select a workspace.' });
-    this.props.onWorkspaceSelect(this.state.workspace);
+
+    this.props.onSelect(this.state.workspace);
   };
 
   render() {
@@ -117,54 +116,32 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
       <ThemeProvider theme={muiTheme}>
         <div className={`workspace-picker-body ${theme}`}>
           <div className="select-row">
+            <WorkspaceSelect
+              workspace={this.state.workspace}
+              workspaces={this.state.workspaces}
+              onSelect={this.onWorkspaceSelect}
+            />
             <FormControl
-              className="workspace-picker-select"
-              data-qa="workspace-select"
-            >
-              <div className="select-label">
-                <InputLabel shrink>WORKSPACE</InputLabel>
-              </div>
-              <div className="workspace-list" data-qa="workspace-list">
-                <Autocomplete
-                  id="workspace-select"
-                  options={this.state.workspaces}
-                  getOptionLabel={option => {
-                    return option.name || '';
-                  }}
-                  fullWidth
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      placeholder="Find a workspace..."
-                      variant="outlined"
-                    />
-                  )}
-                  value={this.state.workspace}
-                  groupBy={() => 'SWITCH TO'}
-                  onChange={this.onWorkspaceSelect}
-                />
-              </div>
-            </FormControl>
-
-            <FormControl
-              className="workspace-picker-button-control"
-              data-qa="workspace-picker-button-control"
+              className="workspace-picker-control"
+              data-qa="workspace-picker-control"
             >
               <button
-                className="workspace-picker-button"
+                className="mural-button workspace-picker-button"
                 data-qa="workspace-picker-button"
                 onClick={this.onSubmit}
               >
-                {buttonTitle}
+                {buttonTitle ?? 'Select'}
               </button>
             </FormControl>
           </div>
           {error && (
-            <div data-qa="workspace-picker-error">
-              <Alert severity="error" className="workspace-picker-error">
-                {error}
-              </Alert>
-            </div>
+            <Alert
+              severity="error"
+              className="workspace-picker-error"
+              data-qa="workspace-picker-error"
+            >
+              {error}
+            </Alert>
           )}
         </div>
       </ThemeProvider>

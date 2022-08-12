@@ -1,0 +1,198 @@
+@use '../styles.scss' as _;
+
+.new-mural {
+  &-container {
+    display: flex;
+    flex: 1 1 _.$card-height;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    overflow: hidden;
+
+    padding-top: 2em;
+  }
+
+  &-info {
+    position: relative;
+    width: 100%;
+  }
+
+  &-categories {
+    margin-right: 1em;
+    max-width: 20%;
+  }
+
+  &-items {
+    /* This ensure the container spans complete rows, including scrollbar */
+    flex: 1 1 calc(_.$card-width + _.$card-gutter + 2em);
+    max-height: 100%;
+    padding-right: _.$card-gutter;
+    overflow-y: scroll;
+
+    &-container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.5em;
+      justify-content: start;
+      padding-bottom: 80px;
+    }
+
+    &-mask {
+      position: absolute;
+      top: -2em;
+      height: 100%;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0) 0%,
+        #ffffff 40%
+      );
+    }
+  }
+
+  &-buttons {
+    &-container {
+      position: relative;
+      display: flex;
+      flex: 0 0 70px;
+      flex-direction: row;
+      justify-content: space-between;
+      padding-top: 1em;
+
+      & .button {
+        align-self: center;
+        margin-right: 0.5em;
+      }
+
+      & .new-mural-create {
+        display: flex;
+        min-width: 40%;
+        max-width: 70%;
+
+        &--input {
+          flex-grow: 1;
+          margin-right: 1em;
+        }
+      }
+    }
+  }
+}
+
+.template-item {
+  box-sizing: border-box;
+  min-width: _.$card-width;
+  min-height: _.$card-height;
+
+  border-radius: 5px;
+  box-shadow: #dedede 0 0 5px;
+  flex-grow: 1;
+  border: solid 1px #dedede;
+
+  &-sfx {
+    height: 100%;
+    width: 100%;
+
+    /* These styles are hardcoded in MUI */
+    align-items: stretch !important;
+    margin: 0 !important;
+
+    &.template-item-sfx--button {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #bbb;
+    }
+  }
+
+  &-selected {
+    border-color: #ff0066;
+
+    .template-item-typography-title {
+      &:focus,
+      &:focus-visible {
+        border-radius: 4px;
+        padding: 9px;
+        outline: 1px solid rgba(0, 0, 0, 0.23);
+      }
+    }
+  }
+
+  &-img-container {
+    box-sizing: border-box;
+    flex-grow: 1;
+    background-color: #e2e2e2;
+
+    height: 65%;
+
+    & img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+  }
+
+  &-typography {
+    &-container {
+      padding: 0.66em;
+      font-size: 0.8em;
+      line-height: 1.2rem;
+      height: 3.6rem;
+      white-space: nowrap;
+
+      * {
+        text-overflow: ellipsis;
+        overflow-x: hidden;
+      }
+    }
+
+    &-title {
+      font-size: 1.2em;
+      font-weight: 700;
+      color: #585858;
+    }
+
+    &-subtitle {
+      color: #8a8a8a;
+    }
+
+    &-desc {
+      margin-top: 0.66em;
+      color: #333;
+    }
+  }
+}
+
+.new-mural-items .template-item {
+  margin: 0.5em;
+}
+
+.one-column {
+  max-width: calc(99% - 0.5em);
+}
+
+.two-column {
+  max-width: calc(47% - 0.5em);
+}
+
+.three-column {
+  max-width: calc(31% - 0.5em);
+}
+
+@media (max-width: 824px), (max-height: 600px) {
+  .new-mural-categories {
+    display: none !important;
+  }
+}
+
+@media(min-width: 510px) {
+  .content--lg {
+    display: visible;
+  }
+}
+
+@media(max-width: 510px) {
+  .content--lg {
+    display: none;
+  }
+}

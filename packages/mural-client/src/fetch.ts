@@ -199,84 +199,123 @@ export interface AuthorizeHandlerOptions {
   storeState: boolean;
 }
 
-export const authorizeHandler = (config: TokenHandlerConfig) => async (
-  redirectUri?: string,
-  opts: AuthorizeHandlerOptions = { storeState: false },
-): Promise<string> => {
-  const state = generateState();
+/**
+ * Builds the MURAL OAuth authorisation URL via the configured Auth service.
+ *
+ * @param redirectUri If your application has multiple possible authentication
+ * callbacks, you can specify it using this parameter.
+ *
+ * Defaults to the first configured `redirectUri` in the MURAL App configuration.
+ *
+ * @param opts.storeState If your application want to use the OAuth `state` parameter
+ * this will automatically persist it in storage.
+ *
+ * @returns Authorization URL
+ */
+export const authorizeHandler =
+  (config: TokenHandlerConfig) =>
+  async (
+    redirectUri?: string,
+    opts: AuthorizeHandlerOptions = { storeState: false },
+  ): Promise<string> => {
+    const state = generateState();
 
-  const params = qs.stringify(
-    {
-      state,
-      redirectUri,
-      auto: opts.authorizeParams?.auto
-        ? encodeAutoParam(opts.authorizeParams.auto)
-        : undefined,
-      signup: opts.authorizeParams?.signup || undefined,
-      reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
-      ...opts.authorizeParams?.forward,
-    },
-    { encode: true },
-  );
+    const params = qs.stringify(
+      {
+        state,
+        redirectUri,
+        auto: opts.authorizeParams?.auto
+          ? encodeAutoParam(opts.authorizeParams.auto)
+          : undefined,
+        signup: opts.authorizeParams?.signup || undefined,
+        reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
+        ...opts.authorizeParams?.forward,
+      },
+      { encode: true },
+    );
 
-  const url = `${config.authorizeUri}?${params}`;
+    const url = `${config.authorizeUri}?${params}`;
 
-  const authorizeUrl = await fetch(url, { method: 'GET' })
-    .then(checkStatus)
-    .then(res => res.text());
+    const authorizeUrl = await fetch(url, { method: 'GET' })
+      .then(checkStatus)
+      .then(res => res.text());
 
-  if (opts.storeState) {
-    storeState(state);
-  }
+    if (opts.storeState) {
+      storeState(state);
+    }
 
-  return authorizeUrl;
-};
-
-export const requestTokenHandler = (config: TokenHandlerConfig) => async (
-  code: string,
-  state: string,
-  opts = { store: false },
-): Promise<Session> => {
-  // validate that the state hasn't been tampered
-  if (!validateState(state)) throw new Error('INVALID_STATE');
-
-  const url = `${config.requestTokenUri}?code=${code}`;
-  const session = await fetch(url, { method: 'GET' })
-    .then(checkStatus)
-    .then(res => res.json());
-
-  if (opts.store) {
-    fetchConfig.sessionStore.set(session);
-  }
-
-  return session;
-};
-
-export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
-  opts = { store: false },
-): Promise<Session> => {
-  const staleSession = fetchConfig.sessionStore.get();
-  const options = {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    body: JSON.stringify({
-      refreshToken: staleSession && staleSession.refreshToken,
-    }),
+    return authorizeUrl;
   };
 
-  const freshSession: Session = await fetch(config.refreshTokenUri, options)
-    .then(checkStatus)
-    .then(res => res.json());
+/**
+ * Exchange the `authorization_code` via the configured Auth service.
+ *
+ * @param code This parameter should match the `code` query string parameter sent by
+ * the MURAL OAuth service.
+ *
+ * @param state This parameter should match the `state` query string parameter sent by
+ * the MURAL OAuth service (if applicable).
+ *
+ * @param opts.store Whether the tokens should automatically be persisted in the provided
+ * storage. This is pretty handy unless you want to manage the tokens on your own.
+ *
+ * @returns The token pair issued from the MURAL OAuth service
+ */
+export const requestTokenHandler =
+  (config: TokenHandlerConfig) =>
+  async (
+    code: string,
+    state: string,
+    opts = { store: false },
+  ): Promise<Session> => {
+    // validate that the state hasn't been tampered
+    if (!validateState(state)) throw new Error('INVALID_STATE');
 
-  if (opts.store) {
-    fetchConfig.sessionStore.set(freshSession);
-  }
+    const url = `${config.requestTokenUri}?code=${code}`;
+    const session = await fetch(url, { method: 'GET' })
+      .then(checkStatus)
+      .then(res => res.json());
 
-  return freshSession;
-};
+    if (opts.store) {
+      fetchConfig.sessionStore.set(session);
+    }
+
+    return session;
+  };
+
+/**
+ * Exchange the MURAL `refreshToken` via the configured Auth service.
+ *
+ * @param opts.store Whether the tokens should automatically be persisted in the provided
+ * storage. This is pretty handy unless you want to manage the tokens on your own.
+ *
+ * @returns The token pair issued from the MURAL OAuth service
+ */
+export const refreshTokenHandler =
+  (config: TokenHandlerConfig) =>
+  async (opts = { store: false }): Promise<Session> => {
+    const staleSession = fetchConfig.sessionStore.get();
+    const options = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      body: JSON.stringify({
+        refreshToken: staleSession && staleSession.refreshToken,
+      }),
+    };
+
+    const freshSession: Session = await fetch(config.refreshTokenUri, options)
+      .then(checkStatus)
+      .then(res => res.json());
+
+    if (opts.store) {
+      fetchConfig.sessionStore.set(freshSession);
+    }
+
+    return freshSession;
+  };
 
 // This is a shortcut as this file as multiple dependencies
 // we'll ensure we require the call to `setup` or anyways
