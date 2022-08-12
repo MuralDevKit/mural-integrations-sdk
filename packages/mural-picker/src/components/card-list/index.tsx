@@ -1,4 +1,4 @@
-import { Container, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { defaultBuilder } from '@muraldevkit/mural-integrations-common';
 import { DeepPartial } from '@muraldevkit/mural-integrations-common/src/types';
 import { EventHandler } from '@muraldevkit/mural-integrations-common/src/types';
@@ -84,7 +84,7 @@ export default class CardList extends React.Component<PropTypes, StateTypes> {
     const slots = useSlots(this.props.slots);
 
     return (
-      <div>
+      <>
         <h5 className="subsection-header">Your favorite murals</h5>
         <Grid container className="mural-selector-grid" direction="row">
           {this.state.favorites.map((fave, i) => (
@@ -97,7 +97,7 @@ export default class CardList extends React.Component<PropTypes, StateTypes> {
             />
           ))}
         </Grid>
-      </div>
+      </>
     );
   };
 
@@ -143,26 +143,25 @@ export default class CardList extends React.Component<PropTypes, StateTypes> {
       this.state.favorites.length
     ) {
       return (
-        <Container className="mural-selector-container">
-          <div>
-            <h5 className="subsection-header">All murals</h5>
-            <Grid className="mural-grid" container direction="row">
-              {this.renderCreateNewMuralButton()}
-              {this.renderMurals()}
-            </Grid>
-          </div>
+        <div className="mural-selector-container">
+          <h5 className="subsection-header">All murals</h5>
+          <Grid className="mural-grid" container direction="row">
+            {this.renderCreateNewMuralButton()}
+            {this.renderMurals()}
+          </Grid>
+
           {this.renderFavoriteMurals()}
-        </Container>
+        </div>
       );
     }
 
     return (
-      <Container className="mural-selector-container">
+      <div className="mural-selector-container">
         <Grid className="mural-selector-grid" container direction="row">
           {this.renderCreateNewMuralButton()}
           {this.renderMurals()}
         </Grid>
-      </Container>
+      </div>
     );
   }
 }

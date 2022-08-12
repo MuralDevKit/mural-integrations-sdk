@@ -26,6 +26,7 @@ code {
 
   box-shadow: rgba(247, 28, 100, 0.6) 0 0 10px;
   border-radius: 1em;
-
   background: white;
+
+  overflow: hidden;
 }
