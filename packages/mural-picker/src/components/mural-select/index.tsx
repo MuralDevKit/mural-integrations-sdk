@@ -1,6 +1,6 @@
 import { FormControl, InputLabel, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { EventHandler } from '@muraldevkit/mural-integrations-common/src/types';
+import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import {
   ApiClient,
   Mural,

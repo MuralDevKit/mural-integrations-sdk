@@ -1,7 +1,9 @@
 import { Grid } from '@material-ui/core';
-import { defaultBuilder } from '@muraldevkit/mural-integrations-common';
-import { DeepPartial } from '@muraldevkit/mural-integrations-common/src/types';
-import { EventHandler } from '@muraldevkit/mural-integrations-common/src/types';
+import {
+  defaultBuilder,
+  EventHandler,
+  DeepPartial,
+} from '@muraldevkit/mural-integrations-common';
 import {
   Mural,
   Room,

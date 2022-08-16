@@ -3,8 +3,8 @@ import { Alert } from '@material-ui/lab';
 import {
   DeepPartial,
   defaultBuilder,
+  EventHandler,
 } from '@muraldevkit/mural-integrations-common';
-import { EventHandler } from '@muraldevkit/mural-integrations-common/src/types';
 import {
   ApiClient,
   Mural,

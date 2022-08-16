@@ -1,4 +1,4 @@
-import { EventHandler } from '@muraldevkit/mural-integrations-common/src/types';
+import { EventHandler } from '@muraldevkit/mural-integrations-common';
 
 export type CardSize = 'small' | 'normal';
 

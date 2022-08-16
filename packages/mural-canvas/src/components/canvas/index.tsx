@@ -107,7 +107,7 @@ export class CanvasHost extends React.Component<PropTypes> {
       throw new Error(`Cannot render the supplied 'canvasLink': ${canvasLink}`);
 
     // Add the canvasParams to the URL
-    let canvasUrl = new URL(canvasLink);
+    let canvasUrl = new URL(canvasLink.toString());
     for (const [key, value] of Object.entries(canvasParams || {})) {
       if (value) canvasUrl.searchParams.set(key, value.toString());
     }

@@ -1,12 +1,4 @@
-import setupAuthenticatedFetch, {
-  authenticated,
-  authorizeHandler,
-  FetchError,
-  refreshTokenHandler,
-  requestTokenHandler,
-  TokenHandlerConfig,
-} from './fetch';
-import { setupSessionStore } from './session';
+import { authenticated, FetchError } from './fetch';
 import {
   CreateStickyNotePayload,
   Mural,
@@ -31,10 +23,9 @@ export type FetchFunction = (
 
 export type ClientConfig = {
   appId: string;
-  fetchFn: FetchFunction;
-  muralHost: string;
-  integrationsHost: string;
-  secure: boolean;
+  integrationsHost?: string;
+  muralHost?: string;
+  secure?: boolean;
 };
 
 export type ApiError = {
@@ -42,6 +33,13 @@ export type ApiError = {
   message: string;
   status: number;
 };
+
+export type ApiQueryFor<T extends keyof ApiClient> = ApiClient[T] extends (
+  query: infer TQuery,
+  ...args: any[]
+) => any
+  ? TQuery
+  : never;
 
 export type PaginatedOptions = {
   limit: number;
@@ -56,14 +54,6 @@ const DEFAULT_CONFIG = {
   secure: true,
 };
 
-export type BuildClientArgs = {
-  appId: string;
-  muralHost?: string;
-  integrationsHost?: string;
-  secure?: boolean;
-  storage?: Storage;
-} & TokenHandlerConfig;
-
 export const getApiError = async (error: Error): Promise<ApiError | null> => {
   if (!(error instanceof FetchError) || !error.json) return null;
 
@@ -75,32 +65,6 @@ export const getApiError = async (error: Error): Promise<ApiError | null> => {
     status: error.response.status,
   };
 };
-
-/**
- * Create an ApiClient instance from the provided configuration.
- *
- * @param args.appId MURAL App `client_id`
- * @param args.muralHost MURAL API service host (default: 'app.mural.co')
- * @param args.integrationsHost MURAL integrations API service host (default: 'integrations.mural.co')
- * @param args.secure Whether the client should use TLS (default: true)
- * @param args.storage 'Storage' compatible store for the session management.
- *
- * @returns ApiClient
- */
-export function buildClientConfig(args: BuildClientArgs): ClientConfig {
-  const fetchFn = setupAuthenticatedFetch({
-    authorizeFn: authorizeHandler(args),
-    requestTokenFn: requestTokenHandler(args),
-    refreshTokenFn: refreshTokenHandler(args),
-    sessionStore: setupSessionStore(args.storage || localStorage),
-  });
-
-  return {
-    ...DEFAULT_CONFIG,
-    ...args,
-    fetchFn,
-  };
-}
 
 export type Envelope<TResource> = {
   value: TResource;
@@ -144,7 +108,7 @@ type TResolvedOptions<TResource, TOptions> = Partial<
 export type ResourceEndpoint<
   TResource,
   TParams = void,
-  TOptions = null,
+  TOptions = null
 > = TParams extends void
   ? (
       options?: TResolvedOptions<TResource, TOptions>,
@@ -286,8 +250,23 @@ export interface ApiClient {
   getLastActiveWorkspaceId: ResourceEndpoint<string | null>;
 }
 
-export default (config: ClientConfig): ApiClient => {
-  const { fetchFn } = config;
+/**
+ * Create an ApiClient instance from the provided configuration.
+ *
+ * @param fetchFn
+ * Fetch-link function that will be used by the API Client. Typically, use `setupAuthenticatedFetch` to
+ * use the standard MURAL API Client authentication aware fetch handler.
+ * @param args
+ * - appid: MURAL App `client_id`
+ * - muralHost: MURAL API service host (default: 'app.mural.co')
+ * - integrationsHost: MURAL integrations API service host (default: 'integrations.mural.co')
+ * - secure: Whether the client should use TLS (default: true)
+ * - storage: 'Storage' compatible store for the session management.
+ *
+ * @returns ApiClient
+ */
+export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
+  const clientConfig = { ...DEFAULT_CONFIG, ...config };
 
   function url(path: string): URL {
     return new URL(
@@ -309,7 +288,7 @@ export default (config: ClientConfig): ApiClient => {
 
   const client: ApiClient = {
     authenticated,
-    config,
+    config: clientConfig,
     fetch: fetchFn,
     url,
     track: async (event: string, properties?: {}) => {
