@@ -1,4 +1,4 @@
-import { authenticated, FetchError } from './fetch';
+import { authenticated, getFetchConfig, FetchError } from './fetch';
 import {
   CreateStickyNotePayload,
   Mural,
@@ -108,7 +108,7 @@ type TResolvedOptions<TResource, TOptions> = Partial<
 export type ResourceEndpoint<
   TResource,
   TParams = void,
-  TOptions = null
+  TOptions = null,
 > = TParams extends void
   ? (
       options?: TResolvedOptions<TResource, TOptions>,
@@ -291,24 +291,30 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
     config: clientConfig,
     fetch: fetchFn,
     url,
-    track: async (event: string, properties?: {}) => {
-      try {
-        const body = {
-          event,
-          properties,
-        };
-        fetchFn(trackingUrl, {
-          body: JSON.stringify(body),
-          credentials: 'include',
-          mode: 'cors',
-          headers: {
-            'content-type': 'application/json',
-          },
-          method: 'POST',
-        });
-      } catch (err) {
-        // suppress any error in tracking
+    track: (event: string, properties?: {}) => {
+      const body = {
+        event,
+        properties,
+      };
+
+      const headers: Headers = new Headers({
+        'content-type': 'application/json',
+      });
+
+      const session = getFetchConfig()?.sessionStore.get();
+      if (session) {
+        headers.append('authorization', session.accessToken);
       }
+
+      // Optimistically send the tracking information,
+      // errors for this process should not be treated as critical
+      fetch(trackingUrl, {
+        body: JSON.stringify(body),
+        credentials: 'include',
+        headers,
+        mode: 'cors',
+        method: 'POST',
+      }).catch(_err => {});
     },
     // https://developers.mural.co/public/reference/createmural
     createMural: async body => {

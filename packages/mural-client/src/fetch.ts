@@ -212,40 +212,38 @@ export interface AuthorizeHandlerOptions {
  *
  * @returns Authorization URL
  */
-export const authorizeHandler =
-  (config: TokenHandlerConfig) =>
-  async (
-    redirectUri?: string,
-    opts: AuthorizeHandlerOptions = { storeState: false },
-  ): Promise<string> => {
-    const state = generateState();
+export const authorizeHandler = (config: TokenHandlerConfig) => async (
+  redirectUri?: string,
+  opts: AuthorizeHandlerOptions = { storeState: false },
+): Promise<string> => {
+  const state = generateState();
 
-    const params = qs.stringify(
-      {
-        state,
-        redirectUri,
-        auto: opts.authorizeParams?.auto
-          ? encodeAutoParam(opts.authorizeParams.auto)
-          : undefined,
-        signup: opts.authorizeParams?.signup || undefined,
-        reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
-        ...opts.authorizeParams?.forward,
-      },
-      { encode: true },
-    );
+  const params = qs.stringify(
+    {
+      state,
+      redirectUri,
+      auto: opts.authorizeParams?.auto
+        ? encodeAutoParam(opts.authorizeParams.auto)
+        : undefined,
+      signup: opts.authorizeParams?.signup || undefined,
+      reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
+      ...opts.authorizeParams?.forward,
+    },
+    { encode: true },
+  );
 
-    const url = `${config.authorizeUri}?${params}`;
+  const url = `${config.authorizeUri}?${params}`;
 
-    const authorizeUrl = await fetch(url, { method: 'GET' })
-      .then(checkStatus)
-      .then(res => res.text());
+  const authorizeUrl = await fetch(url, { method: 'GET' })
+    .then(checkStatus)
+    .then(res => res.text());
 
-    if (opts.storeState) {
-      storeState(state);
-    }
+  if (opts.storeState) {
+    storeState(state);
+  }
 
-    return authorizeUrl;
-  };
+  return authorizeUrl;
+};
 
 /**
  * Exchange the `authorization_code` via the configured Auth service.
@@ -261,27 +259,25 @@ export const authorizeHandler =
  *
  * @returns The token pair issued from the MURAL OAuth service
  */
-export const requestTokenHandler =
-  (config: TokenHandlerConfig) =>
-  async (
-    code: string,
-    state: string,
-    opts = { store: false },
-  ): Promise<Session> => {
-    // validate that the state hasn't been tampered
-    if (!validateState(state)) throw new Error('INVALID_STATE');
+export const requestTokenHandler = (config: TokenHandlerConfig) => async (
+  code: string,
+  state: string,
+  opts = { store: false },
+): Promise<Session> => {
+  // validate that the state hasn't been tampered
+  if (!validateState(state)) throw new Error('INVALID_STATE');
 
-    const url = `${config.requestTokenUri}?code=${code}`;
-    const session = await fetch(url, { method: 'GET' })
-      .then(checkStatus)
-      .then(res => res.json());
+  const url = `${config.requestTokenUri}?code=${code}`;
+  const session = await fetch(url, { method: 'GET' })
+    .then(checkStatus)
+    .then(res => res.json());
 
-    if (opts.store) {
-      fetchConfig.sessionStore.set(session);
-    }
+  if (opts.store) {
+    fetchConfig.sessionStore.set(session);
+  }
 
-    return session;
-  };
+  return session;
+};
 
 /**
  * Exchange the MURAL `refreshToken` via the configured Auth service.
@@ -291,31 +287,31 @@ export const requestTokenHandler =
  *
  * @returns The token pair issued from the MURAL OAuth service
  */
-export const refreshTokenHandler =
-  (config: TokenHandlerConfig) =>
-  async (opts = { store: false }): Promise<Session> => {
-    const staleSession = fetchConfig.sessionStore.get();
-    const options = {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-      body: JSON.stringify({
-        refreshToken: staleSession && staleSession.refreshToken,
-      }),
-    };
-
-    const freshSession: Session = await fetch(config.refreshTokenUri, options)
-      .then(checkStatus)
-      .then(res => res.json());
-
-    if (opts.store) {
-      fetchConfig.sessionStore.set(freshSession);
-    }
-
-    return freshSession;
+export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
+  opts = { store: false },
+): Promise<Session> => {
+  const staleSession = fetchConfig.sessionStore.get();
+  const options = {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    body: JSON.stringify({
+      refreshToken: staleSession && staleSession.refreshToken,
+    }),
   };
+
+  const freshSession: Session = await fetch(config.refreshTokenUri, options)
+    .then(checkStatus)
+    .then(res => res.json());
+
+  if (opts.store) {
+    fetchConfig.sessionStore.set(freshSession);
+  }
+
+  return freshSession;
+};
 
 // This is a shortcut as this file as multiple dependencies
 // we'll ensure we require the call to `setup` or anyways
@@ -331,4 +327,11 @@ export default function setup(
   fetchConfig = config;
 
   return authenticatedFetch;
+}
+
+/**
+ * Return the current `fetchConfig` used by the ApiClient
+ */
+export function getFetchConfig() {
+  return fetchConfig;
 }
