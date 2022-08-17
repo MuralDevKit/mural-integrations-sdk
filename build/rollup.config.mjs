@@ -25,6 +25,7 @@ console.info('BUNDLE_STATS:', BUNDLE_STATS);
  * @param descriptor {
  *   name: string;
  *   packageDir?: string;
+ *   entrypoint: string = 'src/index.ts';
  *   overrides: {};
  * }
  */
@@ -34,6 +35,7 @@ export const moduleConfig = descriptor => {
     esm: `${descriptor.name}.esm.js`,
   };
 
+  const entrypoint = descriptor.entrypoint || 'src/index.ts';
   const packageDir =
     descriptor.packageDir || path.resolve('./packages', descriptor.name);
 
@@ -63,7 +65,7 @@ export const moduleConfig = descriptor => {
   }
 
   return {
-    input: path.resolve(packageDir, 'src/index.ts'),
+    input: path.resolve(packageDir, entrypoint),
     output: [
       {
         file: path.resolve(packageDir, 'dist', bundleName.commonjs),
