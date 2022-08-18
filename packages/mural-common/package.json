@@ -6,9 +6,9 @@
   "module": "dist/mural-common.esm.js",
   "types": "dist/index.d.ts",
   "files": [
-    "src/assets/*",
-    "src/fonts/*",
-    "src/styles/*",
+    "src/assets/",
+    "src/fonts/",
+    "src/styles/",
     "dist/"
   ],
   "scripts": {

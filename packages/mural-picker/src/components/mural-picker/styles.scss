@@ -4,6 +4,7 @@
   flex-direction: column;
   flex-grow: 1;
   align-items: stretch;
+  min-height: 300px;
 
   &.dark {
     color: white;

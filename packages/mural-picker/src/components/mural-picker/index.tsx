@@ -43,9 +43,6 @@ export type Slots = {
 
   WorkspaceSelect?: WorkspaceSelect['props']['slots'];
   RoomSelect?: RoomSelect['props']['slots'];
-
-  CardList?: CardList['props']['slots'];
-  MuralCreate?: MuralCreate['props']['slots'];
 };
 
 interface PropTypes {
@@ -316,8 +313,6 @@ export default class MuralPicker extends React.Component<
           {this.state.segue === Segue.LOADING && <Loading />}
           {this.state.segue === Segue.PICKING && (
             <CardList
-              workspace={this.state.workspace}
-              room={this.state.room}
               murals={this.state.murals}
               selectedMural={this.state.mural}
               cardSize={cardSize}
@@ -325,7 +320,6 @@ export default class MuralPicker extends React.Component<
               onSelect={this.handleMuralSelect}
               onCreate={this.handleCreate}
               onError={this.handleError}
-              slots={slots.CardList}
             />
           )}
 
@@ -339,7 +333,6 @@ export default class MuralPicker extends React.Component<
                 onError={this.handleError}
                 onCreate={this.handleFinishCreation}
                 onCancel={this.setInitialState}
-                slots={slots.MuralCreate}
               />
             )}
         </div>

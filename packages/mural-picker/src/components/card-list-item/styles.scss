@@ -12,12 +12,18 @@
       sans-serif;
   }
 
-  .mural-thumbnail {
+  .card-thumbnail {
     width: 100%;
     height: 120px;
   }
 
-  .mural-info {
+  .card-action {
+    height: 100%;
+    font-size: 1.66em;
+    text-align: center;
+  }
+
+  .card-info {
     height: 40px;
     padding: 0.6em;
 
@@ -26,7 +32,7 @@
       pointer-events: none;
     }
 
-    .mural-title {
+    .card-title {
       font-weight: 700;
       font-size: 0.8rem;
 
@@ -36,7 +42,7 @@
       overflow: hidden;
     }
 
-    .mural-details {
+    .card-details {
       font-size: 0.6rem;
     }
   }
@@ -45,12 +51,12 @@
     width: 141px;
     height: 120px;
 
-    .mural-thumbnail {
+    .card-thumbnail {
       width: 141px;
       height: 85px;
     }
 
-    .mural-info {
+    .card-info {
       padding-top: 0.3em;
     }
   }
