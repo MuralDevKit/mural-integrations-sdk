@@ -1,3 +1,4 @@
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import * as React from 'react';
 import { CardSize } from '../card-list-item';
@@ -22,7 +23,6 @@ const dateMarker = (mural: Mural) => {
 interface PropTypes {
   murals: Mural[];
   cardSize: CardSize;
-  hideAddButton: boolean;
 
   onSelect: EventHandler<[mural: Mural]>;
   onCreate: EventHandler;
@@ -31,34 +31,19 @@ interface PropTypes {
   selectedMural?: Mural | null;
 }
 
-interface StateTypes {
-  murals: Mural[];
-  favorites: Mural[];
-}
+export default class MuralCardList extends React.Component<PropTypes> {
+  handleSelectFor =
+    (murals: Mural[], section: 'favorites' | 'murals') => (idx: number) => {
+      this.setState({
+        selected: {
+          favorites: -1,
+          murals: -1,
+          [section]: idx,
+        },
+      });
 
-export default class MuralCardList extends React.Component<
-  PropTypes,
-  StateTypes
-> {
-  state = {
-    murals: [],
-    favorites: [],
-  };
-
-  componentDidMount() {
-    const favorites = this.props.murals.filter(mural => {
-      return mural.favorite;
-    });
-
-    this.setState({
-      murals: this.props.murals,
-      favorites,
-    });
-  }
-
-  handleSelectFor = (section: 'favorites' | 'murals') => (idx: number) => {
-    this.props.onSelect(this.state[section][idx]);
-  };
+      this.props.onSelect(murals[idx]);
+    };
 
   handleAction = (actionName: string) => {
     switch (actionName) {
@@ -68,26 +53,28 @@ export default class MuralCardList extends React.Component<
   };
 
   renderFavoriteMurals = () => {
-    if (this.state.favorites.length === 0) return null;
+    const favorites = this.props.murals.filter(mural => mural.favorite);
+    if (favorites.length === 0) return null;
+
+    const selected = favorites.findIndex(
+      m => m.favorite && m.id === this.props.selectedMural?.id,
+    );
 
     return (
       <CardListSection
         title="Your favorite murals"
-        items={this.state.favorites.map(muralCardItemSource)}
+        items={favorites.map(muralCardItemSource)}
         cardSize={this.props.cardSize}
-        onSelect={this.handleSelectFor('favorites')}
+        onSelect={this.handleSelectFor(favorites, 'favorites')}
+        selected={selected}
       />
     );
   };
 
   renderMurals = () => {
-    /*
-    TODO:
-    If a user has not selected workspace and room, display 3 rows of murals:
-    1. create a mural button + templates (e.g. icebreaker)
-    2. recently opened murals (is this in the private API?)
-    3. favorite murals
-     */
+    const selected = this.props.murals.findIndex(
+      m => !m.favorite && m.id === this.props.selectedMural?.id,
+    );
 
     // Display all murals or all murals in selected room
     if (this.props.murals.length) {
@@ -95,12 +82,22 @@ export default class MuralCardList extends React.Component<
         <CardListSection
           title="All murals"
           actions={[
-            { title: 'Create new mural', name: 'create', sort: 'start' },
+            {
+              content: (
+                <div>
+                  <AddCircleIcon />
+                  <div>Create new mural</div>
+                </div>
+              ),
+              name: 'create',
+              sort: 'start',
+            },
           ]}
-          items={this.state.murals.map(muralCardItemSource)}
+          items={this.props.murals.map(muralCardItemSource)}
           cardSize={this.props.cardSize}
-          onSelect={this.handleSelectFor('murals')}
+          onSelect={this.handleSelectFor(this.props.murals, 'murals')}
           onAction={this.handleAction}
+          selected={selected}
         />
       );
     }

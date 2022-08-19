@@ -110,7 +110,7 @@ class App extends React.Component<{}, AppState> {
 
   handleMural = (mural: Mural) => {
     this.setState({
-      segue: Segue.CANVAS,
+      //segue: Segue.CANVAS,
       canvasLink: mural._canvasLink,
     });
   };

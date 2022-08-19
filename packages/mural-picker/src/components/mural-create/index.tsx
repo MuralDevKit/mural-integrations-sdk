@@ -11,6 +11,8 @@ import {
 import debounce from 'lodash/debounce';
 import * as React from 'react';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
+import { ActionItemSource } from '../card-list-item/action';
+import { CardListSection } from '../card-list/card-list-section';
 import {
   ListItem,
   ListSubheader,
@@ -19,8 +21,6 @@ import {
 } from '../common';
 import { ErrorHandler } from '../types';
 import './styles.scss';
-import { CardListSection } from '../card-list/card-list-section';
-import { ActionItemSource } from '../card-list-item/action';
 
 /*
  * Once we have the proper template lookup in the public API, we should showcase
@@ -259,7 +259,7 @@ export default class MuralCreate extends React.Component<
 
     const actions: ActionItemSource[] = [];
     if (this.state.nextToken) {
-      actions.push({ title: 'Load more…', name: 'load-more', sort: 'end' });
+      actions.push({ content: 'Load more…', name: 'load-more', sort: 'end' });
     }
 
     return (
@@ -269,10 +269,12 @@ export default class MuralCreate extends React.Component<
         <div ref={this.scrollRef} className="mural-selector-container">
           <div className="mural-selector-grid">
             <CardListSection
+              title="Workspace templates"
               actions={actions}
               items={templateCardItems}
               onSelect={this.onSelectTemplate}
               onAction={this.handleAction}
+              selected={this.state.selected}
               cardSize={'normal'}
             />
           </div>

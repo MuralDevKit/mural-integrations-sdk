@@ -11,20 +11,13 @@ interface PropTypes {
   onSelect: EventHandler<[idx: number, item: CardItemSource]>;
 
   actions?: ActionItemSource[];
-  title?: string;
   cardSize?: CardSize;
   onAction?: EventHandler<[actionName: string]>;
+  title?: string;
+  selected?: number;
 }
 
-interface StateTypes {
-  selected: number | null;
-}
-
-export class CardListSection extends React.Component<PropTypes, StateTypes> {
-  state = {
-    selected: null,
-  };
-
+export class CardListSection extends React.Component<PropTypes> {
   handleAction = (name: string) => () => {
     if (!this.props.onAction) return;
 
@@ -32,7 +25,6 @@ export class CardListSection extends React.Component<PropTypes, StateTypes> {
   };
 
   handleSelectFor = (idx: number) => () => {
-    this.setState({ selected: idx });
     this.props.onSelect(idx, this.props.items[idx]);
   };
 
@@ -70,7 +62,7 @@ export class CardListSection extends React.Component<PropTypes, StateTypes> {
             <CardItem
               key={i}
               source={item}
-              isSelected={this.state.selected === i}
+              isSelected={this.props.selected === i}
               cardSize={this.props.cardSize || 'normal'}
               onClick={this.handleSelectFor(i)}
             />

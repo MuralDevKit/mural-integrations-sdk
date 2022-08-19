@@ -5,8 +5,8 @@ import { PropTypes as ItemPropTypes } from './types';
 import './styles.scss';
 
 export type ActionItemSource = {
+  content: React.ReactNode;
   name: string;
-  title: string;
   sort: 'start' | 'end';
 };
 
@@ -19,10 +19,16 @@ export default (props: PropTypes) => {
     <Grid item>
       <Card
         variant="outlined"
-        className={classnames('card-list-item', `${cardSize}-card`)}
+        className={classnames(
+          'card-list-item',
+          `${cardSize}-card`,
+          'outline-dashed',
+        )}
         onClick={onClick}
       >
-        <CardActionArea className="card-action">{source.title}</CardActionArea>
+        <CardActionArea className="card-action">
+          {source.content}
+        </CardActionArea>
       </Card>
     </Grid>
   );
