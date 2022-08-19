@@ -6,8 +6,8 @@ import WorkspacePicker from './components/workspace-picker';
 
 export * from './common/delays'; // testing rig
 
-import '@muraldevkit/mural-integrations-common/src/styles/fonts.css';
-import '@muraldevkit/mural-integrations-common/src/styles/common.scss';
+import '@muraldevkit/mural-integrations-common/styles/fonts.css';
+import '@muraldevkit/mural-integrations-common/styles/common.scss';
 
 export {
   MuralPicker,

@@ -1,5 +1,4 @@
 import { DEBUG, BUNDLE_STATS } from './module-config.mjs';
-import muralCommon from '../packages/mural-common/build/rollup.config.mjs';
 import muralClient from '../packages/mural-client/build/rollup.config.mjs';
 import muralPicker from '../packages/mural-picker/build/rollup.config.mjs';
 import muralCanvas from '../packages/mural-canvas/build/rollup.config.mjs';
@@ -21,7 +20,6 @@ const registerModules = (...modules) => {
 };
 
 export default registerModules(
-  ...muralCommon,
   ...muralClient,
   ...muralPicker,
   ...muralCanvas,
