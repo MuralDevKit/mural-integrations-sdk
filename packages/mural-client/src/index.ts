@@ -297,13 +297,11 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
         properties,
       };
 
-      const headers: Headers = new Headers({
-        'content-type': 'application/json',
-      });
-
       const session = getFetchConfig()?.sessionStore.get();
+      const headers = [['content-type', 'application/json']];
+
       if (session) {
-        headers.append('authorization', session.accessToken);
+        headers.push(['authorization', `Bearer ${session.accessToken}`]);
       }
 
       // Optimistically send the tracking information,

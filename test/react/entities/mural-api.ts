@@ -20,8 +20,12 @@ const generate = <T extends BaseEntity>(defaults?: {}) =>
 
 const workspace = generate<Workspace>();
 const room = generate<Room>({ type: 'private' });
-const mural = generate<Mural>();
-const template = generate<Template>();
+const mural = generate<Mural>({
+  thumbnailUrl: 'https://static.testing.rig/mural-thumbnail.png',
+});
+const template = generate<Template>({
+  thumbUrl: 'https://static.testing.rig/template-thumbnail.png',
+});
 
 export default {
   workspace,

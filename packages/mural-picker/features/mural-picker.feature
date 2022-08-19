@@ -17,22 +17,22 @@ Feature: mural picker
     And the route has finished loading
 
   Scenario: the first workspace is selected by default and murals are shown
-    Then the [mural title] at index 0 content is "${M1.title}"
-    And the [mural title] at index 1 content is "${M2.title}"
+    Then the [card title] at index 0 content is "${M1.title}"
+    And the [card title] at index 1 content is "${M2.title}"
 
   Scenario: selecting a room show the murals of that room
     When I select "workspace1" in [workspace select]
     And I select "room2" in [room select]
-    Then the [mural title] at index 0 content is "${M3.title}"
+    Then the [card title] at index 0 content is "${M3.title}"
 
   Scenario: selecting a workspace show the murals of that workspace
     When I select "workspace2" in [workspace select]
     And I select "room3" in [room select]
-    Then the [mural title] at index 0 content is "${M4.title}"
+    Then the [card title] at index 0 content is "${M4.title}"
 
   Scenario: searching for a room in a workspace returns the room
     Given mural picker delay "DEBOUNCE_SEARCH" is 0ms
     When I select "workspace1" in [workspace select]
     And typing "room2" on the [input room select]
     And I select "room2" in [room select]
-    Then the [mural title] at index 0 content is "${M3.title}"
+    Then the [card title] at index 0 content is "${M3.title}"

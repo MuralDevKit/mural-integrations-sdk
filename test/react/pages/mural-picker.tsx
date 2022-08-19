@@ -15,7 +15,7 @@ const muralPicker: Page = {
     );
   },
   items: {
-    'mural title': 'mural-title',
+    'card title': 'card-title',
     'room select': 'room-select',
     'workspace select': 'workspace-select',
     'input room select': 'input-room-select',
