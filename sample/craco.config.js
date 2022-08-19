@@ -5,10 +5,6 @@ const config = require('dos-config');
 module.exports = {
   webpack: {
     alias: {
-      '@muraldevkit/mural-integrations-common': path.join(
-        __dirname,
-        '../packages/mural-common/src',
-      ),
       react: path.join(__dirname, 'node_modules/react'),
       'react-dom': path.join(__dirname, 'node_modules/react-dom'),
     },

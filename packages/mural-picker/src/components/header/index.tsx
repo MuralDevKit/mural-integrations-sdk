@@ -3,7 +3,7 @@ import {
   defaultBuilder,
 } from '@muraldevkit/mural-integrations-common';
 // @ts-ignore
-import MuralIcon from '@muraldevkit/mural-integrations-common/assets/icon.png';
+import MuralIcon from '@muraldevkit/mural-integrations-common/src/assets/icon.png';
 import * as React from 'react';
 import { ReactSlot } from '../../common/react';
 

@@ -9,7 +9,6 @@
     "@muraldevkit/mural-integrations-mural-canvas": "2.2.5",
     "@muraldevkit/mural-integrations-mural-client": "2.2.5",
     "@muraldevkit/mural-integrations-mural-picker": "2.2.5",
-    "@muraldevkit/mural-integrations-common": "2.2.5",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",

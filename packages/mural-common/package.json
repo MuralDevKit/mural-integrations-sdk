@@ -6,10 +6,7 @@
   "module": "dist/mural-common.esm.js",
   "types": "dist/index.d.ts",
   "files": [
-    "src/assets/",
-    "src/fonts/",
-    "src/styles/",
-    "dist/"
+    "dist/**/*"
   ],
   "scripts": {
     "pack": "npm pack --pack-destination ../../dist/",
