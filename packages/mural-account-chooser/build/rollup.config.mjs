@@ -1,9 +1,7 @@
-import path from 'path';
-import { moduleConfig } from '../../../build/rollup.config.mjs';
+import { moduleConfig } from '../../../build/module-config.mjs';
 
 export default [
   moduleConfig({
-    packageDir: path.resolve(),
     name: 'mural-account-chooser',
   }),
 ];

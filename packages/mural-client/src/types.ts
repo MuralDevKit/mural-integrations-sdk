@@ -23,17 +23,37 @@ export type Room = {
 
 export type Mural = {
   id: string;
-  title: string;
+  /** @deprecated
+   * This field will require the new DR content API in the future
+   */
+  createdBy: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    id: string;
+  };
+  createdOn: number;
   favorite: boolean;
+  title: string;
   thumbnailUrl: string;
-  updatedOn: number;
-  workspaceId: string;
   roomId: string;
+  /** @deprecated
+   * This field will require the new DR content API in the future
+   */
+  updatedBy: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    id: string;
+  };
+  updatedOn: number;
   visitorsSettings: {
     link: string;
     visitors: string;
     workspaceMembers: string;
   };
+  workspaceId: string;
+
   _canvasLink: string;
 };
 

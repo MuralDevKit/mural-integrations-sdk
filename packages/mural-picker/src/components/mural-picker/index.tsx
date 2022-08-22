@@ -43,9 +43,6 @@ export type Slots = {
 
   WorkspaceSelect?: WorkspaceSelect['props']['slots'];
   RoomSelect?: RoomSelect['props']['slots'];
-
-  CardList?: CardList['props']['slots'];
-  MuralCreate?: MuralCreate['props']['slots'];
 };
 
 interface PropTypes {
@@ -225,12 +222,6 @@ export default class MuralPicker extends React.Component<
         error: '',
         mural,
       });
-      this.props.apiClient.track('Selected mural from picker', {
-        ...getCommonTrackingProperties(),
-        clientAppId: this.props.apiClient.config.appId,
-        workspace: this.state.workspace?.name,
-        muralId: mural.id,
-      });
       this.props.onSelect(mural, this.state.room, this.state.workspace!);
     } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_SELECTING_MURAL);
@@ -316,16 +307,12 @@ export default class MuralPicker extends React.Component<
           {this.state.segue === Segue.LOADING && <Loading />}
           {this.state.segue === Segue.PICKING && (
             <CardList
-              workspace={this.state.workspace}
-              room={this.state.room}
               murals={this.state.murals}
               selectedMural={this.state.mural}
               cardSize={cardSize}
-              hideAddButton={!slots.AddButton === null}
               onSelect={this.handleMuralSelect}
               onCreate={this.handleCreate}
               onError={this.handleError}
-              slots={slots.CardList}
             />
           )}
 
@@ -339,7 +326,6 @@ export default class MuralPicker extends React.Component<
                 onError={this.handleError}
                 onCreate={this.handleFinishCreation}
                 onCancel={this.setInitialState}
-                slots={slots.MuralCreate}
               />
             )}
         </div>

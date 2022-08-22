@@ -22,6 +22,7 @@ import registerThen from './step-definitions/then';
 
 import * as fetch from './mocks/fetch';
 import * as muralApi from './mocks/mural-api';
+import * as muralIntegrationsApi from './mocks/mural-integrations-api';
 import muralApiEntities from './entities/mural-api';
 
 const setup: SetupFn = args => {
@@ -33,6 +34,7 @@ const setup: SetupFn = args => {
 
   Before(async () => {
     muralApi.registerGlobalRoutes();
+    muralIntegrationsApi.registerGlobalRoutes();
   });
 
   After(async () => {

@@ -22,7 +22,8 @@
       "murals:write",
       "rooms:read",
       "workspaces:read",
-      "identity:read"
+      "identity:read",
+      "templates:read"
     ]
   }
 }

@@ -1,166 +1,115 @@
-import { Grid } from '@material-ui/core';
-import { defaultBuilder } from '@muraldevkit/mural-integrations-common';
-import { DeepPartial } from '@muraldevkit/mural-integrations-common/src/types';
-import { EventHandler } from '@muraldevkit/mural-integrations-common/src/types';
-import {
-  Mural,
-  Room,
-  Workspace,
-} from '@muraldevkit/mural-integrations-mural-client';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import * as React from 'react';
-import { ReactSlot } from '../../common/react';
-import { MuralCardItem, CreateCardItem, CardSize } from '../card-list-item';
+import { CardSize } from '../card-list-item';
 import './styles.scss';
+import { Mural } from '@muraldevkit/mural-integrations-mural-client';
+import humanize from 'humanize-duration';
+import { CardListSection } from './card-list-section';
 
-interface Slots {
-  MuralItem: ReactSlot<typeof MuralCardItem>;
-  CreateItem: ReactSlot<typeof CreateCardItem>;
-}
+export const muralCardItemSource = (mural: Mural) => ({
+  title: mural.title || 'Untitled mural',
+  details: dateMarker(mural),
+  thumbnailUrl: mural.thumbnailUrl,
+});
+
+const dateMarker = (mural: Mural) => {
+  const span = Date.now() - mural.updatedOn;
+  const marker = humanize(span, { round: true, units: ['d', 'h'] });
+
+  return `Modified ${marker} ago`;
+};
 
 interface PropTypes {
-  workspace: Workspace | null;
-  room: Room | null;
   murals: Mural[];
   cardSize: CardSize;
-  hideAddButton: boolean;
 
   onSelect: EventHandler<[mural: Mural]>;
   onCreate: EventHandler;
   onError: EventHandler<[e: Error, displayMsg: string]>;
 
   selectedMural?: Mural | null;
-  slots?: DeepPartial<Slots>;
 }
 
-interface StateTypes {
-  murals: Mural[];
-  isCreateSelected: boolean;
-  favorites: Mural[];
-}
+export default class MuralCardList extends React.Component<PropTypes> {
+  handleSelectFor =
+    (murals: Mural[], section: 'favorites' | 'murals') => (idx: number) => {
+      this.setState({
+        selected: {
+          favorites: -1,
+          murals: -1,
+          [section]: idx,
+        },
+      });
 
-const useSlots = defaultBuilder<Slots>({
-  MuralItem: MuralCardItem,
-  CreateItem: CreateCardItem,
-});
+      this.props.onSelect(murals[idx]);
+    };
 
-export default class CardList extends React.Component<PropTypes, StateTypes> {
-  state = {
-    murals: [],
-    isCreateSelected: false,
-    favorites: [],
-  };
-
-  componentDidMount() {
-    const favorites = this.props.murals.filter(mural => {
-      return mural.favorite;
-    });
-
-    this.setState({
-      murals: this.props.murals,
-      favorites,
-    });
-  }
-
-  isSelected = (mural: Mural) =>
-    !!this.props.selectedMural && this.props.selectedMural.id === mural.id;
-
-  handleSelectFor = (mural: Mural) => () => {
-    if (!mural) {
-      return this.props.onError(
-        new Error('Mural undefined'),
-        'Error creating mural',
-      );
+  handleAction = (actionName: string) => {
+    switch (actionName) {
+      case 'create':
+        return this.props.onCreate();
     }
-    this.setState({ isCreateSelected: false });
-
-    this.props.onSelect(mural);
-  };
-
-  handleCreate = () => {
-    this.props.onCreate();
   };
 
   renderFavoriteMurals = () => {
-    const slots = useSlots(this.props.slots);
+    const favorites = this.props.murals.filter(mural => mural.favorite);
+    if (favorites.length === 0) return null;
 
-    return (
-      <>
-        <h5 className="subsection-header">Your favorite murals</h5>
-        <Grid container className="mural-selector-grid" direction="row">
-          {this.state.favorites.map((fave, i) => (
-            <slots.MuralItem
-              mural={fave}
-              key={i}
-              isSelected={this.isSelected(fave)}
-              cardSize={this.props.cardSize}
-              onClick={this.handleSelectFor(fave)}
-            />
-          ))}
-        </Grid>
-      </>
+    const selected = favorites.findIndex(
+      m => m.favorite && m.id === this.props.selectedMural?.id,
     );
-  };
-
-  renderMurals = () => {
-    /*
-    TODO:
-    If a user has not selected workspace and room, display 3 rows of murals:
-    1. create a mural button + templates (e.g. icebreaker)
-    2. recently opened murals (is this in the private API?)
-    3. favorite murals
-  */
-
-    // Display all murals or all murals in selected room
-    if (this.props.murals.length) {
-      const slots = useSlots(this.props.slots);
-      return this.props.murals.map((mural, i) => (
-        <slots.MuralItem
-          mural={mural}
-          key={i}
-          isSelected={this.isSelected(mural)}
-          onClick={this.handleSelectFor(mural)}
-          cardSize={this.props.cardSize}
-        />
-      ));
-    }
-  };
-
-  renderCreateNewMuralButton = () => {
-    const slots = useSlots(this.props.slots);
 
     return (
-      <slots.CreateItem
-        onClick={this.handleCreate}
+      <CardListSection
+        title="Your favorite murals"
+        items={favorites.map(muralCardItemSource)}
         cardSize={this.props.cardSize}
-        isSelected={this.state.isCreateSelected}
+        onSelect={this.handleSelectFor(favorites, 'favorites')}
+        selected={selected}
       />
     );
   };
 
-  render() {
-    if (
-      (!this.props.workspace || !this.props.room) &&
-      this.state.favorites.length
-    ) {
-      return (
-        <div className="mural-selector-container">
-          <h5 className="subsection-header">All murals</h5>
-          <Grid className="mural-grid" container direction="row">
-            {this.renderCreateNewMuralButton()}
-            {this.renderMurals()}
-          </Grid>
+  renderMurals = () => {
+    const selected = this.props.murals.findIndex(
+      m => !m.favorite && m.id === this.props.selectedMural?.id,
+    );
 
-          {this.renderFavoriteMurals()}
-        </div>
+    // Display all murals or all murals in selected room
+    if (this.props.murals.length) {
+      return (
+        <CardListSection
+          title="All murals"
+          actions={[
+            {
+              content: (
+                <div>
+                  <AddCircleIcon />
+                  <div>Create new mural</div>
+                </div>
+              ),
+              name: 'create',
+              sort: 'start',
+            },
+          ]}
+          items={this.props.murals.map(muralCardItemSource)}
+          cardSize={this.props.cardSize}
+          onSelect={this.handleSelectFor(this.props.murals, 'murals')}
+          onAction={this.handleAction}
+          selected={selected}
+        />
       );
     }
+  };
 
+  render() {
     return (
       <div className="mural-selector-container">
-        <Grid className="mural-selector-grid" container direction="row">
-          {this.renderCreateNewMuralButton()}
+        <div className="mural-selector-grid">
+          {this.renderFavoriteMurals()}
           {this.renderMurals()}
-        </Grid>
+        </div>
       </div>
     );
   }

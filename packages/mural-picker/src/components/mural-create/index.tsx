@@ -1,10 +1,6 @@
 import { Box, CircularProgress, List, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import {
-  DeepPartial,
-  defaultBuilder,
-} from '@muraldevkit/mural-integrations-common';
-import { EventHandler } from '@muraldevkit/mural-integrations-common/src/types';
+import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import {
   ApiClient,
   Mural,
@@ -12,16 +8,15 @@ import {
   Template,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
-import classnames from 'classnames';
 import debounce from 'lodash/debounce';
 import * as React from 'react';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
-import { ReactSlot } from '../../common/react';
+import { ActionItemSource } from '../card-list-item/action';
+import { CardListSection } from '../card-list/card-list-section';
 import {
   ListItem,
   ListSubheader,
   PrimaryButton,
-  Ripple,
   SecondaryButton,
 } from '../common';
 import { ErrorHandler } from '../types';
@@ -46,14 +41,6 @@ const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
 const DEFAULT_BLANK_TEMPLATE_ID =
   'gh&rishIOpNm-thON^43D-O&(8&hHjPle$-(kplP&Nm-ujlK8*0^';
 
-const BREAKPOINTS = {
-  'one-column': '(max-width:548px)',
-  'two-column': '(min-width:548px) and (max-width:1094px)',
-  'three-column': '(min-width:1094px)',
-};
-
-type BreakPoints = keyof typeof BREAKPOINTS;
-
 const BLANK_TEMPLATE: Template = {
   id: DEFAULT_BLANK_TEMPLATE_ID,
   description: '',
@@ -66,39 +53,6 @@ const BLANK_TEMPLATE: Template = {
   viewLink: '',
 } as const;
 
-const TemplateCardItem = (props: any) => (
-  <Ripple
-    className={classnames(['template-item', 'template-item-sfx'], {
-      'template-item-selected': props.isSelected,
-    })}
-    onClick={props.onClick}
-  >
-    <div className="template-item-img-container">
-      {!props.isBlank && (
-        <img
-          className="template-item-img"
-          src={props.template.thumbUrl}
-          alt="thumbnail"
-        />
-      )}
-    </div>
-    <div className={'template-item-typography-container'}>
-      <div className="template-item-typography-title">
-        {props.template.name}
-      </div>
-      {/* TODO: property 'createdBy' is missing in 'Template' interface */}
-      <div className="template-item-typography-subtitle">
-        {props.isBlank ? '' : `${props.workspace.name} Template`}
-      </div>
-    </div>
-  </Ripple>
-);
-
-interface Slots {
-  // @TECHDEBT: converge all card items to the same format
-  TemplateCardItem: ReactSlot<typeof TemplateCardItem>;
-}
-
 export interface PropTypes {
   apiClient: ApiClient;
   room: Room;
@@ -107,8 +61,6 @@ export interface PropTypes {
   onCancel: EventHandler;
   onCreate: EventHandler<[mural: Mural]>;
   onError: ErrorHandler;
-
-  slots?: DeepPartial<Slots>;
 }
 
 interface StateTypes {
@@ -120,7 +72,6 @@ interface StateTypes {
   selected: number;
   templates: Template[];
   title: string;
-  breakPoint: BreakPoints | null;
 }
 
 const INITIAL_STATE: StateTypes = {
@@ -132,15 +83,10 @@ const INITIAL_STATE: StateTypes = {
   selected: 0,
   templates: [BLANK_TEMPLATE],
   title: '',
-  breakPoint: null,
 };
 
 const LIMIT = 25;
 const THRESHOLD = 0.8;
-
-const useSlots = defaultBuilder<Slots>({
-  TemplateCardItem,
-});
 
 export default class MuralCreate extends React.Component<
   PropTypes,
@@ -156,20 +102,6 @@ export default class MuralCreate extends React.Component<
     this.titleRef = React.createRef();
     this.scrollRef = React.createRef();
   }
-
-  matchMediaQuery = () => {
-    for (const [breakPoint, mediaQuery] of Object.entries(BREAKPOINTS)) {
-      if (window.matchMedia(mediaQuery).matches) {
-        this.setState({ breakPoint: breakPoint as BreakPoints });
-        return;
-      }
-    }
-  };
-
-  breakPointObserver = () => {
-    this.matchMediaQuery();
-    window.addEventListener('resize', this.matchMediaQuery);
-  };
 
   loadTemplates = async () => {
     if (this.state.loading) {
@@ -240,7 +172,6 @@ export default class MuralCreate extends React.Component<
         }
 
         this.props.onCreate(eMural.value);
-
         this.props.apiClient.track('Created mural from picker', {
           ...getCommonTrackingProperties(),
           clientAppId: this.props.apiClient.config.appId,
@@ -271,12 +202,10 @@ export default class MuralCreate extends React.Component<
 
   componentDidMount() {
     this.loadTemplates();
-    this.breakPointObserver();
   }
 
   componentWillUnmount() {
     this.scrollRef.current?.removeEventListener('scroll', this.lazyLoadHandler);
-    window.removeEventListener('resize', this.matchMediaQuery);
   }
 
   onSelectTemplate = (index: number) => {
@@ -289,6 +218,13 @@ export default class MuralCreate extends React.Component<
         this.titleRef.current?.focus();
       },
     );
+  };
+
+  handleAction = (name: string) => {
+    switch (name) {
+      case 'load-more':
+        return this.loadTemplates();
+    }
   };
 
   renderTemplateCategories = () => {
@@ -316,49 +252,34 @@ export default class MuralCreate extends React.Component<
   };
 
   renderTemplateCardItems = () => {
-    const slots = useSlots(this.props.slots);
-    if (slots.TemplateCardItem === null) return null;
+    const templateCardItems = this.state.templates.map(template => ({
+      title: template.name,
+      thumbnailUrl: template.thumbUrl,
+    }));
+
+    const actions: ActionItemSource[] = [];
+    if (this.state.nextToken) {
+      actions.push({ content: 'Load more…', name: 'load-more', sort: 'end' });
+    }
 
     return (
-      <div className="new-mural-container">
+      <>
         {this.renderTemplateCategories()}
 
-        <div ref={this.scrollRef} className="new-mural-items">
-          <div className="new-mural-items-container">
-            {this.state.templates.map((template: Template, index) => {
-              const isSelected = this.state.selected === index;
-              const isBlank = index === 0;
-
-              return (
-                <div
-                  key={index}
-                  className={classnames({
-                    [this.state.breakPoint as string]: true,
-                  })}
-                >
-                  <slots.TemplateCardItem
-                    onClick={() => this.onSelectTemplate(index)}
-                    workspace={this.props.workspace}
-                    template={template}
-                    isSelected={isSelected}
-                    isBlank={isBlank}
-                  />
-                </div>
-              );
-            })}
-            {this.state.nextToken && (
-              <div key="_next" className="template-item">
-                <Ripple
-                  className="template-item-sfx template-item-sfx--button"
-                  onClick={this.loadTemplates}
-                >
-                  Load more…
-                </Ripple>
-              </div>
-            )}
+        <div ref={this.scrollRef} className="mural-selector-container">
+          <div className="mural-selector-grid">
+            <CardListSection
+              title="Workspace templates"
+              actions={actions}
+              items={templateCardItems}
+              onSelect={this.onSelectTemplate}
+              onAction={this.handleAction}
+              selected={this.state.selected}
+              cardSize={'normal'}
+            />
           </div>
         </div>
-      </div>
+      </>
     );
   };
 
@@ -373,15 +294,13 @@ export default class MuralCreate extends React.Component<
 
     return (
       <>
-        <div className="new-mural-info">
-          {this.state.error && (
-            <div data-qa="mural-picker-error">
-              <Alert severity="error" className="mural-picker-error">
-                {this.state.error}
-              </Alert>
-            </div>
-          )}
-        </div>
+        {this.state.error && (
+          <div data-qa="mural-picker-error">
+            <Alert severity="error" className="mural-picker-error">
+              {this.state.error}
+            </Alert>
+          </div>
+        )}
 
         {this.renderTemplateCardItems()}
 

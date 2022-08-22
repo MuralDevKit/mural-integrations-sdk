@@ -1,6 +1,6 @@
 import fetchMock from 'fetch-mock';
 import { ROUTES as muralApiRoutes } from './mural-api';
-// import { ROUTES as integrationsApiRoutes } from './integrations-api';
+import { ROUTES as muralIntegrationsApiRoutes } from './mural-integrations-api';
 
 export const initialize = () => {
   fetchMock.config.warnOnFallback = false;
@@ -18,7 +18,7 @@ export const initialize = () => {
   reset();
 };
 
-export const ROUTES = { ...muralApiRoutes };
+export const ROUTES = { ...muralApiRoutes, ...muralIntegrationsApiRoutes };
 
 export const mockApi = (
   route: keyof typeof ROUTES,

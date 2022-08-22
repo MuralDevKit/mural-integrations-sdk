@@ -5,10 +5,11 @@ import {
 } from '@muraldevkit/mural-integrations-mural-canvas';
 import buildApiClient, {
   authorizeHandler,
-  buildClientConfig,
   Mural,
   refreshTokenHandler,
   requestTokenHandler,
+  setupAuthenticatedFetch,
+  setupSessionStore,
 } from '@muraldevkit/mural-integrations-mural-client';
 import { MuralPicker } from '@muraldevkit/mural-integrations-mural-picker';
 import * as React from 'react';
@@ -65,17 +66,19 @@ const authorize = authorizeHandler(tokenHandlerConfig);
 const requestToken = requestTokenHandler(tokenHandlerConfig);
 const refreshToken = refreshTokenHandler(tokenHandlerConfig);
 
-// Here we inject our handlers in the client configuration.
-// We are considering changing this interface in the future to
-// expose a higher level interface to the authentication handlers.
-const clientConfig = buildClientConfig({
+const fetchFn = setupAuthenticatedFetch({
+  authorizeFn: authorize,
+  requestTokenFn: requestToken,
+  refreshTokenFn: refreshToken,
+  sessionStore: setupSessionStore(localStorage),
+});
+
+const apiClient = buildApiClient(fetchFn, {
   appId: APP_ID,
   muralHost: SERVICES.mural.host,
   integrationsHost: SERVICES.integrations.host,
-  ...tokenHandlerConfig,
+  secure: true,
 });
-
-const apiClient = buildApiClient(clientConfig);
 
 const handleError = (_: Error, message: string) => {
   console.log(message);

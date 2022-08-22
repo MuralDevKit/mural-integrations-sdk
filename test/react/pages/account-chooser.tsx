@@ -1,27 +1,11 @@
-import * as React from 'react';
-import { Page } from './types';
-
 import { AccountChooser } from '@muraldevkit/mural-integrations-mural-account-chooser';
 import { getCtxItem } from 'pickled-cucumber/context';
-import { FAKE_CLIENT_ID, FAKE_MURAL_HOST } from '../../utils';
-import buildApiClient, {
-  buildClientConfig,
-} from '@muraldevkit/mural-integrations-mural-client';
-
-const oauthUrl = new URL('http://oauth.testing.rig');
-
-const clientConfig = buildClientConfig({
-  appId: FAKE_CLIENT_ID,
-  muralHost: FAKE_MURAL_HOST,
-  authorizeUri: new URL('/', oauthUrl).href,
-  requestTokenUri: new URL('/token', oauthUrl).href,
-  refreshTokenUri: new URL('/refresh', oauthUrl).href,
-});
+import * as React from 'react';
+import { apiClient } from '../helpers/apiClient';
+import { Page } from './types';
 
 const accountChooser: Page = {
   element: () => {
-    const apiClient = buildApiClient(clientConfig);
-
     return (
       // @ts-ignore
       <AccountChooser

@@ -3,8 +3,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   defaultBuilder,
   DeepPartial,
+  EventHandler,
 } from '@muraldevkit/mural-integrations-common';
-import { EventHandler } from '@muraldevkit/mural-integrations-common/src/types';
 import { Workspace } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { ReactSlot } from '../../common/react';
