@@ -22,8 +22,9 @@
 	"include": [
 		"./packages/**/*.ts",
 		"./packages/**/*.tsx",
-		"*.d.ts"
-	],
+		"*.d.ts",
+    "./stories/**/*.stories.tsx"
+  ],
 	"exclude": [
 		"./node_modules"
 	]

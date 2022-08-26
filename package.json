@@ -54,6 +54,7 @@
     "humanize-duration": "^3.27.3",
     "lodash": "^4.17.21",
     "runtime": "file:runtimes/current",
+    "storybook-addon-mock": "^2.4.1",
     "storybook-addon-sass-postcss": "^0.1.3"
   }
 }
