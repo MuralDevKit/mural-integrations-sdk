@@ -3,9 +3,13 @@
     "@rollup/plugin-commonjs": "^22.0.1",
     "@rollup/plugin-image": "^2.1.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
+    "@types/classnames": "^2.3.1",
+    "@types/humanize-duration": "^3.27.1",
     "@types/jsonwebtoken": "^8.5.6",
+    "@types/lodash": "^4.14.184",
     "@types/node": "^16.11.12",
     "@types/qs": "^6.9.7",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/parser": "4.29.0",
     "eslint": "7.32.0",
     "eslint-config-prettier": "6.0.0",
@@ -32,6 +36,10 @@
     "lint": "eslint --ext ts,tsx,js --fix packages/ test/"
   },
   "dependencies": {
+    "@muraldevkit/mural-integrations-common": "^3.0.0",
+    "@muraldevkit/mural-integrations-mural-client": "^3.0.0",
+    "humanize-duration": "^3.27.3",
+    "lodash": "^4.17.21",
     "runtime": "file:runtimes/current"
   }
 }
