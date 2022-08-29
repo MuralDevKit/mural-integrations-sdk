@@ -24,16 +24,16 @@ const Template: ComponentStory<typeof AccountChooser> = args => (
   <AccountChooser {...args} />
 );
 
-export const Primary = Template.bind({});
+export const SignIn = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
-Primary.args = {
+SignIn.args = {
   theme: 'light',
 };
 
-export const DarkTheme = Template.bind({});
-DarkTheme.args = {
-  theme: 'dark',
-};
+// export const DarkTheme = Template.bind({});
+// DarkTheme.args = {
+//   theme: 'dark',
+// };
 
 export const Visitor = Template.bind({});
 Visitor.args = {
@@ -83,7 +83,7 @@ HintEmailSignInWithMicrosoft.args = {
 HintEmailSignInWithMicrosoft.parameters = {
   mockData: [
     MockApi.userRealm(
-      AccountStatus.UNVERIFIED,
+      AccountStatus.VALID,
       'authUrl',
       AuthMode.MICROSOFT,
       false,
@@ -113,25 +113,19 @@ HintEmailSignUp.args = {
   apiClient: MockApiClient,
 };
 HintEmailSignUp.parameters = {
-  mockData: [MockApi.userRealm(undefined, 'authUrl', AuthMode.GOOGLE, false)],
+  //mockData: [MockApi.userRealm(undefined, 'authUrl', AuthMode.GOOGLE, false)],
+  mockData: [MockApi.userRealm()],
 };
 
-export const HintEmailSignUpWithGoogle = Template.bind({});
-HintEmailSignUpWithGoogle.args = {
-  hint: 'something@gmail.com',
+export const HintEmailSignUpWithMicrosoft = Template.bind({});
+HintEmailSignUpWithMicrosoft.args = {
+  hint: 'something@outlook.com',
   apiClient: MockApiClient,
 };
-HintEmailSignUpWithGoogle.parameters = {
-  mockData: [MockApi.userRealm(undefined, 'authUrl', AuthMode.GOOGLE, false)],
-};
-
-export const HintEmailSignUpWithGoogleConsentRequired = Template.bind({});
-HintEmailSignUpWithGoogleConsentRequired.args = {
-  hint: 'something@gmail.com',
-  apiClient: MockApiClient,
-};
-HintEmailSignUpWithGoogleConsentRequired.parameters = {
-  mockData: [MockApi.userRealm(undefined, 'authUrl', AuthMode.GOOGLE, true)],
+HintEmailSignUpWithMicrosoft.parameters = {
+  mockData: [
+    MockApi.userRealm(undefined, 'authUrl', AuthMode.MICROSOFT, false),
+  ],
 };
 
 export const HintEmailSignUpWithMSConsentRequired = Template.bind({});
@@ -141,6 +135,15 @@ HintEmailSignUpWithMSConsentRequired.args = {
 };
 HintEmailSignUpWithMSConsentRequired.parameters = {
   mockData: [MockApi.userRealm(undefined, 'authUrl', AuthMode.MICROSOFT, true)],
+};
+
+export const HintEmailSignUpWithGoogleConsentRequired = Template.bind({});
+HintEmailSignUpWithGoogleConsentRequired.args = {
+  hint: 'something@gmail.com',
+  apiClient: MockApiClient,
+};
+HintEmailSignUpWithGoogleConsentRequired.parameters = {
+  mockData: [MockApi.userRealm(undefined, 'authUrl', AuthMode.GOOGLE, true)],
 };
 
 export const HintEmailSignUpWithSSOConsentRequired = Template.bind({});
