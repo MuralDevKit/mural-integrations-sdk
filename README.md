@@ -31,7 +31,7 @@ In order to run this application, you need to have a registered application crea
 
 ### Documentation
 
-TDB
+[Documentation page](https://developers.mural.co/public/docs/integration-sdk)
 
 ### Building
 
