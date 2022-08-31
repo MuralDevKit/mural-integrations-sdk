@@ -21,10 +21,25 @@ export type AuthenticatedFetchConfig = {
   sessionStore: ReturnType<typeof setupSessionStore>;
 };
 
+/**
+ * This error is thrown whenever the ApiClient sent an authenticated request
+ * to the Public API, and the response was 401 — UNAUTHORIZED
+ *
+ * This means the current session isn't valid and thus the ApiClient should
+ * be re-authenticated with the Public API.
+ */
 export class InvalidSessionError extends Error {
-  constructor(message?: string) {
+  error: Error;
+
+  constructor(error: Error, message?: string) {
     super(message);
+
+    this.error = error;
     this.name = 'InvalidSessionError';
+  }
+
+  static fromError(error: Error) {
+    return new InvalidSessionError(error, error.message);
   }
 }
 
@@ -100,6 +115,7 @@ export class FetchError extends Error {
       response,
     );
     await fetchError.readResponseContent();
+
     return fetchError;
   }
 
@@ -121,10 +137,13 @@ async function checkStatus(response: Response) {
 
 function catchAuthenticationError(input: RequestInfo, init: RequestInit = {}) {
   return async (error: FetchError | Error): Promise<Response> => {
+    if (!(error instanceof FetchError)) {
+      throw error;
+    }
+
     const session = fetchConfig.sessionStore.get();
 
     if (
-      error instanceof FetchError &&
       error.response.status === 401 &&
       error.text === 'Need to Refresh' &&
       session &&
@@ -135,17 +154,12 @@ function catchAuthenticationError(input: RequestInfo, init: RequestInit = {}) {
       return authenticatedFetch(input, init);
     }
 
-    /*
-   There's currently a bug on mural-api side which causes that some possible errors are transformed into CORS error.
-     - This appends because 'Access-Control-Allow-Origin' is not set correctly when an error occurs
-     - So temporarily we are dealing any networking errors as an invalid session
-     - TODO: update this code when mural-api bug is fixed
-    */
-    const invalidSessionError =
-      !(error instanceof FetchError) || error.response.status === 401;
-    if (invalidSessionError) {
+    // In the case that we sent a authenticated request to the back-end
+    // and we receive 401, this means our current session is tainted
+    // and invalid.
+    if (error.response.status === 401) {
       fetchConfig.sessionStore.delete();
-      throw new InvalidSessionError();
+      throw InvalidSessionError.fromError(error);
     }
 
     throw error;
