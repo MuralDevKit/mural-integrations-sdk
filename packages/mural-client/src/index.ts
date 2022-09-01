@@ -108,7 +108,7 @@ type TResolvedOptions<TResource, TOptions> = Partial<
 export type ResourceEndpoint<
   TResource,
   TParams = void,
-  TOptions = null,
+  TOptions = null
 > = TParams extends void
   ? (
       options?: TResolvedOptions<TResource, TOptions>,
@@ -268,29 +268,21 @@ export interface ApiClient {
 export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
   const clientConfig = { ...DEFAULT_CONFIG, ...config };
 
-  function url(path: string): URL {
-    return new URL(
-      path,
-      `http${config.secure ? 's' : ''}://${config.muralHost}`,
-    );
-  }
+  const urlBuilderFor = (host: string) => (path: string): URL => {
+    const protocol = clientConfig.secure ? 'https' : 'http';
+    return new URL(path, `${protocol}://${host}`);
+  };
 
-  function integrationsUrl(path: string): URL {
-    return new URL(
-      path,
-      `http${config.secure ? 's' : ''}://${config.integrationsHost}`,
-    );
-  }
+  const muralUrl = urlBuilderFor(clientConfig.muralHost);
+  const integrationsUrl = urlBuilderFor(clientConfig.integrationsHost);
 
-  const baseUrl = url('/api/public/v1/');
-  const api = (path: string) => new URL(path, baseUrl).href;
-  const trackingUrl = integrationsUrl('/integrations/api/v0/track').href;
+  const api = (path: string) => new URL(path, muralUrl('/api/public/v1/')).href;
 
   const client: ApiClient = {
     authenticated,
     config: clientConfig,
     fetch: fetchFn,
-    url,
+    url: muralUrl,
     track: (event: string, properties?: {}) => {
       const body = {
         event,
@@ -306,7 +298,7 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
 
       // Optimistically send the tracking information,
       // errors for this process should not be treated as critical
-      fetch(trackingUrl, {
+      fetch(integrationsUrl('/integrations/api/v0/track').href, {
         body: JSON.stringify(body),
         credentials: 'include',
         headers,
