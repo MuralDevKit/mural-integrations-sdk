@@ -255,6 +255,72 @@ $background-dark-mode: #1f1f1f;
     }
   }
 
+  .email-hint {
+    /* Size */
+    width: 270px;
+    height: 48px;
+
+    /* Button */
+    cursor: pointer;
+    border: 2px solid darken($background, 4%);
+    box-shadow: 0 2px 2px darken($background, 6%);
+    border-radius: 16px;
+
+    /* Style */
+    background: $background;
+
+    /* Flex */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &:active,
+    &:hover {
+      border: 2px solid darken($background, 10%);
+    }
+
+    .avatar {
+      /* Size / Position */
+      width: 32px;
+      height: 32px;
+
+      /* Style */
+      border-radius: 8px;
+    }
+
+    .body {
+      /* Flex */
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      flex: 1 1;
+
+      .email {
+        /* Size */
+        width: 220px;
+
+        /* Font */
+        font-family: $font-family;
+        text-align: left;
+        font-weight: bold;
+        font-size: 1.2em;
+
+        /* Overflow */
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .status {
+        /* Font */
+        font-family: $font-family;
+        font-weight: bold;
+        font-size: 0.85em;
+        line-height: 16px;
+        color: $secondary-text-color;
+      }
+    }
+  }
+
   .footer {
     .mural-logo {
       /* Size / Position */
@@ -266,6 +332,23 @@ $background-dark-mode: #1f1f1f;
     color: $text-color-dark-mode;
 
     .account-choice {
+      background: $background-dark-mode;
+      border: 2px solid lighten($background-dark-mode, 8%);
+      box-shadow: 0 2px 2px lighten($background-dark-mode, 10%);
+
+      &:active,
+      &:hover {
+        border: 2px solid lighten($background-dark-mode, 14%);
+      }
+
+      .body {
+        .email {
+          color: $text-color-dark-mode;
+        }
+      }
+    }
+
+    .email-hint {
       background: $background-dark-mode;
       border: 2px solid lighten($background-dark-mode, 8%);
       box-shadow: 0 2px 2px lighten($background-dark-mode, 10%);

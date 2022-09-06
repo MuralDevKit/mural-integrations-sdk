@@ -14,7 +14,7 @@ import GoogleIcon from '../../images/google-icon.png?w=32&h=32';
 import MicrosoftIcon from '../../images/microsoft-icon.png?w=32&h=32';
 // @ts-ignore
 import MuralLogo from '../../images/mural-logo.png?w=130';
-import EmailHintSignIn from './email-hint-sign-in';
+import AccountChoice from './account-choice';
 import './styles.scss';
 import { AuthorizeParams } from './types';
 
@@ -38,11 +38,6 @@ export interface AccountChooserPropTypes {
 }
 
 interface StateTypes {
-  hintEmail?: {
-    email: string;
-    authMode?: AuthMode;
-    requireConsent?: boolean;
-  };
   hintEmailSignIn?: {
     email: string;
     authMode?: AuthMode;
@@ -62,7 +57,7 @@ export enum ACCOUNT_CHOOSER_ACTION {
   ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
 }
 
-export default class AccountChooser extends React.Component<
+export default class AccountChooserV1 extends React.Component<
   AccountChooserPropTypes,
   StateTypes
 > {
@@ -74,7 +69,6 @@ export default class AccountChooser extends React.Component<
   }
 
   async componentDidMount() {
-    let hintEmail;
     let hintEmailSignIn;
     let hintEmailSignUp;
     const { activeSession, hint, silent } = this.props;
@@ -86,12 +80,6 @@ export default class AccountChooser extends React.Component<
         const accountExist =
           realm.accountStatus === AccountStatus.VALID ||
           realm.accountStatus === AccountStatus.UNVERIFIED;
-
-        hintEmail = {
-          email: hint,
-          authMode,
-          requireConsent: realm?.requireConsent,
-        };
 
         if (accountExist) {
           hintEmailSignIn = { email: hint, authMode };
@@ -105,11 +93,9 @@ export default class AccountChooser extends React.Component<
       }
     }
 
-    // I think this determines the action of the button?
     if (silent) return this.autoChoose(hintEmailSignIn, hintEmailSignUp);
 
     this.setState({
-      hintEmail,
       hintEmailSignIn,
       hintEmailSignUp,
       isLoading: false,
@@ -192,73 +178,113 @@ export default class AccountChooser extends React.Component<
     );
 
   render() {
-    const { hint, theme, visitor } = this.props;
-    const { hintEmail, isLoading } = this.state;
+    const { activeSession, hint, theme, visitor } = this.props;
+    const { hintEmailSignIn, hintEmailSignUp, isLoading } = this.state;
 
     if (isLoading) {
       return <CircularProgress />;
     }
 
-    //if(!hint && !visitor) {
-    // most basic page with only a sign in button -> ugly
-    // go straight to Murally sign in page (which has a button to create account)
-    //}
+    const haveAccountOptions =
+      activeSession || hintEmailSignIn || hintEmailSignUp;
+    return (
+      <div data-qa="account-chooser" className={`account-chooser ${theme}`}>
+        <span className="header">
+          {haveAccountOptions
+            ? 'Choose an account to get started'
+            : 'Sign in to get started'}
+        </span>
 
-    if (!hint) {
-      return (
-        <div data-qa="account-chooser" className={`account-chooser ${theme}`}>
-          <span className="header">Sign in to get started</span>
-
+        {haveAccountOptions && (
           <div className="content">
+            {(activeSession || hintEmailSignIn) && (
+              <div className="button-group">
+                {activeSession && (
+                  <AccountChoice
+                    avatar={activeSession.avatar}
+                    email={activeSession.email}
+                    qa="active-session"
+                    onClick={activeSession.onSelect}
+                    status={'Signed in'}
+                  />
+                )}
+
+                {hintEmailSignIn && (
+                  <AccountChoice
+                    avatar={
+                      hintEmailSignIn.authMode
+                        ? AUTH_MODE_ICONS[hintEmailSignIn.authMode]
+                        : undefined
+                    }
+                    email={hint!}
+                    qa="sign-in-from-hint"
+                    onClick={this.hintEmailSignIn}
+                    status={'Signed out'}
+                  />
+                )}
+              </div>
+            )}
+
+            {hintEmailSignUp && hintEmailSignUp.requireConsent && (
+              <>
+                <span className="notice">
+                  We noticed <b>{hintEmailSignUp.email}</b> is a{' '}
+                  {hintEmailSignUp.authMode} account
+                </span>
+                <button
+                  data-qa="sign-up-with"
+                  className="sign-up-with"
+                  onClick={this.hintSsoSignUp}
+                >
+                  <img
+                    alt="auth-mode-icon"
+                    className="logo"
+                    src={AUTH_MODE_ICONS[hintEmailSignUp.authMode!]}
+                  />
+                  <div className="text">
+                    Sign up with {hintEmailSignUp.authMode}
+                  </div>
+                </button>
+
+                <div className="separator">
+                  <span>OR</span>
+                </div>
+              </>
+            )}
+
+            {hintEmailSignUp && (
+              <AccountChoice
+                email={hintEmailSignUp!.email}
+                qa="sign-up-from-hint"
+                onClick={this.hintEmailSignUp}
+                status={'Create a MURAL account'}
+              />
+            )}
+          </div>
+        )}
+
+        <div className="content">
+          <button
+            data-qa="use-another-account"
+            className={
+              haveAccountOptions ? 'link' : 'button light-color-button'
+            }
+            onClick={this.useAnotherAccount}
+          >
+            {haveAccountOptions ? 'Use another account' : 'Sign in'}
+          </button>
+
+          <div className="separator" />
+
+          <div className="button-group">
             <button
               data-qa="create-account"
               className="button mural-color-button"
               onClick={this.createNewAccount}
             >
-              Sign in
+              Create a MURAL account
             </button>
 
-            {visitor && <div className="separator" />}
-
-            {visitor && (
-              <div className="button-group">
-                <div>
-                  <button
-                    data-qa="continue-as-visitor"
-                    className="button light-color-button"
-                    onClick={visitor.onSelect}
-                  >
-                    Continue as visitor
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="footer">
-            <img className="mural-logo" src={MuralLogo} alt="Mural logo" />
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div data-qa="account-chooser" className={`account-chooser ${theme}`}>
-        <div className="footer">
-          <img className="mural-logo" src={MuralLogo} alt="Mural logo" />
-        </div>
-        <span className="header">Sign in to get started</span>
-
-        {hintEmail && (
-          <EmailHintSignIn
-            email={hint!}
-            qa="sign-in-from-hint"
-            onClick={this.hintEmailSignIn}
-          />
-        )}
-
-        <div className="content">
-          <div className="button-group">
             {visitor && (
               <div>
                 <button
@@ -271,15 +297,10 @@ export default class AccountChooser extends React.Component<
               </div>
             )}
           </div>
-          <div className="separator" />
-          <div>Not {hint}?</div>
-          <button
-            data-qa="use-another-account"
-            className="link"
-            onClick={this.useAnotherAccount}
-          >
-            Sign in with a different account
-          </button>
+        </div>
+
+        <div className="footer">
+          <img className="mural-logo" src={MuralLogo} alt="Mural logo" />
         </div>
       </div>
     );
