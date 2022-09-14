@@ -2,8 +2,9 @@ import { CircularProgress } from '@material-ui/core';
 import '@muraldevkit/mural-integrations-common/styles/fonts.css';
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
+import styled from 'styled-components';
 import {
-  AccountStatus,
+  // AccountStatus,
   AuthMode,
   getAuthMode,
   getMuralRealm,
@@ -31,6 +32,19 @@ export enum ACCOUNT_CHOOSER_ACTION {
   NEW_ACCOUNT = 'NEW_ACCOUNT',
   ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
 }
+
+export const PRIMARY_TEXT_COLOR = '#1f1f1f';
+export const P = styled.p`
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 125%;
+  color: ${PRIMARY_TEXT_COLOR};
+`;
+const Text = styled(P)`
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 18px;
+`;
 
 export interface AccountChooserPropTypes {
   apiClient: ApiClient;
@@ -214,7 +228,7 @@ export default class AccountChooser extends React.Component<
 
   render() {
     const { hint, theme, visitor } = this.props;
-    const { hintEmail, isLoading, page } = this.state;
+    const { isLoading, page } = this.state;
 
     if (isLoading) {
       return <CircularProgress />;
@@ -259,7 +273,8 @@ export default class AccountChooser extends React.Component<
         )}
         {hint && page == 'Sign in' && (
           <div className="account-chooser-footer">
-            <div className="not-your-email">Not {hint}?</div>
+            {/* <div className="not-your-email">Not {hint}?</div> */}
+            <Text>Not {hint}?</Text>
             <button
               data-qa="use-another-account"
               className="link"
