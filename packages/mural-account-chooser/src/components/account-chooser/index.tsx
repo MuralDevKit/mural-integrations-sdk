@@ -25,6 +25,13 @@ const AUTH_MODE_ICONS = {
   [AuthMode.PASSWORD]: null,
 };
 
+export enum ACCOUNT_CHOOSER_ACTION {
+  SIGN_IN = 'SIGN_IN',
+  SIGN_UP = 'SIGN_UP',
+  NEW_ACCOUNT = 'NEW_ACCOUNT',
+  ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
+}
+
 export interface AccountChooserPropTypes {
   apiClient: ApiClient;
   activeSession?: { email: string; avatar: string; onSelect: () => void };
@@ -32,7 +39,7 @@ export interface AccountChooserPropTypes {
   hint?: string;
   onError: (e: Error) => void;
   onSelection: (url: string, action?: ACCOUNT_CHOOSER_ACTION) => void;
-  silent?: boolean;
+  // silent?: boolean;
   theme?: 'light' | 'dark';
   visitor?: { onSelect: () => void };
 }
@@ -43,23 +50,8 @@ interface StateTypes {
     authMode?: AuthMode;
     requireConsent?: boolean;
   };
-  hintEmailSignIn?: {
-    email: string;
-    authMode?: AuthMode;
-  };
-  hintEmailSignUp?: {
-    email: string;
-    authMode?: AuthMode;
-    requireConsent?: boolean;
-  };
   isLoading: boolean;
-}
-
-export enum ACCOUNT_CHOOSER_ACTION {
-  SIGN_IN = 'SIGN_IN',
-  SIGN_UP = 'SIGN_UP',
-  NEW_ACCOUNT = 'NEW_ACCOUNT',
-  ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
+  page: 'Sign in' | 'Verify email';
 }
 
 export default class AccountChooser extends React.Component<
@@ -70,48 +62,35 @@ export default class AccountChooser extends React.Component<
     super(props);
     this.state = {
       isLoading: true,
+      page: 'Sign in',
     };
   }
 
   async componentDidMount() {
     let hintEmail;
-    let hintEmailSignIn;
-    let hintEmailSignUp;
-    const { activeSession, hint, silent } = this.props;
+    const { activeSession, hint } = this.props;
 
     if (hint && hint !== activeSession?.email) {
       const realm = await this.loadRealm(hint);
       if (realm) {
         const authMode = getAuthMode(realm);
-        const accountExist =
-          realm.accountStatus === AccountStatus.VALID ||
-          realm.accountStatus === AccountStatus.UNVERIFIED;
+        // const accountExist =
+        //   realm.accountStatus === AccountStatus.VALID ||
+        //   realm.accountStatus === AccountStatus.UNVERIFIED;
 
         hintEmail = {
           email: hint,
           authMode,
           requireConsent: realm?.requireConsent,
         };
-
-        if (accountExist) {
-          hintEmailSignIn = { email: hint, authMode };
-        } else {
-          hintEmailSignUp = {
-            email: hint,
-            authMode,
-            requireConsent: realm?.requireConsent,
-          };
-        }
       }
     }
 
     // I think this determines the action of the button?
-    if (silent) return this.autoChoose(hintEmailSignIn, hintEmailSignUp);
+    // if (silent) return this.autoChoose(hintEmailSignIn, hintEmailSignUp);
 
     this.setState({
       hintEmail,
-      hintEmailSignIn,
-      hintEmailSignUp,
       isLoading: false,
     });
   }
@@ -124,20 +103,6 @@ export default class AccountChooser extends React.Component<
       this.props.onError(e);
       return null;
     }
-  };
-
-  autoChoose = (
-    hintEmailSignIn: StateTypes['hintEmailSignIn'],
-    hintEmailSignUp: StateTypes['hintEmailSignUp'],
-  ) => {
-    const { activeSession } = this.props;
-    if (activeSession) return activeSession.onSelect();
-    if (hintEmailSignIn) return this.hintEmailSignIn();
-    if (hintEmailSignUp) {
-      if (hintEmailSignUp.requireConsent) return this.hintSsoSignUp();
-      return this.hintEmailSignUp();
-    }
-    return this.useAnotherAccount();
   };
 
   onSelection = (url: string, action?: ACCOUNT_CHOOSER_ACTION) => {
@@ -191,9 +156,65 @@ export default class AccountChooser extends React.Component<
       ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT,
     );
 
+  signInPage = (hint?: string) => {
+    let button = hint ? (
+      <EmailHintSignIn
+        email={hint!}
+        qa="sign-in-from-hint"
+        onClick={this.verifyEmail}
+      />
+    ) : (
+      <button
+        data-qa="create-account"
+        className="button mural-color-button"
+        onClick={this.createNewAccount}
+      >
+        Sign in
+      </button>
+    );
+    return button;
+  };
+
+  verifyEmail = () => {
+    alert('Hey hey!');
+    this.setState({
+      page: 'Verify email',
+    });
+  };
+
+  verifyEmailPage = (
+    email?: string,
+    authMode?: AuthMode,
+    _requireConsent?: boolean,
+  ) => {
+    return (
+      <div>
+        <span className="notice">
+          We noticed <b>{email}</b> is a {authMode} account
+        </span>
+        <button
+          data-qa="sign-up-with"
+          className="sign-up-with"
+          onClick={this.hintSsoSignUp}
+        >
+          <img
+            alt="auth-mode-icon"
+            className="logo"
+            src={AUTH_MODE_ICONS[authMode!]}
+          />
+          <div className="text">Sign up with {authMode}</div>
+        </button>
+
+        <div className="separator">
+          <span>OR</span>
+        </div>
+      </div>
+    );
+  };
+
   render() {
     const { hint, theme, visitor } = this.props;
-    const { hintEmail, isLoading } = this.state;
+    const { hintEmail, isLoading, page } = this.state;
 
     if (isLoading) {
       return <CircularProgress />;
@@ -204,83 +225,51 @@ export default class AccountChooser extends React.Component<
     // go straight to Murally sign in page (which has a button to create account)
     //}
 
-    if (!hint) {
-      return (
-        <div data-qa="account-chooser" className={`account-chooser ${theme}`}>
-          <span className="header">Sign in to get started</span>
-
-          <div className="content">
-            <button
-              data-qa="create-account"
-              className="button mural-color-button"
-              onClick={this.createNewAccount}
-            >
-              Sign in
-            </button>
-
-            {visitor && <div className="separator" />}
-
-            {visitor && (
-              <div className="button-group">
-                <div>
-                  <button
-                    data-qa="continue-as-visitor"
-                    className="button light-color-button"
-                    onClick={visitor.onSelect}
-                  >
-                    Continue as visitor
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="footer">
-            <img className="mural-logo" src={MuralLogo} alt="Mural logo" />
-          </div>
-        </div>
-      );
-    }
-
     return (
       <div data-qa="account-chooser" className={`account-chooser ${theme}`}>
-        <div className="footer">
-          <img className="mural-logo" src={MuralLogo} alt="Mural logo" />
+        <div className="account-chooser-mural-logo">
+          <img className="mural-logo" src={MuralLogo} alt="MURAL" />
         </div>
-        <span className="header">Sign in to get started</span>
-
-        {hintEmail && (
-          <EmailHintSignIn
-            email={hint!}
-            qa="sign-in-from-hint"
-            onClick={this.hintEmailSignIn}
-          />
-        )}
-
-        <div className="content">
-          <div className="button-group">
+        {page === 'Sign in' ? (
+          <div
+            data-qa="account-chooser-content"
+            className={`account-chooser-content ${theme}`}
+          >
+            <span className="header">Sign in to get started</span>
+            {this.signInPage(hint)}
             {visitor && (
-              <div>
+              <div className="button-group">
                 <button
                   data-qa="continue-as-visitor"
-                  className="button light-color-button"
+                  className="button light-color-button visitor-button"
                   onClick={visitor.onSelect}
                 >
-                  Continue as visitor
+                  Continue as a visitor
                 </button>
               </div>
             )}
           </div>
-          <div className="separator" />
-          <div>Not {hint}?</div>
-          <button
-            data-qa="use-another-account"
-            className="link"
-            onClick={this.useAnotherAccount}
+        ) : (
+          <div
+            data-qa="account-chooser-content"
+            className={`account-chooser-content ${theme}`}
           >
-            Sign in with a different account
-          </button>
-        </div>
+            <p>this.verifyEmailPage</p>
+          </div>
+        )}
+        {hint && page == 'Sign in' && (
+          <div className="account-chooser-footer">
+            <div className="not-your-email">Not {hint}?</div>
+            <button
+              data-qa="use-another-account"
+              className="link"
+              onClick={this.useAnotherAccount}
+            >
+              Sign in with a different account
+            </button>
+          </div>
+        )}
+        <div className="footer"></div>
       </div>
     );
   }

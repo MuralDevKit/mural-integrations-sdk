@@ -13,16 +13,14 @@ interface PropTypes {
 export default function EmailHintSignIn({ email, qa, onClick }: PropTypes) {
   return (
     <div className="email-hint" data-qa={qa}>
-      <div className="body">
-        <div className="email">{email}</div>
-        <button
-          data-qa={qa}
-          className="button mural-color-button"
-          onClick={onClick}
-        >
-          Continue
-        </button>
-      </div>
+      <div className="email">{email}</div>
+      <button
+        data-qa={qa}
+        className="button mural-color-button"
+        onClick={onClick}
+      >
+        Continue
+      </button>
     </div>
   );
 }

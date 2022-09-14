@@ -15,18 +15,30 @@ $background-dark-mode: #1f1f1f;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 70px;
 
   /* Size / Position */
-  padding-top: 78px;
 
   /* Font */
   color: $text-color;
+  background: #f4f4f4;
+
+  .account-chooser-content {
+    background: #ffffff;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    background-color: white;
+
+    border: #e8e8e8 2px solid;
+    border-radius: 10px;
+    box-shadow: 1px 8px 15px #cccccc;
+
+    padding: 30px;
+  }
 
   .header {
-    /* Size / Position */
-    width: 300px;
+    margin: 20px;
 
     /* Font */
     font-family: $font-family;
@@ -152,7 +164,7 @@ $background-dark-mode: #1f1f1f;
     /* Flex */
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    margin: 15px;
   }
 
   .button {
@@ -163,6 +175,7 @@ $background-dark-mode: #1f1f1f;
     /* Size */
     width: 260px;
     height: 44px;
+    // margin: 15px;
 
     /* Font */
     font-family: $font-family;
@@ -187,84 +200,21 @@ $background-dark-mode: #1f1f1f;
 
     /* Style */
     background: $background;
+    width: 180px;
   }
 
-  .account-choice {
-    /* Size */
-    width: 270px;
-    height: 48px;
-
-    /* Button */
-    cursor: pointer;
-    border: 2px solid darken($background, 4%);
-    box-shadow: 0 2px 2px darken($background, 6%);
-    border-radius: 16px;
-
-    /* Style */
-    background: $background;
-
-    /* Flex */
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    &:active,
-    &:hover {
-      border: 2px solid darken($background, 10%);
-    }
-
-    .avatar {
-      /* Size / Position */
-      width: 32px;
-      height: 32px;
-
-      /* Style */
-      border-radius: 8px;
-    }
-
-    .body {
-      /* Flex */
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      flex: 1 1;
-
-      .email {
-        /* Size */
-        width: 220px;
-
-        /* Font */
-        font-family: $font-family;
-        text-align: left;
-        font-weight: bold;
-        font-size: 1.2em;
-
-        /* Overflow */
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
-
-      .status {
-        /* Font */
-        font-family: $font-family;
-        font-weight: bold;
-        font-size: 0.85em;
-        line-height: 16px;
-        color: $secondary-text-color;
-      }
-    }
-  }
 
   .email-hint {
     /* Size */
-    width: 270px;
-    height: 48px;
+    // width: 80%;
+    // height: 48px;
+    padding:10px;
 
     /* Button */
     cursor: pointer;
-    border: 2px solid darken($background, 4%);
+    border: 2px solid darken($background, 6%);
     box-shadow: 0 2px 2px darken($background, 6%);
-    border-radius: 16px;
+    border-radius: 10px;
 
     /* Style */
     background: $background;
@@ -272,60 +222,54 @@ $background-dark-mode: #1f1f1f;
     /* Flex */
     display: flex;
     align-items: center;
-    gap: 10px;
+    font-family: proxima-nova,sans-serif;
 
     &:active,
     &:hover {
       border: 2px solid darken($background, 10%);
     }
 
-    .avatar {
-      /* Size / Position */
-      width: 32px;
-      height: 32px;
+    .email {
+      /* Size */
+      width: 220px;
 
-      /* Style */
-      border-radius: 8px;
+      /* Font */
+      font-family: $font-family;
+      text-align: left;
+      font-weight: bold;
+      font-size: 1.2em;
+
+      /* Overflow */
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
-    .body {
-      /* Flex */
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      flex: 1 1;
+    .button {
+      width: 100px;
+    }
+  }
 
-      .email {
-        /* Size */
-        width: 220px;
+  .account-chooser-mural-logo {
+    .mural-logo {
+      /* Size / Position */
+      height: 34px;
+      margin: 34px 0px 34px 0px;
+    }
+  }
 
-        /* Font */
-        font-family: $font-family;
-        text-align: left;
-        font-weight: bold;
-        font-size: 1.2em;
+  .account-chooser-footer {
+    text-align: center;
+    font-family: proxima-nova,sans-serif;
+    margin-top: 25px;
 
-        /* Overflow */
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
-
-      .status {
-        /* Font */
-        font-family: $font-family;
-        font-weight: bold;
-        font-size: 0.85em;
-        line-height: 16px;
-        color: $secondary-text-color;
-      }
+    .not-your-email {
+      font-family: proxima-nova,sans-serif;
     }
   }
 
   .footer {
-    .mural-logo {
-      /* Size / Position */
-      width: 130px;
-    }
+
+    margin-bottom:34px;
   }
 
   &.dark {
@@ -341,10 +285,9 @@ $background-dark-mode: #1f1f1f;
         border: 2px solid lighten($background-dark-mode, 14%);
       }
 
-      .body {
-        .email {
-          color: $text-color-dark-mode;
-        }
+      .email {
+        color: $text-color-dark-mode;
+        font-family: proxima-nova,sans-serif;
       }
     }
 
@@ -358,10 +301,9 @@ $background-dark-mode: #1f1f1f;
         border: 2px solid lighten($background-dark-mode, 14%);
       }
 
-      .body {
-        .email {
-          color: $text-color-dark-mode;
-        }
+      .email {
+        color: $text-color-dark-mode;
+
       }
     }
 

@@ -25,13 +25,20 @@ const AUTH_MODE_ICONS = {
   [AuthMode.PASSWORD]: null,
 };
 
+export enum ACCOUNT_CHOOSER_ACTION_V1 {
+  SIGN_IN = 'SIGN_IN',
+  SIGN_UP = 'SIGN_UP',
+  NEW_ACCOUNT = 'NEW_ACCOUNT',
+  ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
+}
+
 export interface AccountChooserPropTypes {
   apiClient: ApiClient;
   activeSession?: { email: string; avatar: string; onSelect: () => void };
   getAuthUrl: (options?: AuthorizeParams) => Promise<string>;
   hint?: string;
   onError: (e: Error) => void;
-  onSelection: (url: string, action?: ACCOUNT_CHOOSER_ACTION) => void;
+  onSelection: (url: string, action?: ACCOUNT_CHOOSER_ACTION_V1) => void;
   silent?: boolean;
   theme?: 'light' | 'dark';
   visitor?: { onSelect: () => void };
@@ -48,13 +55,6 @@ interface StateTypes {
     requireConsent?: boolean;
   };
   isLoading: boolean;
-}
-
-export enum ACCOUNT_CHOOSER_ACTION {
-  SIGN_IN = 'SIGN_IN',
-  SIGN_UP = 'SIGN_UP',
-  NEW_ACCOUNT = 'NEW_ACCOUNT',
-  ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
 }
 
 export default class AccountChooserV1 extends React.Component<
@@ -126,7 +126,7 @@ export default class AccountChooserV1 extends React.Component<
     return this.useAnotherAccount();
   };
 
-  onSelection = (url: string, action?: ACCOUNT_CHOOSER_ACTION) => {
+  onSelection = (url: string, action?: ACCOUNT_CHOOSER_ACTION_V1) => {
     this.props.onSelection(url, action);
   };
 
@@ -138,7 +138,7 @@ export default class AccountChooserV1 extends React.Component<
           email: this.props.hint!,
         },
       }),
-      ACCOUNT_CHOOSER_ACTION.SIGN_IN,
+      ACCOUNT_CHOOSER_ACTION_V1.SIGN_IN,
     );
 
   hintEmailSignUp = async () =>
@@ -150,7 +150,7 @@ export default class AccountChooserV1 extends React.Component<
           email: this.props.hint!,
         },
       }),
-      ACCOUNT_CHOOSER_ACTION.SIGN_UP,
+      ACCOUNT_CHOOSER_ACTION_V1.SIGN_UP,
     );
 
   hintSsoSignUp = async () =>
@@ -162,19 +162,19 @@ export default class AccountChooserV1 extends React.Component<
           email: this.props.hint!,
         },
       }),
-      ACCOUNT_CHOOSER_ACTION.SIGN_UP,
+      ACCOUNT_CHOOSER_ACTION_V1.SIGN_UP,
     );
 
   useAnotherAccount = async () =>
     this.onSelection(
       await this.props.getAuthUrl(),
-      ACCOUNT_CHOOSER_ACTION.ANOTHER_ACCOUNT,
+      ACCOUNT_CHOOSER_ACTION_V1.ANOTHER_ACCOUNT,
     );
 
   createNewAccount = async () =>
     this.onSelection(
       await this.props.getAuthUrl({ signup: true }),
-      ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT,
+      ACCOUNT_CHOOSER_ACTION_V1.NEW_ACCOUNT,
     );
 
   render() {
