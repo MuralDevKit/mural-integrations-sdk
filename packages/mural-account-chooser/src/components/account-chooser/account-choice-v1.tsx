@@ -12,7 +12,7 @@ interface PropTypes {
   onClick: MouseEventHandler;
 }
 
-export default function AccountChoice({
+export default function AccountChoiceV1({
   avatar,
   email,
   qa,

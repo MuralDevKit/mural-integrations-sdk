@@ -14,7 +14,7 @@ import GoogleIcon from '../../images/google-icon.png?w=32&h=32';
 import MicrosoftIcon from '../../images/microsoft-icon.png?w=32&h=32';
 // @ts-ignore
 import MuralLogo from '../../images/mural-logo.png?w=130';
-import AccountChoice from './account-choice';
+import AccountChoiceV1 from './account-choice-v1';
 import './styles.scss';
 import { AuthorizeParams } from './types';
 
@@ -200,7 +200,7 @@ export default class AccountChooserV1 extends React.Component<
             {(activeSession || hintEmailSignIn) && (
               <div className="button-group">
                 {activeSession && (
-                  <AccountChoice
+                  <AccountChoiceV1
                     avatar={activeSession.avatar}
                     email={activeSession.email}
                     qa="active-session"
@@ -210,7 +210,7 @@ export default class AccountChooserV1 extends React.Component<
                 )}
 
                 {hintEmailSignIn && (
-                  <AccountChoice
+                  <AccountChoiceV1
                     avatar={
                       hintEmailSignIn.authMode
                         ? AUTH_MODE_ICONS[hintEmailSignIn.authMode]
@@ -253,7 +253,7 @@ export default class AccountChooserV1 extends React.Component<
             )}
 
             {hintEmailSignUp && (
-              <AccountChoice
+              <AccountChoiceV1
                 email={hintEmailSignUp!.email}
                 qa="sign-up-from-hint"
                 onClick={this.hintEmailSignUp}

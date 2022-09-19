@@ -3,10 +3,11 @@ import React from 'react';
 import withMock from 'storybook-addon-mock';
 import {
   AccountStatus,
-  AuthMode,
+  // AuthMode,
 } from '../packages/mural-account-chooser/src/common/realm';
 import AccountChooser from '../packages/mural-account-chooser/src/components/account-chooser';
-import { MockApi, MockApiClient } from './common/mockApi';
+// import { MockApi, MockApiClient } from './common/mockApi';
+import { MockApi } from './common/mockApi';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -25,21 +26,26 @@ const Template: ComponentStory<typeof AccountChooser> = args => (
 );
 
 export const NoEmailHint = Template.bind({});
+const visitor = {
+  onSelect: () => {
+    alert('Enter mural as visitor.');
+  },
+};
 
 // export const DarkTheme = Template.bind({});
 // DarkTheme.args = {
 //   theme: 'dark',
 // };
 
-export const Visitor = Template.bind({});
-Visitor.args = {
-  visitor: true,
+export const Visitor1 = Template.bind({});
+Visitor1.args = {
+  visitor,
 };
 
 export const EmailHint = Template.bind({});
 EmailHint.args = {
   hint: 'integrations@mural.co',
-  apiClient: MockApiClient,
+  // apiClient: MockApiClient,
 };
 EmailHint.parameters = {
   mockData: [MockApi.userRealm(AccountStatus.VALID)],
@@ -48,9 +54,22 @@ EmailHint.parameters = {
 export const EmailHintWithVisitor = Template.bind({});
 EmailHintWithVisitor.args = {
   hint: 'integrations@mural.co',
-  apiClient: MockApiClient,
-  visitor: true,
+  // apiClient: MockApiClient,
+  visitor,
 };
 EmailHint.parameters = {
   mockData: [MockApi.userRealm(AccountStatus.VALID)],
+};
+
+export const DarkMode = Template.bind({});
+DarkMode.args = {
+  visitor,
+  theme: 'dark',
+};
+
+export const DarkModeWithEmailHint = Template.bind({});
+DarkModeWithEmailHint.args = {
+  visitor,
+  theme: 'dark',
+  hint: 'integrations@mural.co',
 };
