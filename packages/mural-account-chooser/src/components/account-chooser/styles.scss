@@ -1,44 +1,28 @@
 $font-family: Proxima Nova, sans-serif;
-
 $secondary-text-color: #757575;
 $separator-color: #e5e5e5;
 $mural-color: #e8005a;
-
 $text-color: #2f2f2f;
 $text-color-dark-mode: #d0d0d0;
-
 $background: #ffffff;
 $background-dark-mode: #1f1f1f;
-
 .account-chooser {
   /* Flex */
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
+  gap: 70px;
 
   /* Size / Position */
+  padding-top: 78px;
 
   /* Font */
   color: $text-color;
-  background: #f4f4f4;
-
-  .account-chooser-content {
-    background: #ffffff;
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    width: 400px;
-    background-color: white;
-
-    border: #e8e8e8 2px solid;
-    border-radius: 10px;
-    box-shadow: 1px 8px 15px #cccccc;
-
-    padding: 30px;
-  }
 
   .header {
-    margin: 20px;
+    /* Size / Position */
+    width: 300px;
 
     /* Font */
     font-family: $font-family;
@@ -47,7 +31,6 @@ $background-dark-mode: #1f1f1f;
     font-size: 2em;
     font-weight: bold;
   }
-
   .content {
     /* Flex */
     display: flex;
@@ -56,40 +39,33 @@ $background-dark-mode: #1f1f1f;
     justify-content: space-evenly;
     gap: 32px;
   }
-
   .notice {
     /* Font */
     font-family: $font-family;
     font-size: 1em;
   }
-
   .sign-up-with {
     /* Size */
     width: 196px;
     height: 40px;
-
     /* Button */
     cursor: pointer;
     background: $background;
     border: none;
     box-shadow: 0 1px 2px darken($background, 30%);
     border-radius: 2px;
-
     /* Flex */
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-
     &:active,
     &:hover {
       box-shadow: 0 1px 2px darken($background, 50%);
     }
-
     .logo {
       width: 20px;
       height: 20px;
     }
-
     .text {
       /* Font */
       font-family: $font-family;
@@ -100,50 +76,40 @@ $background-dark-mode: #1f1f1f;
       letter-spacing: 0.4px;
     }
   }
-
   .separator {
     /* Size / Position */
     position: relative;
     width: 260px;
-
     /* Other */
     text-align: center;
-
     span {
       /* Size / Position */
       padding-left: 5px;
       padding-right: 5px;
-
       /* Style */
       background: $background;
       border-radius: 4px;
-
       /* Font */
       font-family: $font-family;
       color: #919191;
       font-weight: bold;
       font-size: 0.8em;
     }
-
     &:after {
       /* Size */
       height: 2px;
       width: 260px;
-
       /* Position */
       position: absolute;
       top: 49%;
       left: 0;
-
       /* Style */
       background: $separator-color;
-
       /* Other */
       content: '';
       z-index: -1;
     }
   }
-
   .link {
     /* Button */
     cursor: pointer;
@@ -151,7 +117,6 @@ $background-dark-mode: #1f1f1f;
     padding: 0;
     border: none;
     border-bottom: 1px dashed $text-color;
-
     /* Font */
     font-family: $font-family;
     color: $text-color;
@@ -159,62 +124,52 @@ $background-dark-mode: #1f1f1f;
     font-size: 0.9em;
     line-height: 120%;
   }
-
   .button-group {
     /* Flex */
     display: flex;
     flex-direction: column;
-    margin: 15px;
+    gap: 16px;
   }
 
   .button {
     /* Button */
     cursor: pointer;
     border-radius: 8px;
-
     /* Size */
     width: 260px;
     height: 44px;
-    // margin: 15px;
 
     /* Font */
     font-family: $font-family;
     font-weight: bold;
     font-size: 1em;
   }
-
   .mural-color-button {
     /* Button */
     border: none;
-
     /* Style */
     background: $mural-color;
-
     /* Font */
     color: $background;
   }
-
   .light-color-button {
     /* Button */
     border: 1px solid black;
 
     /* Style */
     background: $background;
-    width: 180px;
   }
 
-
-  .email-hint {
+  .account-choice {
     /* Size */
-    // width: 80%;
-    // height: 48px;
-    padding:10px;
+    width: 270px;
+    height: 48px;
 
     /* Button */
     cursor: pointer;
-    border: 2px solid darken($background, 6%);
+    border: 2px solid darken($background, 4%);
     box-shadow: 0 2px 2px darken($background, 6%);
-    border-radius: 10px;
+    border-radius: 16px;
 
     /* Style */
     background: $background;
@@ -222,54 +177,60 @@ $background-dark-mode: #1f1f1f;
     /* Flex */
     display: flex;
     align-items: center;
-    font-family: proxima-nova,sans-serif;
+    gap: 10px;
 
     &:active,
     &:hover {
       border: 2px solid darken($background, 10%);
     }
 
-    .email {
-      /* Size */
-      width: 220px;
-
-      /* Font */
-      font-family: $font-family;
-      text-align: left;
-      font-weight: bold;
-      font-size: 1.2em;
-
-      /* Overflow */
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-
-    .button {
-      width: 100px;
-    }
-  }
-
-  .account-chooser-mural-logo {
-    .mural-logo {
+    .avatar {
       /* Size / Position */
-      height: 34px;
-      margin: 34px 0px 34px 0px;
+      width: 32px;
+      height: 32px;
+
+      /* Style */
+      border-radius: 8px;
     }
-  }
 
-  .account-chooser-footer {
-    text-align: center;
-    font-family: proxima-nova,sans-serif;
-    margin-top: 25px;
+    .body {
+      /* Flex */
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      flex: 1 1;
 
-    .not-your-email {
-      font-family: proxima-nova,sans-serif;
+      .email {
+        /* Size */
+        width: 220px;
+
+        /* Font */
+        font-family: $font-family;
+        text-align: left;
+        font-weight: bold;
+        font-size: 1.2em;
+
+        /* Overflow */
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .status {
+        /* Font */
+        font-family: $font-family;
+        font-weight: bold;
+        font-size: 0.85em;
+        line-height: 16px;
+        color: $secondary-text-color;
+      }
     }
   }
 
   .footer {
-
-    margin-bottom:34px;
+    .mural-logo {
+      /* Size / Position */
+      width: 130px;
+    }
   }
 
   &.dark {
@@ -279,31 +240,15 @@ $background-dark-mode: #1f1f1f;
       background: $background-dark-mode;
       border: 2px solid lighten($background-dark-mode, 8%);
       box-shadow: 0 2px 2px lighten($background-dark-mode, 10%);
-
       &:active,
       &:hover {
         border: 2px solid lighten($background-dark-mode, 14%);
       }
 
-      .email {
-        color: $text-color-dark-mode;
-        font-family: proxima-nova,sans-serif;
-      }
-    }
-
-    .email-hint {
-      background: $background-dark-mode;
-      border: 2px solid lighten($background-dark-mode, 8%);
-      box-shadow: 0 2px 2px lighten($background-dark-mode, 10%);
-
-      &:active,
-      &:hover {
-        border: 2px solid lighten($background-dark-mode, 14%);
-      }
-
-      .email {
-        color: $text-color-dark-mode;
-
+      .body {
+        .email {
+          color: $text-color-dark-mode;
+        }
       }
     }
 
@@ -311,7 +256,6 @@ $background-dark-mode: #1f1f1f;
       color: $text-color-dark-mode;
       border-color: $text-color-dark-mode;
     }
-
     .separator {
       span {
         background: $background-dark-mode;
