@@ -220,7 +220,11 @@ export interface ApiClient {
     Paginated & Sorted & Integration
   >;
   getMuralTags: ResourceEndpoint<Tag[], { muralId: string }>;
-  getDefaultTemplates: ResourceEndpoint<Template[], void, Paginated & Sorted>;
+  getDefaultTemplates: ResourceEndpoint<
+    Template[],
+    void,
+    Paginated & Sorted & { category: string[] }
+  >;
   getRoomsByWorkspace: ResourceEndpoint<
     Room[],
     { workspaceId: string },
@@ -231,7 +235,7 @@ export interface ApiClient {
   getTemplatesByWorkspace: ResourceEndpoint<
     Template[],
     { workspaceId: string },
-    Paginated & Sorted & { withoutDefault: boolean }
+    Paginated & Sorted & { category: string[]; withoutDefault: boolean }
   >;
   searchMuralsByWorkspace: ResourceEndpoint<
     Mural[],
@@ -359,8 +363,9 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
       return await response.json();
     },
     // https://developers.mural.co/public/reference/getglobaltemplates
-    getDefaultTemplates: async () => {
-      const response = await fetchFn(api('templates'), {
+    getDefaultTemplates: async options => {
+      const params = optionsParams(options);
+      const response = await fetchFn(api(`templates?${params}`), {
         method: 'GET',
       });
 
