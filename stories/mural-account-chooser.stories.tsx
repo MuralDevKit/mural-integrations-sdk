@@ -7,7 +7,7 @@ import {
 } from '../packages/mural-account-chooser/src/common/realm';
 import AccountChooser from '../packages/mural-account-chooser/src/components/account-chooser';
 // import { MockApi, MockApiClient } from './common/mockApi';
-import { MockApi } from './common/mockApi';
+import { MockApi, MockApiClient } from './common/mockApi';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -32,14 +32,13 @@ const visitor = {
   },
 };
 
-// export const DarkTheme = Template.bind({});
-// DarkTheme.args = {
-//   theme: 'dark',
-// };
-
 export const Visitor1 = Template.bind({});
 Visitor1.args = {
   visitor,
+  apiClient: MockApiClient,
+  onSelection: (url, action) => {
+    alert(`${url}, ${action}`);
+  },
 };
 
 export const EmailHint = Template.bind({});

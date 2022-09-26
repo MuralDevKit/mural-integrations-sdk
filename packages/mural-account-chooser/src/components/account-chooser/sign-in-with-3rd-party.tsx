@@ -1,11 +1,7 @@
 import * as React from 'react';
-// import { MouseEventHandler } from 'react';
+import { MouseEventHandler } from 'react';
 // @ts-ignore
-import GoogleIcon from '../../images/google-icon.png?w=32&h=32';
-// @ts-ignore
-import MicrosoftIcon from '../../images/microsoft-icon.png?w=32&h=32';
-// @ts-ignore
-import MuralIcon from '../../images/mural-logo.png?w=32&h=32';
+import MuralIcon from '../../images/mural-icon.png?w=32&h=32';
 
 import styled from 'styled-components';
 
@@ -38,7 +34,7 @@ const ThirdPartySignInButton = styled.button`
   background: white;
   padding: 10px;
 `;
-const Avatar = styled.img`
+const Icon = styled.img`
   height: 32px;
 `;
 const Text = styled.div`
@@ -96,24 +92,32 @@ const SendVerificationEmail = styled.button`
 
 interface PropTypes {
   name: string;
-  avatar?: string;
-  authUrl: string;
+  iconSrc?: string;
+  signIn: MouseEventHandler;
+  sendVerificationEmail?: MouseEventHandler;
 }
 
 export default function SignInWith3rdParty({
   name,
-  avatar,
-  authUrl, // TODO: When the user clicks the button, go to the auth url
+  iconSrc,
+  signIn,
+  sendVerificationEmail,
 }: PropTypes) {
+  const icon = iconSrc ?? MuralIcon;
+
   return (
     <ThirdPartySignIn>
       <Header>Let's verify your email</Header>
-      <ThirdPartySignInButton>
-        <Avatar src={avatar || MuralIcon} alt="avatar" />
+      <ThirdPartySignInButton onClick={signIn} data-qa="sign-in-3rd-party">
+        <Icon src={icon} alt="avatar" />
         <Text>Continue with {name}</Text>
       </ThirdPartySignInButton>
+
       <Separator>or</Separator>
-      <SendVerificationEmail>
+      <SendVerificationEmail
+        onClick={sendVerificationEmail}
+        data-qa="send-verification-email"
+      >
         Send me a verification email
       </SendVerificationEmail>
     </ThirdPartySignIn>

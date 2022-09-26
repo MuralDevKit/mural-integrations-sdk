@@ -23,6 +23,11 @@ export default {
 const Template: ComponentStory<typeof AccountChooserV1> = args => (
   <AccountChooserV1 {...args} />
 );
+const visitor = {
+  onSelect: () => {
+    alert('Enter mural as visitor.');
+  },
+};
 
 export const SignIn = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
@@ -37,7 +42,7 @@ SignIn.args = {
 
 export const Visitor = Template.bind({});
 Visitor.args = {
-  visitor: true,
+  visitor,
 };
 
 export const HintEmailSignIn = Template.bind({});
@@ -53,7 +58,7 @@ export const HintEmailSignInWithVisitorOption = Template.bind({});
 HintEmailSignInWithVisitorOption.args = {
   hint: 'integrations@mural.co',
   apiClient: MockApiClient,
-  visitor: true,
+  visitor,
 };
 HintEmailSignInWithVisitorOption.parameters = {
   mockData: [MockApi.userRealm(AccountStatus.VALID)],
