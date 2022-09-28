@@ -1,16 +1,18 @@
 import * as React from 'react';
 import { MouseEventHandler } from 'react';
 // @ts-ignore
-import MuralIcon from '../../images/mural-icon.png?w=32&h=32';
-
 import styled from 'styled-components';
+import MuralIcon from '../../images/mural-icon.png?w=32&h=32';
+import { lightTheme } from './index';
 
 export const FONT_FAMILY = 'Proxima Nova, sans-serif';
-export const PRIMARY_TEXT_COLOR = '#2f2f2f';
-const ThirdPartySignIn = styled.div`
+const ThirdPartySignUp = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: ${({ theme }) => theme.primaryTextColor};
+  border-color: ${({ theme }) => theme.secondaryTextColor};
+  background: ${({ theme }) => theme.contentBackgroundColor};
 `;
 const Header = styled.h1`
   margin: 20px;
@@ -20,18 +22,20 @@ const Header = styled.h1`
   font-size: 2em;
   font-weight: bold;
 `;
-const ThirdPartySignInButton = styled.button`
+const ThirdPartySignUpButton = styled.button`
   width: 70%;
   display: flex;
   justify-content: center;
   align-items: center;
 
-  font-size: 0.9em;
+  font-size: 1em;
   font-weight: bold;
+  font-family: ${FONT_FAMILY};
+  color: ${({ theme }) => theme.primaryTextColor};
 
-  border: #cccccc 1px solid;
+  background: ${({ theme }) => theme.contentBackgroundColor};
+  border: 1px solid;
   border-radius: 10px;
-  background: white;
   padding: 10px;
 `;
 const Icon = styled.img`
@@ -39,6 +43,7 @@ const Icon = styled.img`
 `;
 const Text = styled.div`
   font-family: ${FONT_FAMILY};
+  color: ${({ theme }) => theme.secondaryTextColor};
   margin: 10px;
 `;
 const Separator = styled.div`
@@ -50,6 +55,7 @@ const Separator = styled.div`
   /* Other */
   text-align: center;
   font-family: ${FONT_FAMILY};
+  color: ${({ theme }) => theme.secondaryTextColor};
 
   &:before {
     content: '';
@@ -70,9 +76,6 @@ const Separator = styled.div`
     margin: 0 -55% 0 0.5em;
   }
 `;
-// const Line = styled.hr`
-//   border-top: 3px solid ${PRIMARY_TEXT_COLOR};
-// `;
 const SendVerificationEmail = styled.button`
   /* Button */
   cursor: pointer;
@@ -80,11 +83,11 @@ const SendVerificationEmail = styled.button`
   padding: 0;
   margin: 10px;
   border: none;
-  border-bottom: 1px dashed ${PRIMARY_TEXT_COLOR};
+  border-bottom: 1px dashed ${({ theme }) => theme.secondaryTextColor};
 
   /* Font */
   font-family: ${FONT_FAMILY};
-  color: ${PRIMARY_TEXT_COLOR};
+  color: ${({ theme }) => theme.primaryTextColor};
   font-weight: bold;
   font-size: 0.9em;
   line-height: 120%;
@@ -93,33 +96,40 @@ const SendVerificationEmail = styled.button`
 interface PropTypes {
   name: string;
   iconSrc?: string;
-  signIn: MouseEventHandler;
+  signUp: MouseEventHandler;
   sendVerificationEmail?: MouseEventHandler;
+  theme?: typeof lightTheme;
 }
 
-export default function SignInWith3rdParty({
+export default function SignUpWith3rdParty({
   name,
   iconSrc,
-  signIn,
+  signUp,
   sendVerificationEmail,
+  theme,
 }: PropTypes) {
   const icon = iconSrc ?? MuralIcon;
 
   return (
-    <ThirdPartySignIn>
+    <ThirdPartySignUp theme={theme}>
       <Header>Let's verify your email</Header>
-      <ThirdPartySignInButton onClick={signIn} data-qa="sign-in-3rd-party">
+      <ThirdPartySignUpButton
+        onClick={signUp}
+        data-qa="sign-in-3rd-party"
+        theme={theme}
+      >
         <Icon src={icon} alt="avatar" />
         <Text>Continue with {name}</Text>
-      </ThirdPartySignInButton>
+      </ThirdPartySignUpButton>
 
       <Separator>or</Separator>
       <SendVerificationEmail
         onClick={sendVerificationEmail}
         data-qa="send-verification-email"
+        theme={theme}
       >
         Send me a verification email
       </SendVerificationEmail>
-    </ThirdPartySignIn>
+    </ThirdPartySignUp>
   );
 }
