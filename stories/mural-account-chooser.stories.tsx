@@ -25,6 +25,8 @@ const Template: ComponentStory<typeof AccountChooser> = args => (
   <AccountChooser {...args} />
 );
 
+const onError = () => {};
+const authUrl = () => 'url';
 export const NoEmailHint = Template.bind({});
 const visitor = {
   onSelect: () => {
@@ -36,6 +38,7 @@ export const Visitor1 = Template.bind({});
 Visitor1.args = {
   visitor,
   apiClient: MockApiClient,
+  getAuthUrl: authUrl,
   onSelection: (url, action) => {
     alert(`${url}, ${action}`);
   },
@@ -44,7 +47,8 @@ Visitor1.args = {
 export const EmailHint = Template.bind({});
 EmailHint.args = {
   hint: 'integrations@mural.co',
-  // apiClient: MockApiClient,
+  apiClient: MockApiClient,
+  onError,
 };
 EmailHint.parameters = {
   mockData: [MockApi.userRealm(AccountStatus.VALID)],
@@ -55,6 +59,7 @@ EmailHintWithVisitor.args = {
   hint: 'integrations@mural.co',
   // apiClient: MockApiClient,
   visitor,
+  onError,
 };
 EmailHint.parameters = {
   mockData: [MockApi.userRealm(AccountStatus.VALID)],
@@ -64,6 +69,7 @@ export const DarkMode = Template.bind({});
 DarkMode.args = {
   visitor,
   theme: 'dark',
+  onError,
 };
 
 export const DarkModeWithEmailHint = Template.bind({});
@@ -71,4 +77,5 @@ DarkModeWithEmailHint.args = {
   visitor,
   theme: 'dark',
   hint: 'integrations@mural.co',
+  onError,
 };

@@ -211,8 +211,6 @@ export default class AccountChooser extends React.Component<
       }
     }
 
-    // if (silent) return this.autoChoose(hintEmailSignIn, hintEmailSignUp);
-
     this.setState({
       account,
       isLoading: false,
@@ -265,7 +263,7 @@ export default class AccountChooser extends React.Component<
     // from a thrid party like Google, Microsoft, or SSO.
     if (account?.requireConsent) {
       this.setState({
-        page: '3rd party',
+        page: 'SSO Option',
       });
     } else {
       // The hint email can be used to create a mural account
@@ -365,7 +363,10 @@ export default class AccountChooser extends React.Component<
         {hint && page === 'Sign in' && (
           <UseDifferentEmail>
             <NotYourEmail>Not {hint}?</NotYourEmail>
-            <UseDifferentEmailLink onClick={this.useAnotherAccount}>
+            <UseDifferentEmailLink
+              onClick={this.useAnotherAccount}
+              theme={theme === 'light' ? lightTheme : darkTheme}
+            >
               Sign in with a different account
             </UseDifferentEmailLink>
           </UseDifferentEmail>
