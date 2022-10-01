@@ -355,7 +355,7 @@ export default class AccountChooser extends React.Component<
             <>
               <SignUpWith3rdParty
                 name={this.state.account?.authMode?.toString() ?? ''}
-                signIn={this.hintSsoSignUp}
+                signUp={this.hintSsoSignUp}
                 sendVerificationEmail={this.hintEmailSignUp}
                 theme={theme === 'light' ? lightTheme : darkTheme}
               />
