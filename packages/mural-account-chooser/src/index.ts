@@ -1,5 +1,5 @@
 import AccountChooser, {
-  ACCOUNT_CHOOSER_ACTION_V1,
-} from './components/account-chooser/indexV1';
+  ACCOUNT_CHOOSER_ACTION,
+} from './components/account-chooser/index';
 
-export { AccountChooser, ACCOUNT_CHOOSER_ACTION_V1 };
+export { AccountChooser, ACCOUNT_CHOOSER_ACTION };
