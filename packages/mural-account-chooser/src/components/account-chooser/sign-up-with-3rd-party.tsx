@@ -2,6 +2,7 @@ import * as React from 'react';
 import { MouseEventHandler } from 'react';
 // @ts-ignore
 import styled from 'styled-components';
+// @ts-ignore
 import MuralIcon from '../../images/mural-icon.png?w=32&h=32';
 import { lightTheme } from './index';
 

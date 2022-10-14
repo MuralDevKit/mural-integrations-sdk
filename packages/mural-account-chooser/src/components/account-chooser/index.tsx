@@ -9,7 +9,8 @@ import {
   getAuthMode,
   getMuralRealm,
 } from '../../common/realm';
-import MuralLogo from '../../images/mural-logo.png';
+// @ts-ignore
+import MuralLogo from '../../images/mural-logo.png?w=130';
 import SignUpWith3rdParty from './sign-up-with-3rd-party';
 
 export const FONT_FAMILY = 'Proxima Nova, sans-serif';
