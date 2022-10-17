@@ -15,7 +15,7 @@ import SignUpWith3rdParty from './sign-up-with-3rd-party';
 
 export const FONT_FAMILY = 'Proxima Nova, sans-serif';
 export const MURAL_COLOR = '#e8005a';
-export const MARGIN = '34px';
+export const MARGIN = '23px';
 
 export const lightTheme = {
   primaryTextColor: '#2f2f2f',
@@ -26,9 +26,9 @@ export const lightTheme = {
 
 export const darkTheme = {
   primaryTextColor: '#f4f4f4',
-  secondaryTextColor: '#d0d0d0',
-  backgroundColor: '#4d4d4d',
-  contentBackgroundColor: '#2f2f2f',
+  secondaryTextColor: '#d6d6d6',
+  backgroundColor: '#292929',
+  contentBackgroundColor: '#2e2e2e',
 };
 
 const Loading = styled.div`
@@ -40,12 +40,13 @@ const Loading = styled.div`
 const AccountChooserDiv = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: space-around;
   align-items: center;
   color: ${({ theme }) => theme.primaryTextColor};
   background: ${({ theme }) => theme.backgroundColor};
 `;
 const MuralLogoImg = styled.img`
-  height: ${MARGIN};
+  height: 34px;
   margin: ${MARGIN} 0px ${MARGIN} 0px;
 `;
 const AccountChooserContent = styled.div`
