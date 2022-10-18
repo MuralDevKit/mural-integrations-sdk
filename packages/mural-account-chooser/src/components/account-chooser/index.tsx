@@ -27,8 +27,8 @@ export const lightTheme = {
 export const darkTheme = {
   primaryTextColor: '#f4f4f4',
   secondaryTextColor: '#d6d6d6',
-  backgroundColor: '#292929',
-  contentBackgroundColor: '#2e2e2e',
+  backgroundColor: '#1f1f1e',
+  contentBackgroundColor: '#292929',
 };
 
 const Loading = styled.div`
@@ -112,14 +112,13 @@ const UseDifferentEmail = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: ${MARGIN};
 `;
 const NotYourEmail = styled.div`
   font-family: ${FONT_FAMILY};
   color: ${({ theme }) => theme.primaryTextColor};
   font-size: 0.9em;
   line-height: 120%;
-  margin: 10px;
+  margin-top: 5px;
 `;
 const UseDifferentEmailLink = styled.button`
   /* Button */
@@ -267,19 +266,20 @@ export default class AccountChooser extends React.Component<
       this.setState({
         page: 'SSO Option',
       });
-    } else {
-      // The hint email can be used to create a mural account
-      this.props.onSelection(
-        await this.props.getAuthUrl({
-          auto: {
-            action: 'signup',
-            consentSso: false,
-            email: this.props.hint!,
-          },
-        }),
-        ACCOUNT_CHOOSER_ACTION.SIGN_UP,
-      );
+      return;
     }
+
+    // The hint email can be used to create a mural account
+    this.props.onSelection(
+      await this.props.getAuthUrl({
+        auto: {
+          action: 'signup',
+          consentSso: false,
+          email: this.props.hint!,
+        },
+      }),
+      ACCOUNT_CHOOSER_ACTION.SIGN_UP,
+    );
   };
 
   hintEmailSignUp = async () =>
