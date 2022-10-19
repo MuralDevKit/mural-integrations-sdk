@@ -24,6 +24,7 @@ const Header = styled.h1`
   font-weight: bold;
 `;
 const ThirdPartySignUpButton = styled.button`
+  cursor: pointer;
   width: 70%;
   display: flex;
   justify-content: center;

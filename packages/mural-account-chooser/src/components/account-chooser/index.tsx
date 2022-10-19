@@ -10,6 +10,12 @@ import {
   getMuralRealm,
 } from '../../common/realm';
 // @ts-ignore
+import GoogleIcon from '../../images/google-icon.png?w=32&h=32';
+// @ts-ignore
+import MicrosoftIcon from '../../images/microsoft-icon.png?w=32&h=32';
+// @ts-ignore
+import MuralIcon from '../../images/mural-icon.png?w=32&h=32';
+// @ts-ignore
 import MuralLogo from '../../images/mural-logo.png?w=130';
 import SignUpWith3rdParty from './sign-up-with-3rd-party';
 
@@ -229,7 +235,6 @@ export default class AccountChooser extends React.Component<
   };
 
   createNewAccount = async () => {
-    console.log('booogers');
     this.props.onSelection(
       await this.props.getAuthUrl({ signup: true }),
       ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT,
@@ -306,6 +311,15 @@ export default class AccountChooser extends React.Component<
       ACCOUNT_CHOOSER_ACTION.SIGN_UP,
     );
 
+  iconSrc = (): string => {
+    const mode = this.state.account?.authMode;
+    return mode === AuthMode.GOOGLE
+      ? GoogleIcon
+      : mode === AuthMode.MICROSOFT
+      ? MicrosoftIcon
+      : MuralIcon;
+  };
+
   render() {
     const { theme, hint, visitor } = this.props;
     const { isLoading, page } = this.state;
@@ -355,6 +369,7 @@ export default class AccountChooser extends React.Component<
             <>
               <SignUpWith3rdParty
                 name={this.state.account?.authMode?.toString() ?? ''}
+                iconSrc={this.iconSrc()}
                 signUp={this.hintSsoSignUp}
                 sendVerificationEmail={this.hintEmailSignUp}
                 theme={theme === 'light' ? lightTheme : darkTheme}
