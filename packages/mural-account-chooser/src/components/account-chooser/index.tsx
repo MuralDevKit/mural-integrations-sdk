@@ -1,8 +1,8 @@
 import { CircularProgress } from '@material-ui/core';
+import '@muraldevkit/mural-integrations-common/styles/fonts.css';
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import styled from 'styled-components';
-// @ts-ignore
 import {
   AccountStatus,
   AuthMode,
@@ -144,6 +144,12 @@ const UseDifferentEmailLink = styled.button`
 const Footer = styled.div`
   margin-bottom: ${MARGIN};
 `;
+const AUTH_MODE_ICONS = {
+  [AuthMode.GOOGLE]: GoogleIcon,
+  [AuthMode.MICROSOFT]: MicrosoftIcon,
+  [AuthMode.ENTERPRISE_SSO]: null,
+  [AuthMode.PASSWORD]: null,
+};
 
 interface AutomaticOptions {
   email: string;
@@ -192,7 +198,6 @@ export default class AccountChooser extends React.Component<
       isLoading: true,
       page: 'Sign in',
     };
-    console.log(props.theme);
   }
 
   async componentDidMount() {
@@ -311,15 +316,6 @@ export default class AccountChooser extends React.Component<
       ACCOUNT_CHOOSER_ACTION.SIGN_UP,
     );
 
-  iconSrc = (): string => {
-    const mode = this.state.account?.authMode;
-    return mode === AuthMode.GOOGLE
-      ? GoogleIcon
-      : mode === AuthMode.MICROSOFT
-      ? MicrosoftIcon
-      : MuralIcon;
-  };
-
   render() {
     const { theme, hint, visitor } = this.props;
     const { isLoading, page } = this.state;
@@ -331,6 +327,8 @@ export default class AccountChooser extends React.Component<
         </Loading>
       );
     }
+
+    const authMode = this.state.account?.authMode;
     return (
       <AccountChooserDiv theme={theme === 'light' ? lightTheme : darkTheme}>
         <MuralLogoImg src={MuralLogo} alt="MURAL" />
@@ -368,8 +366,8 @@ export default class AccountChooser extends React.Component<
             // else the page === "SSO Option"
             <>
               <SignUpWith3rdParty
-                name={this.state.account?.authMode?.toString() ?? ''}
-                iconSrc={this.iconSrc()}
+                name={authMode?.toString() ?? ''}
+                iconSrc={authMode ? AUTH_MODE_ICONS[authMode] : undefined}
                 signUp={this.hintSsoSignUp}
                 sendVerificationEmail={this.hintEmailSignUp}
                 theme={theme === 'light' ? lightTheme : darkTheme}
