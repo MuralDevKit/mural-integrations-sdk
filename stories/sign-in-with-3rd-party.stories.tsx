@@ -10,7 +10,7 @@ import GoogleIcon from '../packages/mural-account-chooser/src/images/google-icon
 import MicrosoftIcon from '../packages/mural-account-chooser/src/images/microsoft-icon.png?w=32&h=32';
 
 export default {
-  title: 'Sign In With 3rd Party',
+  title: 'Account Chooser/Sign In With 3rd Party',
   component: SignUpWith3rdParty,
 };
 

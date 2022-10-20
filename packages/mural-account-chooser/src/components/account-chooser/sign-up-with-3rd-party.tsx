@@ -4,7 +4,6 @@ import { MouseEventHandler } from 'react';
 import styled from 'styled-components';
 // @ts-ignore
 import MuralIcon from '../../images/mural-icon.png?w=32&h=32';
-import { lightTheme } from './index';
 
 export const FONT_FAMILY = 'Proxima Nova, sans-serif';
 const ThirdPartySignUp = styled.div`
@@ -100,7 +99,12 @@ interface PropTypes {
   iconSrc?: string;
   signUp: MouseEventHandler;
   sendVerificationEmail?: MouseEventHandler;
-  theme?: typeof lightTheme;
+  theme?: {
+    primaryTextColor: string;
+    secondaryTextColor: string;
+    backgroundColor: string;
+    contentBackgroundColor: string;
+  };
 }
 
 export default function SignUpWith3rdParty({
