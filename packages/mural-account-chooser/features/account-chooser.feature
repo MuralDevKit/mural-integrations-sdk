@@ -1,47 +1,41 @@
 Feature: Account chooser
 
-  Scenario: when requiring consent and no account for hint, both 'sign in with' and 'sign up from hint' are shown
-    Given user principal name is any_email@gmail.com
-    And the POST REALM api response is 200 status with
-    """
-    {
-      "accountStatus": 0,
-      "canAccessTenant": false,
-      "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
-      "identityProviderName": "google",
-      "overridable": true,
-      "requireConsent": true
-    }
-    """
+  Scenario: when no hint email, 'sign up' is shown
     When I visit the "account chooser" route
-    Then [sign up with] is shown
-    And [sign up from hint] is shown
+    Then [sign up] is shown
+    And [continue with email] is not shown
 
-  Scenario: when not requiring consent and no account for hint, only 'sign up from hint' is shown
+  Scenario: when hint email, 'continue with email' is shown
+    Given user principal name is any_email@gmail.com
+    When I visit the "account chooser" route
+    Then [continue with email] is shown
+    And [sign up] is not shown
+
+  Scenario: when not requiring consent and no account for hint, 'continue with email' is shown
     Given user principal name is any_email@mural.co
     And the POST REALM api response is 200 status with
     """
     {
       "accountStatus": 0,
-      "canAccessTenant": false,
       "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
       "identityProviderName": "internal-sso"
     }
     """
     When I visit the "account chooser" route
-    Then [sign up with] is not shown
-    And [sign up from hint] is shown
+    Then [continue with email] is shown
 
-  Scenario: when account exist for hint, 'sign in from hint' is shown
-    Given user principal name is existing@mural.co
+  Scenario: when requiring consent and no account for hint, 'sign-up-with' is shown
+    Given user principal name is any_email@gmail.com
     And the POST REALM api response is 200 status with
     """
     {
       "accountStatus": 2,
-      "canAccessTenant": false,
+      "requireConsent": true,
       "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
-      "identityProviderName": "internal-sso"
+      "identityProviderName": "Google"
     }
     """
     When I visit the "account chooser" route
-    Then [sign in from hint] is shown
+    And I click [continue with email]
+    Then [sign up with] is shown
+    And [send verification email] is shown

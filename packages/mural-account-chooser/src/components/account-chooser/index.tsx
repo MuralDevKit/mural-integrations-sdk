@@ -2,6 +2,7 @@ import { CircularProgress } from '@material-ui/core';
 import '@muraldevkit/mural-integrations-common/styles/fonts.css';
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
   AccountStatus,
@@ -148,7 +149,7 @@ const AUTH_MODE_ICONS = {
   [AuthMode.GOOGLE]: GoogleIcon,
   [AuthMode.MICROSOFT]: MicrosoftIcon,
   [AuthMode.ENTERPRISE_SSO]: null,
-  [AuthMode.PASSWORD]: null,
+  [AuthMode.PASSWORD]: MuralIcon,
 };
 
 interface AutomaticOptions {
@@ -178,91 +179,80 @@ export interface AccountChooserPropTypes {
   visitor?: { onSelect: () => void };
 }
 
-interface StateTypes {
-  isLoading: boolean;
-  account?: {
-    email: string;
-    authMode?: AuthMode;
-    requireConsent?: boolean;
-  };
-  page: 'Sign in' | 'SSO Option';
+interface Account {
+  email: string;
+  authMode?: AuthMode;
+  requireConsent?: boolean;
 }
 
-export default class AccountChooser extends React.Component<
-  AccountChooserPropTypes,
-  StateTypes
-> {
-  constructor(props: AccountChooserPropTypes) {
-    super(props);
-    this.state = {
-      isLoading: true,
-      page: 'Sign in',
-    };
-  }
+type PageName = 'Sign in' | 'SSO Option';
 
-  async componentDidMount() {
-    const { hint, visitor } = this.props;
-    let account;
+const AccountChooser: React.FC<AccountChooserPropTypes> = (
+  props: AccountChooserPropTypes,
+) => {
+  const { hint, visitor, onError, getAuthUrl, apiClient, onSelection, theme } =
+    props;
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [page, setPage] = useState<PageName>('Sign in');
+  const [account, setAccount] = useState<Account>();
 
-    // Go directly to the murally sign up page
-    if (!hint && !visitor) await this.createNewAccount();
+  useEffect(() => {
+    (async () => {
+      // Go directly to the murally sign up page
+      if (!hint && !visitor) await createNewAccount();
 
-    if (hint) {
-      const realm = await this.loadRealm(hint);
-      if (realm) {
-        const authMode = getAuthMode(realm);
-        const accountExist =
-          realm.accountStatus === AccountStatus.VALID ||
-          realm.accountStatus === AccountStatus.UNVERIFIED;
-
-        account = {
-          email: hint,
-          authMode,
-          requireConsent: accountExist ? undefined : realm?.requireConsent,
-        };
+      if (hint) {
+        const realm = await loadRealm(hint);
+        if (realm) {
+          const authMode = getAuthMode(realm);
+          const accountExist =
+            realm.accountStatus === AccountStatus.VALID ||
+            realm.accountStatus === AccountStatus.UNVERIFIED;
+          setAccount({
+            email: hint,
+            authMode,
+            requireConsent: accountExist ? undefined : realm?.requireConsent,
+          });
+        }
       }
-    }
 
-    this.setState({
-      account,
-      isLoading: false,
-    });
-  }
+      setIsLoading(false);
+    })();
+  }, []);
 
-  loadRealm = async (email: string) => {
-    const { apiClient } = this.props;
+  const loadRealm = async (email: string) => {
     try {
       return await getMuralRealm(apiClient, email);
     } catch (e: any) {
-      this.props.onError(e);
+      onError(e);
       return null;
     }
   };
 
-  createNewAccount = async () => {
-    this.props.onSelection(
-      await this.props.getAuthUrl({ signup: true }),
+  const createNewAccount = async () => {
+    onSelection(
+      await getAuthUrl({ signup: true }),
       ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT,
     );
   };
 
-  useAnotherAccount = async () =>
-    this.props.onSelection(
-      await this.props.getAuthUrl(),
-      ACCOUNT_CHOOSER_ACTION.ANOTHER_ACCOUNT,
-    );
+  const useAnotherAccount = async () =>
+    onSelection(await getAuthUrl(), ACCOUNT_CHOOSER_ACTION.ANOTHER_ACCOUNT);
 
-  continueWithEmail = async () => {
-    const account = this.state.account;
+  const continueWithEmail = async () => {
+    if (!hint) {
+      createNewAccount();
+      return;
+    }
 
     // The hint email is already associated with a mural account
     // so sign in
     if (account?.authMode === AuthMode.PASSWORD) {
-      this.props.onSelection(
-        await this.props.getAuthUrl({
+      onSelection(
+        await getAuthUrl({
           auto: {
             action: 'signin',
-            email: this.props.hint!,
+            email: hint,
           },
         }),
         ACCOUNT_CHOOSER_ACTION.SIGN_IN,
@@ -273,121 +263,115 @@ export default class AccountChooser extends React.Component<
     // The hint email is not a mural account yet, but it requires consent
     // from a thrid party like Google, Microsoft, or SSO.
     if (account?.requireConsent) {
-      this.setState({
-        page: 'SSO Option',
-      });
+      setPage('SSO Option');
       return;
     }
 
-    // The hint email can be used to create a mural account
-    this.props.onSelection(
-      await this.props.getAuthUrl({
-        auto: {
-          action: 'signup',
-          consentSso: false,
-          email: this.props.hint!,
-        },
-      }),
-      ACCOUNT_CHOOSER_ACTION.SIGN_UP,
-    );
+    // The hint email is not a mural account yet
+    hintEmailSignUp();
   };
 
-  hintEmailSignUp = async () =>
-    this.props.onSelection(
-      await this.props.getAuthUrl({
+  const hintEmailSignUp = async () =>
+    onSelection(
+      await getAuthUrl({
         auto: {
           action: 'signup',
           consentSso: false,
-          email: this.props.hint!,
+          email: hint!,
         },
       }),
       ACCOUNT_CHOOSER_ACTION.SIGN_UP,
     );
 
-  hintSsoSignUp = async () =>
-    this.props.onSelection(
-      await this.props.getAuthUrl({
+  const hintSsoSignUp = async () =>
+    onSelection(
+      await getAuthUrl({
         auto: {
           action: 'signup',
           consentSso: true,
-          email: this.props.hint!,
+          email: hint!,
         },
       }),
       ACCOUNT_CHOOSER_ACTION.SIGN_UP,
     );
 
-  render() {
-    const { theme, hint, visitor } = this.props;
-    const { isLoading, page } = this.state;
-
-    if (isLoading) {
-      return (
+  return (
+    <>
+      {isLoading ? (
         <Loading>
           <CircularProgress />
         </Loading>
-      );
-    }
-
-    const authMode = this.state.account?.authMode;
-    return (
-      <AccountChooserDiv theme={theme === 'light' ? lightTheme : darkTheme}>
-        <MuralLogoImg src={MuralLogo} alt="MURAL" />
-        <AccountChooserContent
+      ) : (
+        <AccountChooserDiv
+          data-qa="account-chooser"
           theme={theme === 'light' ? lightTheme : darkTheme}
         >
-          {page === 'Sign in' ? (
-            <>
-              <Header>Sign in to get started</Header>
-              {hint ? (
-                <EmailHintSignInDiv>
-                  <Email>{hint}</Email>
-                  <EmailHintButton
-                    data-qa="continue-with-email"
-                    onClick={this.continueWithEmail}
+          <MuralLogoImg src={MuralLogo} alt="MURAL" />
+          <AccountChooserContent
+            theme={theme === 'light' ? lightTheme : darkTheme}
+          >
+            {page === 'Sign in' ? (
+              <>
+                <Header>Sign in to get started</Header>
+                {hint ? (
+                  <EmailHintSignInDiv>
+                    <Email>{hint}</Email>
+                    <EmailHintButton
+                      data-qa="continue-with-email"
+                      onClick={continueWithEmail}
+                    >
+                      Continue
+                    </EmailHintButton>
+                  </EmailHintSignInDiv>
+                ) : (
+                  <SignInButton data-qa="sign-up" onClick={createNewAccount}>
+                    Sign in
+                  </SignInButton>
+                )}
+                {visitor && (
+                  <VisitorButton
+                    data-qa="sign-in-as-visitor"
+                    onClick={visitor.onSelect}
+                    theme={theme === 'light' ? lightTheme : darkTheme}
                   >
-                    Continue
-                  </EmailHintButton>
-                </EmailHintSignInDiv>
-              ) : (
-                <SignInButton data-qa="sign-in" onClick={this.createNewAccount}>
-                  Sign in
-                </SignInButton>
-              )}
-              {visitor && (
-                <VisitorButton
-                  onClick={visitor.onSelect}
+                    Continue as a visitor
+                  </VisitorButton>
+                )}
+              </>
+            ) : (
+              // else the page === "SSO Option"
+              <>
+                <SignUpWith3rdParty
+                  name={account?.authMode?.toString() ?? ''}
+                  iconSrc={
+                    account?.authMode
+                      ? AUTH_MODE_ICONS[account?.authMode]
+                      : undefined
+                  }
+                  signUp={hintSsoSignUp}
+                  sendVerificationEmail={hintEmailSignUp}
                   theme={theme === 'light' ? lightTheme : darkTheme}
-                >
-                  Continue as a visitor
-                </VisitorButton>
-              )}
-            </>
-          ) : (
-            // else the page === "SSO Option"
-            <>
-              <SignUpWith3rdParty
-                name={authMode?.toString() ?? ''}
-                iconSrc={authMode ? AUTH_MODE_ICONS[authMode] : undefined}
-                signUp={this.hintSsoSignUp}
-                sendVerificationEmail={this.hintEmailSignUp}
+                />
+              </>
+            )}
+          </AccountChooserContent>
+          {hint && page === 'Sign in' && (
+            <UseDifferentEmail>
+              <NotYourEmail>Not {hint}?</NotYourEmail>
+              <UseDifferentEmailLink
+                data-qa="use-another-account"
+                onClick={useAnotherAccount}
                 theme={theme === 'light' ? lightTheme : darkTheme}
-              />
-            </>
+              >
+                Sign in with a different account
+              </UseDifferentEmailLink>
+            </UseDifferentEmail>
           )}
-        </AccountChooserContent>
-        {hint && page === 'Sign in' && (
-          <UseDifferentEmail>
-            <NotYourEmail>Not {hint}?</NotYourEmail>
-            <UseDifferentEmailLink
-              onClick={this.useAnotherAccount}
-              theme={theme === 'light' ? lightTheme : darkTheme}
-            >
-              Sign in with a different account
-            </UseDifferentEmailLink>
-          </UseDifferentEmail>
-        )}
-        <Footer />
-      </AccountChooserDiv>
-    );
-  }
-}
+          <Footer />
+        </AccountChooserDiv>
+      )}
+    </>
+  );
+};
+
+export default AccountChooser;

@@ -107,13 +107,8 @@ interface PropTypes {
   };
 }
 
-export default function SignUpWith3rdParty({
-  name,
-  iconSrc,
-  signUp,
-  sendVerificationEmail,
-  theme,
-}: PropTypes) {
+const SignUpWith3rdParty: React.FC<PropTypes> = (props: PropTypes) => {
+  const { name, iconSrc, signUp, sendVerificationEmail, theme } = props;
   const icon = iconSrc ?? MuralIcon;
 
   return (
@@ -121,7 +116,7 @@ export default function SignUpWith3rdParty({
       <Header>Let's verify your email</Header>
       <ThirdPartySignUpButton
         onClick={signUp}
-        data-qa="sign-in-3rd-party"
+        data-qa="sign-up-with"
         theme={theme}
       >
         <Icon src={icon} alt="avatar" />
@@ -138,4 +133,6 @@ export default function SignUpWith3rdParty({
       </SendVerificationEmail>
     </ThirdPartySignUp>
   );
-}
+};
+
+export default SignUpWith3rdParty;
