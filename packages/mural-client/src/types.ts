@@ -142,3 +142,6 @@ export interface CreateStickyNotePayload {
   x: number;
   y: number;
 }
+
+export interface UpdateStickyNotePayload
+  extends Partial<CreateStickyNotePayload> {}
