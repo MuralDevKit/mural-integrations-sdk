@@ -1,6 +1,5 @@
 import { authenticated, getFetchConfig, FetchError } from './fetch';
 import {
-  CreateStickyNotePayload,
   Mural,
   Room,
   StickyNote,
@@ -8,6 +7,8 @@ import {
   Template,
   User,
   Workspace,
+  UpdateStickyNotePayload,
+  CreateStickyNotePayload,
 } from './types';
 
 export * from './fetch';
@@ -207,6 +208,14 @@ export interface ApiClient {
       payload: CreateStickyNotePayload;
     }
   >;
+  updateStickyNote: ResourceEndpoint<
+    StickyNote,
+    {
+      muralId: string;
+      widgetId: string;
+      payload: UpdateStickyNotePayload;
+    }
+  >;
   getCurrentUser: ResourceEndpoint<User>;
   getMural: ResourceEndpoint<Mural, { id: string }, Integration>;
   getMuralsByRoom: ResourceEndpoint<
@@ -350,6 +359,18 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
           body: JSON.stringify(payload),
           headers: { 'content-type': 'application/json' },
           method: 'POST',
+        },
+      );
+      return response.json();
+    },
+    // https://developers.mural.co/public/reference/updatestickynote
+    updateStickyNote: async ({ muralId, widgetId, payload }) => {
+      const response = await fetchFn(
+        api(`murals/${muralId}/widgets/sticky-note/${widgetId}`),
+        {
+          body: JSON.stringify(payload),
+          headers: { 'content-type': 'application/json' },
+          method: 'PATCH',
         },
       );
       return response.json();
