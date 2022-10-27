@@ -52,16 +52,14 @@
 
   &-buttons {
     &-container {
-      position: relative;
       display: flex;
-      flex: 0 0 70px;
-      flex-direction: row;
+      flex: 0;
       justify-content: space-between;
+      align-items: baseline;
       padding-top: 1em;
 
-      & .button {
-        align-self: center;
-        margin-right: 0.5em;
+      & * {
+        margin: 0 0.33em;
       }
 
       & .new-mural-create {
@@ -69,7 +67,7 @@
         min-width: 40%;
         max-width: 70%;
 
-        &--input {
+        &__title {
           flex-grow: 1;
           margin-right: 1em;
         }

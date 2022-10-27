@@ -1,5 +1,5 @@
 import { CircularProgress, FormControl } from '@material-ui/core';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 import {
   DeepPartial,
@@ -11,10 +11,13 @@ import {
   Room,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
+import cx from 'classnames';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { ReactSlot } from '../../common/react';
+import { PrimaryButton } from '../common';
 import RoomSelect from '../room-select';
+import createTheme, { Preset } from '../theme';
 import WorkspaceSelect from '../workspace-select';
 import './styles.scss';
 
@@ -27,15 +30,18 @@ interface Slots {
   };
 }
 
+type ThemeOptions = {
+  preset: Preset;
+};
+
 export interface PropTypes {
   apiClient: ApiClient;
   onSelect: EventHandler<[room: Room, workspace: Workspace]>;
 
   buttonTitle?: string;
   onError?: EventHandler<[error: Error, message: string]>;
-  theme?: 'light' | 'dark';
-
   slots?: DeepPartial<Slots>;
+  theme?: Partial<ThemeOptions>;
 }
 
 interface StateTypes {
@@ -57,6 +63,10 @@ const INITIAL_STATE: StateTypes = {
   workspace: null,
   room: null,
 };
+
+const useThemeOptions = defaultBuilder<ThemeOptions>({
+  preset: 'light',
+});
 
 const useSlots = defaultBuilder<Slots>({
   WorkspaceSelect: {
@@ -166,9 +176,11 @@ export default class RoomPicker extends React.Component<PropTypes> {
   };
 
   render() {
-    const { theme, buttonTitle } = this.props;
+    const { buttonTitle } = this.props;
     const { error, isLoading } = this.state;
     const slots = useSlots(this.props.slots);
+    const { preset } = useThemeOptions(this.props.theme);
+    const muiTheme = createTheme(preset);
 
     const controlGlyph = isLoading ? (
       <CircularProgress />
@@ -176,24 +188,9 @@ export default class RoomPicker extends React.Component<PropTypes> {
       buttonTitle ?? 'Select'
     );
 
-    // @TECHDEBT: use the main theme
-    const currentTheme = theme || 'light';
-    const muiTheme = createMuiTheme({
-      palette: {
-        type: currentTheme,
-        text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
-        primary: {
-          main: '#FF0066',
-        },
-      },
-      typography: {
-        fontFamily: 'Proxima Nova',
-      },
-    });
-
     return (
       <ThemeProvider theme={muiTheme}>
-        <div className={`room-picker-body ${theme}`}>
+        <div className={cx('room-picker-body', muiTheme?.palette?.type)}>
           <div className="select-row">
             <slots.WorkspaceSelect.Self
               workspace={this.state.workspace}
@@ -212,13 +209,14 @@ export default class RoomPicker extends React.Component<PropTypes> {
             />
 
             <FormControl className="room-picker-control">
-              <button
-                className="mural-button room-picker-button"
+              <PrimaryButton
+                className="room-picker-button"
                 data-qa="room-picker-button"
+                disabled={!this.state.room}
                 onClick={this.handleSubmit}
               >
                 {controlGlyph}
-              </button>
+              </PrimaryButton>
             </FormControl>
           </div>
           {error && (

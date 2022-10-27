@@ -9,6 +9,7 @@ export type CardItemSource = {
   thumbnailUrl: URL | string;
 
   details?: string;
+  initials?: string;
 };
 
 export type PropTypes = { source: CardItemSource } & ItemPropTypes;
@@ -30,10 +31,19 @@ export default (props: PropTypes) => {
             image={source.thumbnailUrl.toString()}
             className="card-thumbnail"
           />
+          <div className="card-title" data-qa="card-title">
+            {source.title}
+          </div>
           <div className="card-info">
-            <div className="card-title" data-qa="card-title">
-              {source.title}
-            </div>
+            {/* TECHDEBT fetch avatar info from the API? */}
+            {source.initials && (
+              <div
+                className="card-avatar card-avatar--initials"
+                data-qa="card-avatar"
+              >
+                {source.initials}
+              </div>
+            )}
             <div className="card-details" data-qa="card-details">
               {source.details || ''}
             </div>

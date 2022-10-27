@@ -79,6 +79,8 @@ const options = {
       setCtxItem(CONFIRM_MESSAGE, message);
       return true;
     };
+
+    window.cancelAnimationFrame = () => {};
   },
 };
 

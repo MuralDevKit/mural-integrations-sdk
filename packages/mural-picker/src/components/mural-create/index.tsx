@@ -8,9 +8,12 @@ import {
   Template,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
+import cx from 'classnames';
 import debounce from 'lodash/debounce';
 import * as React from 'react';
+import Measure from 'react-measure';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
+import { CardSize } from '../card-list-item';
 import { ActionItemSource } from '../card-list-item/action';
 import { CardListSection } from '../card-list/card-list-section';
 import {
@@ -18,9 +21,17 @@ import {
   ListSubheader,
   PrimaryButton,
   SecondaryButton,
+  threshold,
 } from '../common';
 import { ErrorHandler } from '../types';
+
 import './styles.scss';
+
+declare module '@material-ui/core/Box' {
+  interface BoxProps {
+    ref?: React.Ref<unknown>;
+  }
+}
 
 /*
  * Once we have the proper template lookup in the public API, we should showcase
@@ -53,7 +64,7 @@ const BLANK_TEMPLATE: Template = {
   viewLink: '',
 } as const;
 
-export interface PropTypes {
+export type PropTypes = {
   apiClient: ApiClient;
   room: Room;
   workspace: Workspace;
@@ -61,7 +72,9 @@ export interface PropTypes {
   onCancel: EventHandler;
   onCreate: EventHandler<[mural: Mural]>;
   onError: ErrorHandler;
-}
+
+  cardSize?: CardSize;
+};
 
 interface StateTypes {
   btnLoading: boolean;
@@ -275,7 +288,7 @@ export default class MuralCreate extends React.Component<
               onSelect={this.onSelectTemplate}
               onAction={this.handleAction}
               selected={this.state.selected}
-              cardSize={'normal'}
+              cardSize={this.props.cardSize}
             />
           </div>
         </div>
@@ -304,45 +317,72 @@ export default class MuralCreate extends React.Component<
 
         {this.renderTemplateCardItems()}
 
-        <Box className="new-mural-buttons-container">
-          <div className="new-mural-items-mask" />
-          <SecondaryButton
-            className="button"
-            variant="text"
-            onClick={this.props.onCancel}
-          >
-            Cancel<span className="content--lg">&nbsp;& go back</span>
-          </SecondaryButton>
+        <Measure bounds>
+          {({ measureRef, contentRect }) => {
+            const sz = threshold(contentRect.bounds?.width, {
+              m: 384,
+            });
 
-          <Box className="new-mural-create">
-            <TextField
-              className="new-mural-create--input"
-              inputRef={this.titleRef}
-              value={this.state.title}
-              onChange={event =>
-                this.setState({ error: '', title: event.target.value })
-              }
-              variant="standard"
-              label="Mural title"
-              placeholder="Untitled mural"
-            />
-            <PrimaryButton
-              className="button"
-              onClick={this.createMural}
-              variant="contained"
-              disabled={this.state.btnLoading}
-            >
-              Create<span className="content--lg">&nbsp;Mural</span>{' '}
-              {this.state.btnLoading && (
-                <CircularProgress
-                  style={{ marginLeft: 10 }}
-                  size={18}
-                  color="inherit"
-                />
-              )}
-            </PrimaryButton>
-          </Box>
-        </Box>
+            return (
+              <Box
+                ref={measureRef}
+                className={cx('new-mural-buttons-container')}
+              >
+                <SecondaryButton
+                  className="new-mural-create__cancel"
+                  variant="text"
+                  onClick={this.props.onCancel}
+                >
+                  Cancel
+                </SecondaryButton>
+
+                {sz.m && (
+                  <TextField
+                    className="new-mural-create__title"
+                    inputRef={this.titleRef}
+                    value={this.state.title}
+                    onChange={event =>
+                      this.setState({
+                        error: '',
+                        title: event.target.value,
+                      })
+                    }
+                    variant="standard"
+                    label="Mural title"
+                    placeholder="Untitled mural"
+                  />
+                )}
+
+                <Measure bounds>
+                  {({ measureRef, contentRect }) => {
+                    const sz = threshold(contentRect.bounds?.width, {
+                      l: 200,
+                    });
+
+                    return (
+                      <PrimaryButton
+                        ref={measureRef}
+                        className="new-mural-create__submit"
+                        onClick={this.createMural}
+                        variant="contained"
+                        disabled={this.state.btnLoading}
+                      >
+                        Create{sz.l && ' Mural'}{' '}
+                        {this.state.btnLoading && (
+                          <CircularProgress
+                            style={{ marginLeft: 10 }}
+                            size={18}
+                            color="inherit"
+                          />
+                        )}
+                      </PrimaryButton>
+                    );
+                  }}
+                </Measure>
+              </Box>
+            );
+          }}
+        </Measure>
       </>
     );
   }

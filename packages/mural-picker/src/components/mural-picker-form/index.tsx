@@ -1,5 +1,4 @@
-import Button from '@material-ui/core/Button';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import {
   DeepPartial,
   defaultBuilder,
@@ -11,15 +10,19 @@ import {
   Room,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
+import cx from 'classnames';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { ReactSlot } from '../../common/react';
+import createTheme, { Preset } from '../theme';
+import { PrimaryButton } from '../common';
 import MuralPickerError from '../error';
 import Header from '../header';
 import Loading from '../loading';
 import MuralSelect from '../mural-select';
 import RoomSelect from '../room-select';
 import WorkspaceSelect from '../workspace-select';
+
 import './styles.scss';
 
 export type Slots = {
@@ -31,17 +34,21 @@ export type Slots = {
   RoomSelect?: RoomSelect['props']['slots'];
 };
 
-export interface PropTypes {
+type ThemeOptions = {
+  preset: Preset;
+};
+
+export type PropTypes = {
   apiClient: ApiClient;
   onError: EventHandler<[error: Error, message: string]>;
   onSelect: EventHandler<
     [mural: Mural, room: Room | null, workspace: Workspace]
   >;
 
-  theme?: 'light' | 'dark';
   ListboxProps?: object | undefined;
   slots?: DeepPartial<Slots>;
-}
+  theme?: Partial<ThemeOptions>;
+};
 
 interface StateTypes {
   isLoading: boolean;
@@ -58,6 +65,10 @@ interface StateTypes {
 
 const useSlots = defaultBuilder<Slots>({
   Header: { Self: Header },
+});
+
+const useThemeOptions = defaultBuilder<ThemeOptions>({
+  preset: 'light',
 });
 
 export default class MuralPickerForm extends React.Component<
@@ -200,19 +211,13 @@ export default class MuralPickerForm extends React.Component<
 
   render() {
     const slots = useSlots(this.props.slots);
-    const { theme } = this.props;
-    const currentTheme = theme || 'light';
-    const muiTheme = createMuiTheme({
-      palette: {
-        type: currentTheme,
-        text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
-      },
-    });
+    const { preset } = useThemeOptions(this.props.theme);
+    const muiTheme = createTheme(preset);
 
     return (
       <ThemeProvider theme={muiTheme}>
         <div
-          className={`mural-picker-body ${currentTheme}`}
+          className={cx('mural-picker-body', muiTheme?.palette?.type)}
           data-qa="mural-picker"
         >
           <slots.Header.Self slots={{ ...slots.Header }}>
@@ -240,17 +245,16 @@ export default class MuralPickerForm extends React.Component<
               onSelect={this.handleMuralSelect}
             />
           </div>
-          <Button
-            className="mural-button mural-select-button"
+          <PrimaryButton
+            className="mural-select-button"
             data-qa="mural-select-button"
             disabled={!this.state.mural}
             onClick={this.handleSelect}
-            color="secondary"
             size="large"
             variant="contained"
           >
             Open mural
-          </Button>
+          </PrimaryButton>
           {this.state.error && <MuralPickerError error={this.state.error} />}
           {this.state.isLoading && <Loading />}
         </div>
