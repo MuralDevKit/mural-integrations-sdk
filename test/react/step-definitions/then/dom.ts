@@ -1,6 +1,6 @@
 import { SetupFnArgs } from 'pickled-cucumber/types';
 import { fail } from 'assert';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { getElement, queryElement, waitForElementWithText } from '../../pages';
 import { elementAt } from '../utils';
 
@@ -123,7 +123,7 @@ export default function registerThen({ Then, compare }: SetupFnArgs) {
   Then('{descriptor} has {int} options?', async (descriptor, choiceCount) => {
     const element = await getElement(descriptor);
 
-    const selectControlElement = element.querySelector('.Select-control');
+    const selectControlElement = await within(element).findByRole('combobox');
     if (!selectControlElement) {
       fail(`${descriptor} has no select element`);
     }
@@ -131,15 +131,12 @@ export default function registerThen({ Then, compare }: SetupFnArgs) {
     // Trigger the dropdown - the dropdown need to be opened for the options to be rendered
     fireEvent.keyDown(selectControlElement, { key: 'ArrowDown', keyCode: 40 });
 
-    const selectMenuElement = element.querySelector('.Select-menu');
-    if (!selectMenuElement) {
-      fail(`${descriptor} has no select menu element`);
-    }
+    const selectOptions = screen.queryAllByRole('option');
 
     // Close the dropdown
     fireEvent.keyDown(selectControlElement, { key: 'Escape', keyCode: 27 });
 
-    compare('is', selectMenuElement.childElementCount, choiceCount);
+    compare('is', selectOptions.length, choiceCount);
   });
 
   // USAGE:
