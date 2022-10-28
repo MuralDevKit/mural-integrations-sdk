@@ -19,13 +19,13 @@
     "strictNullChecks": true,
     "target": "es2018"
   },
-	"include": [
-		"./packages/**/*.ts",
-		"./packages/**/*.tsx",
-		"*.d.ts",
+  "include": [
+    "./packages/**/*.ts",
+    "./packages/**/*.tsx",
+    "*.d.ts",
     "./stories/**/*.stories.tsx"
   ],
-	"exclude": [
-		"./node_modules"
-	]
+  "exclude": [
+    "./node_modules"
+  ]
 }
