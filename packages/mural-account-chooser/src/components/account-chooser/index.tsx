@@ -48,7 +48,6 @@ const AccountChooserDiv = styled.div`
   display: flex;
   height: 100vh;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   color: ${({ theme }) => theme.primaryTextColor};
   background: ${({ theme }) => theme.backgroundColor};
