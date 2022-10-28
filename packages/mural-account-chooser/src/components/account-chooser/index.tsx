@@ -96,51 +96,38 @@ const Email = styled.div`
   font-size: 16px;
   line-height: 16px;
   margin: 32px;
-  padding: 0px 0px 0px 10px;
   color: ${({ theme }) => theme.secondaryTextColor};
 `;
 const Button = styled.button`
   cursor: pointer;
+  border: none;
   border-radius: 8px;
-  width: 260px;
   height: 44px;
   font-family: ${FONT_FAMILY};
-  font-weight: bold;
-  font-size: 1em;
-  margin: 15px;
-`;
-const EmailHintButton = styled(Button)`
-  width: 90px;
-  border: none;
-  margin: 20px;
-  background: ${MURAL_COLOR};
-  color: #ffffff;
+  font-style: normal;
   font-weight: 700;
   font-size: 14px;
   line-height: 20px;
 `;
+const EmailHintButton = styled(Button)`
+  width: 90px;
+  background: ${MURAL_COLOR};
+  color: #ffffff;
+  margin: 20px;
+`;
 const SignInButton = styled(Button)`
   width: 100%;
-  height: 44px;
-  border: none;
   background: ${MURAL_COLOR};
   color: #ffffff;
   margin: 0px;
 `;
 const VisitorButton = styled(Button)`
-  border: 2px solid #4e4e4e;
+  border: 2px solid ${({ theme }) => theme.secondaryTextColor};
   border-radius: 8px;
-  border-color: ${({ theme }) => theme.secondaryTextColor};
   width: 176px;
-  margin: 32px;
-  margin-bottom: 13px;
-  color: ${({ theme }) => theme.secondaryTextColor};
   background: ${({ theme }) => theme.contentBackgroundColor};
-  font-family: 'Proxima Nova';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 20px;
+  color: ${({ theme }) => theme.secondaryTextColor};
+  margin: 32px 32px 13px 32px;
 `;
 const UseDifferentEmail = styled.div`
   display: flex;
@@ -154,8 +141,7 @@ const NotYourEmail = styled.div`
   font-size: 0.9em;
   line-height: 120%;
 `;
-const UseDifferentEmailLink = styled.button`
-  /* Button */
+const UseDifferentEmailLink = styled.a`
   cursor: pointer;
   background: none;
   padding: 0;
@@ -169,9 +155,6 @@ const UseDifferentEmailLink = styled.button`
   font-weight: bold;
   font-size: 0.9em;
   line-height: 120%;
-`;
-const Footer = styled.div`
-  margin-bottom: ${MARGIN};
 `;
 const AUTH_MODE_ICONS = {
   [AuthMode.GOOGLE]: GoogleIcon,
@@ -289,7 +272,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
     }
 
     // The hint email is not a mural account yet, but it requires consent
-    // from a thrid party like Google, Microsoft, or SSO.
+    // from a third party like Google, Microsoft, or SSO.
     if (account?.requireConsent) {
       setPage('SSO Option');
       return;
@@ -368,19 +351,17 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
               </>
             ) : (
               // else the page === "SSO Option"
-              <>
-                <SignUpWith3rdParty
-                  name={account?.authMode?.toString() ?? ''}
-                  iconSrc={
-                    account?.authMode
-                      ? AUTH_MODE_ICONS[account?.authMode]
-                      : undefined
-                  }
-                  signUp={hintSsoSignUp}
-                  sendVerificationEmail={hintEmailSignUp}
-                  theme={theme === 'light' ? lightTheme : darkTheme}
-                />
-              </>
+              <SignUpWith3rdParty
+                name={account?.authMode?.toString() ?? ''}
+                iconSrc={
+                  account?.authMode
+                    ? AUTH_MODE_ICONS[account?.authMode]
+                    : undefined
+                }
+                signUp={hintSsoSignUp}
+                sendVerificationEmail={hintEmailSignUp}
+                theme={theme === 'light' ? lightTheme : darkTheme}
+              />
             )}
           </AccountChooserContent>
           {hint && page === 'Sign in' && (
@@ -395,7 +376,6 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
               </UseDifferentEmailLink>
             </UseDifferentEmail>
           )}
-          <Footer />
         </AccountChooserDiv>
       )}
     </>
