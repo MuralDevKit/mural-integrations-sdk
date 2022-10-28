@@ -27,7 +27,7 @@ export const MARGIN = '23px';
 export const lightTheme = {
   primaryTextColor: '#2f2f2f',
   secondaryTextColor: '#4d4d4d',
-  backgroundColor: '#f4f4f4',
+  backgroundColor: '#f4f7fb',
   contentBackgroundColor: '#ffffff',
 };
 
@@ -42,36 +42,42 @@ const Loading = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 200px;
+  height: 100vh;
 `;
 const AccountChooserDiv = styled.div`
   display: flex;
+  height: 100vh;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   color: ${({ theme }) => theme.primaryTextColor};
   background: ${({ theme }) => theme.backgroundColor};
 `;
 const MuralLogoImg = styled.img`
-  height: 34px;
-  margin: ${MARGIN} 0px ${MARGIN} 0px;
+  height: 26px;
+  margin: 41px 0px 41px 0px;
 `;
 const AccountChooserContent = styled.div`
   background-color: ${({ theme }) => theme.contentBackgroundColor};
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 400px;
-  border-radius: 10px;
-  padding: 30px;
+  width: 450px;
+  padding: 32px;
+
+  border: 2px solid rgba(0, 0, 0, 0.02);
+  box-shadow: 0px 16px 12px -4px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
 `;
 const Header = styled.h1`
-  margin: 20px;
+  margin-bottom: 25px;
+  margin-top: 15px;
   font-family: ${FONT_FAMILY};
   line-height: 100%;
   text-align: center;
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 800;
+  color: ${({ theme }) => theme.primaryTextColor};
 `;
 const EmailHintSignInDiv = styled.div`
   width: 100%;
@@ -79,13 +85,19 @@ const EmailHintSignInDiv = styled.div`
   justify-content: space-between;
   align-items: center;
 
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.08),
+    0px 5px 8px rgba(0, 0, 0, 0.08);
   border: #cccccc 1px solid;
-  border-radius: 10px;
+  border-radius: 12px;
 `;
 const Email = styled.div`
   font-family: ${FONT_FAMILY};
-  margin: 15px;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 16px;
+  margin: 32px;
   padding: 0px 0px 0px 10px;
+  color: ${({ theme }) => theme.secondaryTextColor};
 `;
 const Button = styled.button`
   cursor: pointer;
@@ -98,40 +110,56 @@ const Button = styled.button`
   margin: 15px;
 `;
 const EmailHintButton = styled(Button)`
-  width: 100px;
+  width: 90px;
   border: none;
+  margin: 20px;
   background: ${MURAL_COLOR};
   color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
 `;
 const SignInButton = styled(Button)`
+  width: 100%;
+  height: 44px;
   border: none;
   background: ${MURAL_COLOR};
   color: #ffffff;
+  margin: 0px;
 `;
 const VisitorButton = styled(Button)`
-  border: 1px solid black;
+  border: 2px solid #4e4e4e;
+  border-radius: 8px;
   border-color: ${({ theme }) => theme.secondaryTextColor};
-  width: 180px;
+  width: 176px;
+  margin: 32px;
+  margin-bottom: 13px;
   color: ${({ theme }) => theme.secondaryTextColor};
   background: ${({ theme }) => theme.contentBackgroundColor};
+  font-family: 'Proxima Nova';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
 `;
 const UseDifferentEmail = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 30px;
 `;
 const NotYourEmail = styled.div`
   font-family: ${FONT_FAMILY};
   color: ${({ theme }) => theme.primaryTextColor};
   font-size: 0.9em;
   line-height: 120%;
-  margin-top: 5px;
 `;
 const UseDifferentEmailLink = styled.button`
   /* Button */
   cursor: pointer;
   background: none;
   padding: 0;
+  margin: 3px;
   border: none;
   border-bottom: 1px dashed ${({ theme }) => theme.primaryTextColor};
 
