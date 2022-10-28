@@ -1,14 +1,14 @@
 {
   "name": "@muraldevkit/sample",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "private": true,
   "dependencies": {
     "@babel/helper-create-class-features-plugin": "^7.18.0",
     "@babel/helper-create-regexp-features-plugin": "^7.17.12",
     "@craco/craco": "^6.4.3",
-    "@muraldevkit/mural-integrations-mural-canvas": "^3.0.0",
-    "@muraldevkit/mural-integrations-mural-client": "^3.0.0",
-    "@muraldevkit/mural-integrations-mural-picker": "^3.0.0",
+    "@muraldevkit/mural-integrations-mural-canvas": "^3.0.1",
+    "@muraldevkit/mural-integrations-mural-client": "^3.0.1",
+    "@muraldevkit/mural-integrations-mural-picker": "^3.0.1",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",

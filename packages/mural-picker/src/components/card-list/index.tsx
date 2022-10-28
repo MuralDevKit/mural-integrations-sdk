@@ -32,18 +32,19 @@ interface PropTypes {
 }
 
 export default class MuralCardList extends React.Component<PropTypes> {
-  handleSelectFor =
-    (murals: Mural[], section: 'favorites' | 'murals') => (idx: number) => {
-      this.setState({
-        selected: {
-          favorites: -1,
-          murals: -1,
-          [section]: idx,
-        },
-      });
+  handleSelectFor = (murals: Mural[], section: 'favorites' | 'murals') => (
+    idx: number,
+  ) => {
+    this.setState({
+      selected: {
+        favorites: -1,
+        murals: -1,
+        [section]: idx,
+      },
+    });
 
-      this.props.onSelect(murals[idx]);
-    };
+    this.props.onSelect(murals[idx]);
+  };
 
   handleAction = (actionName: string) => {
     switch (actionName) {
@@ -77,30 +78,30 @@ export default class MuralCardList extends React.Component<PropTypes> {
     );
 
     // Display all murals or all murals in selected room
-    if (this.props.murals.length) {
-      return (
-        <CardListSection
-          title="All murals"
-          actions={[
-            {
-              content: (
-                <div>
-                  <AddCircleIcon />
-                  <div>Create new mural</div>
-                </div>
-              ),
-              name: 'create',
-              sort: 'start',
-            },
-          ]}
-          items={this.props.murals.map(muralCardItemSource)}
-          cardSize={this.props.cardSize}
-          onSelect={this.handleSelectFor(this.props.murals, 'murals')}
-          onAction={this.handleAction}
-          selected={selected}
-        />
-      );
-    }
+    return (
+      <CardListSection
+        title="All murals"
+        actions={[
+          {
+            content: (
+              <div>
+                <AddCircleIcon />
+                <div>Create new mural</div>
+              </div>
+            ),
+            name: 'create',
+            sort: 'start',
+          },
+        ]}
+        items={
+          this.props.murals ? this.props.murals.map(muralCardItemSource) : []
+        }
+        cardSize={this.props.cardSize}
+        onSelect={this.handleSelectFor(this.props.murals, 'murals')}
+        onAction={this.handleAction}
+        selected={selected}
+      />
+    );
   };
 
   render() {
