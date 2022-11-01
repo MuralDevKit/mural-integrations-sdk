@@ -88,7 +88,7 @@ async function verifyTokensExpiration() {
     if (isTokenExpired(session.refreshToken)) {
       fetchConfig.sessionStore.delete();
     } else if (isTokenExpired(session.accessToken)) {
-      await refreshToken();
+      await fetchConfig.refreshTokenFn({ store: true });
     }
   }
 }
@@ -101,20 +101,6 @@ function isTokenExpired(token: string) {
     }
   }
   return true;
-}
-
-async function refreshToken() {
-  try {
-    await fetchConfig.refreshTokenFn({ store: true });
-  } catch (e) {
-    if (
-      e instanceof FetchError &&
-      e.response.status >= 400 &&
-      e.response.status < 500
-    )
-      throw InvalidSessionError.fromError(e);
-    throw e;
-  }
 }
 
 export class FetchError extends Error {
@@ -163,7 +149,7 @@ function catchAuthenticationError(input: RequestInfo, init: RequestInit = {}) {
       session &&
       session.refreshToken
     ) {
-      await refreshToken();
+      await fetchConfig.refreshTokenFn({ store: true });
       // For api retry we should use the newly refreshed token and not the original one
       return authenticatedFetch(input, init);
     }
@@ -334,15 +320,25 @@ export const refreshTokenHandler =
       }),
     };
 
-    const freshSession: Session = await fetch(config.refreshTokenUri, options)
-      .then(checkStatus)
-      .then(res => res.json());
+    try {
+      const freshSession: Session = await fetch(config.refreshTokenUri, options)
+        .then(checkStatus)
+        .then(res => res.json());
 
-    if (opts.store) {
-      fetchConfig.sessionStore.set(freshSession);
+      if (opts.store) {
+        fetchConfig.sessionStore.set(freshSession);
+      }
+
+      return freshSession;
+    } catch (e) {
+      if (
+        e instanceof FetchError &&
+        e.response.status >= 400 &&
+        e.response.status < 500
+      )
+        throw InvalidSessionError.fromError(e);
+      throw e;
     }
-
-    return freshSession;
   };
 
 // This is a shortcut as this file as multiple dependencies
