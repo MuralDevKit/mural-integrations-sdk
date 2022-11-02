@@ -41,13 +41,6 @@ export type ApiQueryFor<T extends keyof ApiClient> = ApiClient[T] extends (
   ? TQuery
   : never;
 
-export type PaginatedOptions = {
-  limit: number;
-  next: string;
-
-  sortBy?: string;
-};
-
 const DEFAULT_CONFIG = {
   muralHost: 'app.mural.co',
   integrationsHost: 'integrations.mural.co',
@@ -68,7 +61,7 @@ export const getApiError = async (error: Error): Promise<ApiError | null> => {
 
 export type Envelope<TResource> = {
   value: TResource;
-  next?: TResource extends any[] ? string | null : undefined;
+  next?: TResource extends any[] ? string : undefined;
 };
 
 type Sorted<TResource = null> = {
@@ -77,8 +70,8 @@ type Sorted<TResource = null> = {
 
 type Paginated<TResource = null> = {
   paginate: {
-    limit: number;
-    next?: string | null;
+    limit?: number;
+    next?: string;
   };
 } & Sorted<TResource>;
 
@@ -136,8 +129,13 @@ const optionsParams = (
   }
 
   if (isPaginated(options)) {
-    params.set('limit', options.paginate.limit.toString());
-    if (options.paginate.next) params.set('next', options.paginate.next);
+    if (options.paginate.limit) {
+      params.set('limit', options.paginate.limit.toString());
+    }
+
+    if (options.paginate.next) {
+      params.set('next', options.paginate.next);
+    }
 
     // @ts-ignore
     delete options.paginate;

@@ -117,7 +117,7 @@ export default class MuralCreate extends React.Component<
           {
             paginate: {
               limit: LIMIT,
-              next: this.state.nextToken,
+              next: this.state.nextToken ?? undefined,
             },
           },
         );
