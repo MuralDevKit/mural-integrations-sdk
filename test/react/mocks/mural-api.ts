@@ -1,6 +1,7 @@
 import fetchMock from 'fetch-mock';
 import { getCtxItem } from 'pickled-cucumber/context';
 import muralApiEntities from '../entities/mural-api';
+
 import { FAKE_MURAL_HOST } from '../../utils';
 
 export const ROUTES = {
@@ -25,6 +26,61 @@ export const ROUTES = {
   GLOBAL_TEMPLATES: 'glob:*/api/v0/templates/globals*',
 };
 
+export const MURAL_API_GET_ROOMS_BY_WORKSPACE_DEFAULT_LIMIT_KEY =
+  '$mural-api-get-rooms-by-workspace-default-limit';
+
+const DEFAULT_LIMIT = 100;
+
+const INVALID_LIMIT_RESPONSE = {
+  body: {
+    code: 'LIMIT_INVALID',
+    message: 'The limit is invalid.',
+  },
+  status: 400,
+};
+
+const INVALID_PAGINATION_RESPONSE = {
+  body: {
+    code: 'PAGINATION_INVALID',
+    message: 'The pagination is invalid.',
+  },
+  status: 400,
+};
+
+/**
+ * Parse 'limit' query parameter.
+ * Return default limit when the parameter is not provided or is 0.
+ */
+const parseLimitParam = (limitParam: string | null) => {
+  if (limitParam === null) {
+    return DEFAULT_LIMIT;
+  }
+
+  const limit = parseInt(limitParam, 10);
+  if (!Number.isInteger(limit)) {
+    throw new Error('Invalid limit parameter');
+  }
+
+  return limit > 0 ? limit : DEFAULT_LIMIT;
+};
+
+/**
+ * Parse 'next' query parameter.
+ * Return 0 when the parameter is not provided.
+ */
+const parseNextParam = (nextParam: string | null) => {
+  if (nextParam === null) {
+    return 0;
+  }
+
+  const next = parseInt(nextParam, 10);
+  if (!Number.isInteger(next)) {
+    throw new Error('Invalid next parameter');
+  }
+
+  return next;
+};
+
 export const registerGlobalRoutes = () => {
   fetchMock.get(ROUTES.ME, async () => {
     return {
@@ -42,10 +98,45 @@ export const registerGlobalRoutes = () => {
   });
 
   fetchMock.get(ROUTES.WORKSPACES_ROOMS, async (url: string) => {
-    const workspaceId = new URL(url).pathname.split('/')[5];
-    const rooms = await muralApiEntities.room.findAllBy({ workspaceId });
+    const parsedUrl = new URL(url);
+    const workspaceId = parsedUrl.pathname.split('/')[5];
 
-    return { value: rooms };
+    let limit;
+    try {
+      limit = parseLimitParam(parsedUrl.searchParams.get('limit'));
+    } catch (err) {
+      return INVALID_LIMIT_RESPONSE;
+    }
+
+    // Allow overriding the specified limit from context
+    const defaultLimit = getCtxItem<number>(
+      MURAL_API_GET_ROOMS_BY_WORKSPACE_DEFAULT_LIMIT_KEY,
+    );
+    limit = defaultLimit ?? limit;
+
+    let next;
+    try {
+      next = parseNextParam(parsedUrl.searchParams.get('next'));
+    } catch (err) {
+      return INVALID_PAGINATION_RESPONSE;
+    }
+
+    let rooms = await muralApiEntities.room.findAllBy({ workspaceId });
+    const numRooms = rooms.length;
+
+    // Create a page of rooms according to the pagination parameters
+    rooms = rooms.slice(next, next + limit);
+
+    // Create the token to request the next page
+    next += limit;
+    if (next >= numRooms) {
+      next = undefined;
+    }
+
+    return {
+      value: rooms,
+      next: next ? next.toString() : undefined,
+    };
   });
 
   fetchMock.get(ROUTES.WORKSPACES_TEMPLATES, async (url: string) => {

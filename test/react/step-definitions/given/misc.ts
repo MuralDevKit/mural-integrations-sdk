@@ -2,6 +2,7 @@ import { SetupFnArgs } from 'pickled-cucumber/types';
 import { setSession } from '@muraldevkit/mural-integrations-mural-client';
 import { DELAYS as MURAL_PICKER_DELAY } from '@muraldevkit/mural-integrations-mural-picker';
 import { dummyToken, get, set } from '../../../utils';
+import { MURAL_API_GET_ROOMS_BY_WORKSPACE_DEFAULT_LIMIT_KEY } from '../../mocks/mural-api';
 
 export const USER_PRINCIPAL_NAME = '$user-principal';
 
@@ -56,6 +57,13 @@ export default function registerGiven({
     onTearDown(() => {
       set(MURAL_PICKER_DELAY, delayName, prev);
     });
+  });
+
+  // USAGE:
+  //
+  // Given mural api get rooms by workspace default limit is 10
+  Given('mural api get rooms by workspace default limit is {int}', limit => {
+    setCtx(MURAL_API_GET_ROOMS_BY_WORKSPACE_DEFAULT_LIMIT_KEY, limit);
   });
 
   // USAGE:

@@ -30,6 +30,17 @@ Feature: mural picker
     And I select "room3" in [room select]
     Then the [card title] at index 0 content is "${M4.title}"
 
+  Scenario: selecting a workspace loads multiple pages of rooms
+    # Force loading multiple pages by setting a small page size
+    Given mural api get rooms by workspace default limit is 2
+    # Add more rooms to workspace 2
+    And a room R10 with { "name": "room10", "workspaceId": "${W2.id}" }
+    And a room R11 with { "name": "room11", "workspaceId": "${W2.id}" }
+    And a room R12 with { "name": "room12", "workspaceId": "${W2.id}" }
+    And a room R13 with { "name": "room13", "workspaceId": "${W2.id}" }
+    When I select "workspace2" in [workspace select]
+    Then [room select] has 5 options
+
   Scenario: searching for a room in a workspace returns the room
     Given mural picker delay "DEBOUNCE_SEARCH" is 0ms
     When I select "workspace1" in [workspace select]

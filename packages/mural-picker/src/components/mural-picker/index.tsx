@@ -15,6 +15,7 @@ import {
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
+import { getAllRoomsByWorkspace } from '../../common/get-all';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import CardList from '../card-list';
 import { CardSize } from '../card-list-item';
@@ -169,13 +170,11 @@ export default class MuralPicker extends React.Component<
       };
 
       const [uponRooms, uponMurals] = await Promise.all([
-        this.props.apiClient.getRoomsByWorkspace(q),
+        getAllRoomsByWorkspace(this.props.apiClient, q),
         this.props.apiClient.getMuralsByWorkspace(q),
       ]);
 
-      const rooms: Room[] = uponRooms.value.sort((a, b) =>
-        b.type.localeCompare(a.type),
-      );
+      const rooms = uponRooms.sort((a, b) => b.type.localeCompare(a.type));
 
       this.setState({
         workspace,
