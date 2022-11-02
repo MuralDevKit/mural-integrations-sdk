@@ -123,9 +123,6 @@ const optionsParams = (
   if (isSorted(options)) {
     // @ts-ignore
     params.set('sortBy', options.sortBy.toString());
-
-    // @ts-ignore
-    delete options.sortBy;
   }
 
   if (isPaginated(options)) {
@@ -136,21 +133,18 @@ const optionsParams = (
     if (options.paginate.next) {
       params.set('next', options.paginate.next);
     }
-
-    // @ts-ignore
-    delete options.paginate;
   }
 
   if (isIntegration(options)) {
     if (options.integration)
       params.set('integration', options.integration.toString());
-
-    // @ts-ignore
-    delete options.integration;
   }
 
   // spread the rest as-is
   for (const [key, val] of Object.entries(options)) {
+    if (key === 'sortBy' || key === 'paginate' || key === 'integration') {
+      continue;
+    }
     params.set(key, val.toString());
   }
 
