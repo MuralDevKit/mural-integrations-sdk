@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core';
 import {
   DeepPartial,
   defaultBuilder,
@@ -8,13 +9,14 @@ import * as React from 'react';
 import { ReactSlot } from '../../common/react';
 
 interface Slots {
-  Logo: ReactSlot;
+  /** @deprecated — Do not add a logo unless you have no action */
+  Logo: ReactSlot<React.ReactHTML['img']>;
+  Action: ReactSlot<typeof Button>;
 }
 
 const useSlots = defaultBuilder<Slots>({
-  Logo: () => (
-    <img className="choose-mural-logo" src={MuralIcon} alt="Mural logo" />
-  ),
+  Logo: () => null,
+  Action: props => <Button onClick={console.log} {...props} />,
 });
 
 type PropTypes = {
@@ -27,9 +29,10 @@ export default class Header extends React.Component<PropTypes> {
     const slots = useSlots(this.props.slots);
 
     return (
-      <h2 className="mural-picker-header">
-        <slots.Logo />
-        <span className="choose-mural-title">{this.props.children}</span>
+      <h2 className="header">
+        <slots.Action className="header__action" />
+        <slots.Logo className="header__logo" />
+        <span className="header__title">{this.props.children}</span>
       </h2>
     );
   }

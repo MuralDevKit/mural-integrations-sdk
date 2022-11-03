@@ -7,20 +7,21 @@
   .select-row {
     display: flex;
     flex-wrap: wrap;
+    align-items: end;
+
+    > * {
+      margin-top: 0.33rem;
+      margin-right: 0.2rem;
+    }
   }
 
   .workspace-select {
     flex-grow: 5;
-    margin-right: 0.2rem;
   }
 
   .workspace-picker-control {
     flex: 1 5 25%;
-    padding-top: 1.2rem;
-  }
-
-  .workspace-picker-button {
-    height: 56px;
+    height: 40px;
   }
 
   .workspace-picker-error {

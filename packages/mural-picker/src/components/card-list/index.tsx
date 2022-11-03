@@ -1,28 +1,40 @@
-import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { EventHandler } from '@muraldevkit/mural-integrations-common';
+import { Mural, Workspace } from '@muraldevkit/mural-integrations-mural-client';
+import humanize from 'humanize-duration';
 import * as React from 'react';
 import { CardSize } from '../card-list-item';
-import './styles.scss';
-import { Mural } from '@muraldevkit/mural-integrations-mural-client';
-import humanize from 'humanize-duration';
 import { CardListSection } from './card-list-section';
+import './styles.scss';
 
-export const muralCardItemSource = (mural: Mural) => ({
-  title: mural.title || 'Untitled mural',
-  details: dateMarker(mural),
-  thumbnailUrl: mural.thumbnailUrl,
-});
+export const muralCardItemSource = (mural: Mural) => {
+  const { firstName, lastName } = mural.createdBy;
 
-const dateMarker = (mural: Mural) => {
-  const span = Date.now() - mural.updatedOn;
-  const marker = humanize(span, { round: true, units: ['d', 'h'] });
+  return {
+    title: mural.title || 'Untitled mural',
+    details: dateMarkers(mural),
+    thumbnailUrl: mural.thumbnailUrl,
+    initials: (firstName[0] || '') + (lastName[0] || ''),
+  };
+};
 
-  return `Modified ${marker} ago`;
+const dateMarkers = (mural: Mural) => {
+  const now = Date.now();
+  const updated = humanize(now - mural.updatedOn, {
+    round: true,
+    units: ['d', 'h'],
+  });
+  const created = humanize(now - mural.createdOn, {
+    round: true,
+    units: ['d'],
+  });
+
+  return [`Created ${created} ago`, `Modified ${updated} ago`].join('\n');
 };
 
 interface PropTypes {
   murals: Mural[];
   cardSize: CardSize;
+  workspace: Workspace;
 
   onSelect: EventHandler<[mural: Mural]>;
   onCreate: EventHandler;
@@ -32,19 +44,18 @@ interface PropTypes {
 }
 
 export default class MuralCardList extends React.Component<PropTypes> {
-  handleSelectFor = (murals: Mural[], section: 'favorites' | 'murals') => (
-    idx: number,
-  ) => {
-    this.setState({
-      selected: {
-        favorites: -1,
-        murals: -1,
-        [section]: idx,
-      },
-    });
+  handleSelectFor =
+    (murals: Mural[], section: 'favorites' | 'murals') => (idx: number) => {
+      this.setState({
+        selected: {
+          favorites: -1,
+          murals: -1,
+          [section]: idx,
+        },
+      });
 
-    this.props.onSelect(murals[idx]);
-  };
+      this.props.onSelect(murals[idx]);
+    };
 
   handleAction = (actionName: string) => {
     switch (actionName) {
@@ -78,30 +89,18 @@ export default class MuralCardList extends React.Component<PropTypes> {
     );
 
     // Display all murals or all murals in selected room
-    return (
-      <CardListSection
-        title="All murals"
-        actions={[
-          {
-            content: (
-              <div>
-                <AddCircleIcon />
-                <div>Create new mural</div>
-              </div>
-            ),
-            name: 'create',
-            sort: 'start',
-          },
-        ]}
-        items={
-          this.props.murals ? this.props.murals.map(muralCardItemSource) : []
-        }
-        cardSize={this.props.cardSize}
-        onSelect={this.handleSelectFor(this.props.murals, 'murals')}
-        onAction={this.handleAction}
-        selected={selected}
-      />
-    );
+    if (this.props.murals.length) {
+      return (
+        <CardListSection
+          title="All murals"
+          items={this.props.murals.map(muralCardItemSource)}
+          cardSize={this.props.cardSize}
+          onSelect={this.handleSelectFor(this.props.murals, 'murals')}
+          onAction={this.handleAction}
+          selected={selected}
+        />
+      );
+    }
   };
 
   render() {

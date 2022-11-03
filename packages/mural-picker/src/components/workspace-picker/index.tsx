@@ -1,20 +1,23 @@
 import { CircularProgress, FormControl } from '@material-ui/core';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
-import { EventHandler } from '@muraldevkit/mural-integrations-common';
+import {
+  defaultBuilder,
+  EventHandler,
+} from '@muraldevkit/mural-integrations-common';
 import {
   ApiClient,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
-import { CardSize } from '../card-list-item';
-import { Preset } from '../theme';
+import { PrimaryButton } from '../common';
+import createTheme, { Preset } from '../theme';
 import WorkspaceSelect from '../workspace-select';
+import cx from 'classnames';
 import './styles.scss';
 
 export type ThemeOptions = {
   preset: Preset;
-  cardSize: CardSize;
 };
 
 export interface WorkspacePickerPropTypes {
@@ -22,7 +25,7 @@ export interface WorkspacePickerPropTypes {
   onSelect: EventHandler<[workspace: Workspace]>;
   onError: EventHandler<[error: Error, message: string]>;
 
-  theme?: 'light' | 'dark';
+  theme?: Partial<ThemeOptions>;
   buttonTitle?: string;
   initialWorkspaceId?: string;
 }
@@ -40,6 +43,10 @@ const INITIAL_STATE: StateTypes = {
   workspace: null,
   workspaces: [],
 };
+
+const useThemeOptions = defaultBuilder<ThemeOptions>({
+  preset: 'light',
+});
 
 export default class WorkspacePicker extends React.Component<WorkspacePickerPropTypes> {
   state: StateTypes = INITIAL_STATE;
@@ -90,20 +97,15 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
   };
 
   render() {
-    const { theme, buttonTitle } = this.props;
+    const { buttonTitle } = this.props;
     const { error, isLoading } = this.state;
-    const currentTheme = theme || 'light';
-    const muiTheme = createMuiTheme({
-      palette: {
-        type: currentTheme,
-        text: { primary: currentTheme === 'light' ? '#585858' : '#a7a7a7' },
-      },
-    });
+    const { preset } = useThemeOptions(this.props.theme);
+    const muiTheme = createTheme(preset);
 
     if (isLoading) {
       return (
         <ThemeProvider theme={muiTheme}>
-          <div className={`workspace-picker-body ${theme}`}>
+          <div className={cx('workspace-picker-body', muiTheme?.palette?.type)}>
             <div className="workspace-list-spinner">
               <CircularProgress />
             </div>
@@ -114,7 +116,7 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
 
     return (
       <ThemeProvider theme={muiTheme}>
-        <div className={`workspace-picker-body ${theme}`}>
+        <div className={cx('workspace-picker-body', muiTheme?.palette?.type)}>
           <div className="select-row">
             <WorkspaceSelect
               workspace={this.state.workspace}
@@ -125,13 +127,13 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
               className="workspace-picker-control"
               data-qa="workspace-picker-control"
             >
-              <button
-                className="mural-button workspace-picker-button"
+              <PrimaryButton
                 data-qa="workspace-picker-button"
+                disabled={!this.state.workspace}
                 onClick={this.onSubmit}
               >
                 {buttonTitle ?? 'Select'}
-              </button>
+              </PrimaryButton>
             </FormControl>
           </div>
           {error && (

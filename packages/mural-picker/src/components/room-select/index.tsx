@@ -8,8 +8,11 @@ import {
 import { Room, Workspace } from '@muraldevkit/mural-integrations-mural-client';
 import debounce from 'lodash/debounce';
 import * as React from 'react';
+import Measure from 'react-measure';
 import { DELAYS } from '../../common/delays';
 import { ReactSlot } from '../../common/react';
+import { threshold } from '../common';
+
 import './styles.scss';
 
 interface Slots {
@@ -37,7 +40,7 @@ interface StateTypes {
 }
 
 const useSlots = defaultBuilder<Slots>({
-  LabelText: () => <span>ROOM</span>,
+  LabelText: () => <span>Room</span>,
 });
 
 export default class RoomSelect extends React.Component<PropTypes, StateTypes> {
@@ -80,46 +83,62 @@ export default class RoomSelect extends React.Component<PropTypes, StateTypes> {
     const slots = useSlots(this.props.slots);
 
     return (
-      <FormControl className="room-select" data-qa="room-select">
-        <div className="select-label">
-          <InputLabel shrink>
-            <slots.LabelText />
-          </InputLabel>
-        </div>
-        <Autocomplete
-          id="room-select"
-          options={this.props.rooms}
-          ListboxProps={this.props.ListboxProps}
-          getOptionLabel={option => {
-            return option?.name || '';
-          }}
-          renderInput={params => (
-            <TextField
-              {...params}
-              placeholder="Find a room..."
-              variant="outlined"
-              inputProps={{
-                ...params.inputProps,
-                'data-qa': 'input-room-select',
-              }}
-            />
-          )}
-          value={this.props.room}
-          disabled={!this.props.workspace}
-          groupBy={this.getRoomGroup}
-          onChange={this.handleSelect}
-          onInputChange={debounce(
-            this.handleInputChange,
-            DELAYS.DEBOUNCE_SEARCH,
-          )}
-          onClose={this.handleInputClose}
-          getOptionSelected={(option: Room, value: Room) =>
-            option.id === value.id
-          }
-          loading={this.state.isSearchingRooms}
-          noOptionsText={'No results'}
-        />
-      </FormControl>
+      <Measure bounds>
+        {({ measureRef, contentRect }) => {
+          const sz = threshold(contentRect.bounds?.width, {
+            m: 140,
+          });
+
+          return (
+            <FormControl
+              ref={measureRef}
+              className="room-select"
+              data-qa="room-select"
+            >
+              {sz.m && (
+                <div className="select-label">
+                  <InputLabel shrink>
+                    <slots.LabelText />
+                  </InputLabel>
+                </div>
+              )}
+              <Autocomplete
+                id="room-select"
+                options={this.props.rooms}
+                ListboxProps={this.props.ListboxProps}
+                getOptionLabel={option => {
+                  return option?.name || '';
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    placeholder="Find a room..."
+                    variant="outlined"
+                    inputProps={{
+                      ...params.inputProps,
+                      'data-qa': 'input-room-select',
+                    }}
+                  />
+                )}
+                value={this.props.room}
+                disabled={!this.props.workspace}
+                groupBy={this.getRoomGroup}
+                onChange={this.handleSelect}
+                onInputChange={debounce(
+                  this.handleInputChange,
+                  DELAYS.DEBOUNCE_SEARCH,
+                )}
+                onClose={this.handleInputClose}
+                getOptionSelected={(option: Room, value: Room) =>
+                  option.id === value.id
+                }
+                loading={this.state.isSearchingRooms}
+                noOptionsText={'No results'}
+              />
+            </FormControl>
+          );
+        }}
+      </Measure>
     );
   }
 }

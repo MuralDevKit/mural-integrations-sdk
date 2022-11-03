@@ -16,6 +16,9 @@ Feature: mural picker
     And I visit the "mural picker" route
     And the route has finished loading
 
+  Scenario: the picker is shown
+    Then [mural picker] is shown
+
   Scenario: the first workspace is selected by default and murals are shown
     Then the [card title] at index 0 content is "${M1.title}"
     And the [card title] at index 1 content is "${M2.title}"
