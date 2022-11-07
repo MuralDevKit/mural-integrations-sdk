@@ -32,7 +32,7 @@ Feature: mural picker
 
   Scenario: selecting a workspace loads multiple pages of rooms
     # Force loading multiple pages by setting a small page size
-    Given mural api get rooms by workspace default limit is 2
+    Given route /api/public/v1/workspaces/${W2.id}/rooms has page size 2
     # Add more rooms to workspace 2
     And a room R10 with { "name": "room10", "workspaceId": "${W2.id}" }
     And a room R11 with { "name": "room11", "workspaceId": "${W2.id}" }

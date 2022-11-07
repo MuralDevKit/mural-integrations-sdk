@@ -27,8 +27,10 @@ export const ROUTES = {
   GLOBAL_TEMPLATES: 'glob:*/api/v0/templates/globals*',
 };
 
-export const MURAL_API_GET_ROOMS_BY_WORKSPACE_DEFAULT_LIMIT_KEY =
-  '$mural-api-get-rooms-by-workspace-default-limit';
+// Map of API route to default page size.
+// Allows tests to configure to default page size to help test paginated endpoints.
+export type PageSizeByRouteMap = Map<string, number>;
+export const MURAL_API_PAGE_SIZE_BY_ROUTE_KEY = '$mural-api-page-size-by-route';
 
 const DEFAULT_LIMIT = 100;
 
@@ -82,6 +84,14 @@ const parseNextParam = (nextParam: string | null) => {
   return next;
 };
 
+/**
+ * Get the configured page size for a route, or undefined.
+ * The route is the URL pathname: the leading '/' followed by the path, without
+ * the query string or fragment.
+ */
+const getRoutePageSize = (route: string): number | undefined =>
+  getCtxItem<PageSizeByRouteMap>(MURAL_API_PAGE_SIZE_BY_ROUTE_KEY)?.get(route);
+
 export const registerGlobalRoutes = () => {
   fetchMock.get(ROUTES.ME, async () => {
     return {
@@ -110,10 +120,7 @@ export const registerGlobalRoutes = () => {
     }
 
     // Allow overriding the specified limit from context
-    const defaultLimit = getCtxItem<number>(
-      MURAL_API_GET_ROOMS_BY_WORKSPACE_DEFAULT_LIMIT_KEY,
-    );
-    limit = defaultLimit ?? limit;
+    limit = getRoutePageSize(parsedUrl.pathname) ?? limit;
 
     let next;
     try {
