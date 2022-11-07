@@ -6,23 +6,24 @@ import { FAKE_MURAL_HOST } from '../../utils';
 
 export const ROUTES = {
   // Public API
-  ME: `glob:*/api/public/v1/users/me`,
-  MURAL: `glob:*/api/public/v1/murals/*`,
-  MURALLY_OAUTH_SESSION: `glob:*/api/v0/authenticate/oauth2/session/*`,
-  MURALS: `glob:*/api/public/v1/murals*`,
-  ROOMS_MURALS: `glob:*/api/public/v1/rooms/*/murals*`,
-  WORKSPACES: `glob:*/api/public/v1/workspaces*`,
-  WORKSPACES_MURALS: `glob:*/api/public/v1/workspaces/*/murals*`,
-  WORKSPACES_ROOMS: `glob:*/api/public/v1/workspaces/*/rooms*`,
-  WORKSPACES_TEMPLATES: `glob:*/api/public/v1/workspaces/*/templates*`,
-  TEMPLATES: 'glob:*/api/public/v1/templates*',
-  TEMPLATES_MURALS: 'glob:*/api/public/v1/templates/*/murals*',
-  SEARCH_ROOMS: `glob:*/api/public/v1/search/*/rooms*`,
+  ME: 'express:/api/public/v1/users/me',
+  MURAL: 'express:/api/public/v1/murals',
+  MURALS: 'express:/api/public/v1/murals',
+  ROOMS_MURALS: 'express:/api/public/v1/rooms/:roomId/murals',
+  WORKSPACES: 'express:/api/public/v1/workspaces',
+  WORKSPACES_MURALS: 'express:/api/public/v1/workspaces/:workspaceId/murals',
+  WORKSPACES_ROOMS: 'express:/api/public/v1/workspaces/:workspaceId/rooms',
+  WORKSPACES_TEMPLATES:
+    'express:/api/public/v1/workspaces/:workspaceId/templates',
+  TEMPLATES: 'experss:/api/public/v1/templates',
+  TEMPLATES_MURALS: 'express:/api/public/v1/templates/:templateId/murals',
+  SEARCH_ROOMS: 'express:/api/public/v1/search/:workspaceId/rooms',
 
   // Internal API
   REALM: `glob:*/api/v0/user/realm`,
   MURAL_INTERNAL: `glob:*/api/murals/*/*`,
   MURAL_VISITOR: 'glob:*/api/v0/visitor/*.*',
+  MURALLY_OAUTH_SESSION: `glob:*/api/v0/authenticate/oauth2/session/*`,
   GLOBAL_TEMPLATES: 'glob:*/api/v0/templates/globals*',
 };
 
