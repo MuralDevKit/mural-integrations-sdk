@@ -41,13 +41,6 @@ export type ApiQueryFor<T extends keyof ApiClient> = ApiClient[T] extends (
   ? TQuery
   : never;
 
-export type PaginatedOptions = {
-  limit: number;
-  next: string;
-
-  sortBy?: string;
-};
-
 const DEFAULT_CONFIG = {
   muralHost: 'app.mural.co',
   integrationsHost: 'integrations.mural.co',
@@ -68,7 +61,7 @@ export const getApiError = async (error: Error): Promise<ApiError | null> => {
 
 export type Envelope<TResource> = {
   value: TResource;
-  next?: TResource extends any[] ? string | null : undefined;
+  next?: TResource extends any[] ? string : undefined;
 };
 
 type Sorted<TResource = null> = {
@@ -77,8 +70,8 @@ type Sorted<TResource = null> = {
 
 type Paginated<TResource = null> = {
   paginate: {
-    limit: number;
-    next?: string | null;
+    limit?: number;
+    next?: string;
   };
 } & Sorted<TResource>;
 
@@ -130,29 +123,28 @@ const optionsParams = (
   if (isSorted(options)) {
     // @ts-ignore
     params.set('sortBy', options.sortBy.toString());
-
-    // @ts-ignore
-    delete options.sortBy;
   }
 
   if (isPaginated(options)) {
-    params.set('limit', options.paginate.limit.toString());
-    if (options.paginate.next) params.set('next', options.paginate.next);
+    if (options.paginate.limit) {
+      params.set('limit', options.paginate.limit.toString());
+    }
 
-    // @ts-ignore
-    delete options.paginate;
+    if (options.paginate.next) {
+      params.set('next', options.paginate.next);
+    }
   }
 
   if (isIntegration(options)) {
     if (options.integration)
       params.set('integration', options.integration.toString());
-
-    // @ts-ignore
-    delete options.integration;
   }
 
   // spread the rest as-is
   for (const [key, val] of Object.entries(options)) {
+    if (key === 'sortBy' || key === 'paginate' || key === 'integration') {
+      continue;
+    }
     params.set(key, val.toString());
   }
 

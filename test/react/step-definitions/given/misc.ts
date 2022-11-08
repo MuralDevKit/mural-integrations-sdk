@@ -2,11 +2,16 @@ import { SetupFnArgs } from 'pickled-cucumber/types';
 import { setSession } from '@muraldevkit/mural-integrations-mural-client';
 import { DELAYS as MURAL_PICKER_DELAY } from '@muraldevkit/mural-integrations-mural-picker';
 import { dummyToken, get, set } from '../../../utils';
+import {
+  MURAL_API_PAGE_SIZE_BY_ROUTE_KEY,
+  PageSizeByRouteMap,
+} from '../../mocks/mural-api';
 
 export const USER_PRINCIPAL_NAME = '$user-principal';
 
 export default function registerGiven({
   Given,
+  getCtx,
   setCtx,
   onTearDown,
 }: SetupFnArgs) {
@@ -56,6 +61,20 @@ export default function registerGiven({
     onTearDown(() => {
       set(MURAL_PICKER_DELAY, delayName, prev);
     });
+  });
+
+  // USAGE:
+  //
+  // Given route /api/public/v1/workspaces/test1234/rooms has page size 2
+  // Given route /api/public/v1/workspaces/${WORKSPACE.id}/rooms has page size 10
+  Given('route {word} has page size {int}', (route, limitStr) => {
+    const pageSizes =
+      getCtx<PageSizeByRouteMap>(MURAL_API_PAGE_SIZE_BY_ROUTE_KEY) ?? new Map();
+
+    const limit = parseInt(limitStr, 10);
+    pageSizes.set(route, limit);
+
+    setCtx(MURAL_API_PAGE_SIZE_BY_ROUTE_KEY, pageSizes);
   });
 
   // USAGE:
