@@ -7,6 +7,15 @@ Feature: Account chooser
 
   Scenario: when hint email, 'continue with email' is shown
     Given user principal name is any_email@gmail.com
+    And the POST REALM api response is 200 status with
+    """
+    {
+      "accountStatus": 2,
+      "requireConsent": true,
+      "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+      "identityProviderName": "Google"
+    }
+    """
     When I visit the "account chooser" route
     Then [continue with email] is shown
     And [sign up] is not shown
@@ -36,6 +45,6 @@ Feature: Account chooser
     }
     """
     When I visit the "account chooser" route
-    And I click [continue with email]
+    And I click on [continue with email]
     Then [sign up with] is shown
     And [send verification email] is shown
