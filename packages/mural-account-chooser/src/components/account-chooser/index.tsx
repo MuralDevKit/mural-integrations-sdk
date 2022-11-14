@@ -349,7 +349,6 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
                 )}
               </>
             ) : (
-              // else the page === "SSO Option"
               <SignUpWith3rdParty
                 name={account?.authMode?.toString() ?? ''}
                 iconSrc={

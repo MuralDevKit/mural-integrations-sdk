@@ -11,9 +11,9 @@ Feature: Account chooser
     """
     {
       "accountStatus": 2,
-      "requireConsent": true,
+      "requireConsent": false,
       "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
-      "identityProviderName": "Google"
+      "identityProviderName": "google"
     }
     """
     When I visit the "account chooser" route
@@ -41,7 +41,7 @@ Feature: Account chooser
       "accountStatus": 2,
       "requireConsent": true,
       "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
-      "identityProviderName": "Google"
+      "identityProviderName": "google"
     }
     """
     When I visit the "account chooser" route
