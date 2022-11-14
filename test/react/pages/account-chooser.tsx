@@ -14,6 +14,7 @@ const accountChooser: Page = {
         getAuthUrl={_options => {
           return Promise.resolve('url');
         }}
+        onSelection={(_url, _action) => {}}
         onError={console.error}
       >
         <div data-qa="logged-in-content" />
