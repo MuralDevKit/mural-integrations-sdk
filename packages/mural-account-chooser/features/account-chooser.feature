@@ -38,7 +38,7 @@ Feature: Account chooser
     And the POST REALM api response is 200 status with
     """
     {
-      "accountStatus": 2,
+      "accountStatus": -1,
       "requireConsent": true,
       "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
       "identityProviderName": "google"
