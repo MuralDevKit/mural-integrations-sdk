@@ -49,7 +49,6 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "@material-ui/styles": "^4.11.5",
     "@muraldevkit/mural-integrations-common": "^3.0.0",
     "@muraldevkit/mural-integrations-mural-client": "^3.0.0",
     "@storybook/preset-scss": "^1.0.3",
