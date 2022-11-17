@@ -10,6 +10,7 @@
     "@storybook/addon-links": "^6.5.10",
     "@storybook/builder-webpack4": "^6.5.10",
     "@storybook/manager-webpack4": "^6.5.10",
+    "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^6.5.10",
     "@storybook/testing-library": "^0.0.13",
     "@types/classnames": "^2.3.1",
@@ -26,6 +27,7 @@
     "eslint-config-prettier": "6.0.0",
     "eslint-plugin-muralco": "1.3.0",
     "eslint-plugin-prettier": "^3.3.1",
+    "html-webpack-plugin": "^5.5.0",
     "lerna": "^5.1.8",
     "prettier": "^2.3.2",
     "rollup": "^2.75.7",
@@ -38,6 +40,8 @@
     "rollup-plugin-typescript2": "^0.32.1",
     "rollup-plugin-visualizer": "^5.6.0",
     "sass": "^1.53.0",
+    "storybook-addon-mock": "^2.4.1",
+    "storybook-addon-sass-postcss": "^0.1.3",
     "typescript": "4.6.4"
   },
   "name": "@muraldevkit/mural-integrations-sdk",
@@ -49,15 +53,6 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "@material-ui/styles": "^4.11.5",
-    "@muraldevkit/mural-integrations-common": "^3.0.0",
-    "@muraldevkit/mural-integrations-mural-client": "^3.0.0",
-    "@storybook/preset-scss": "^1.0.3",
-    "humanize-duration": "^3.27.3",
-    "lodash": "^4.17.21",
-    "runtime": "file:runtimes/current",
-    "storybook-addon-mock": "^2.4.1",
-    "storybook-addon-sass-postcss": "^0.1.3",
-    "styled-components": "^5.3.5"
+    "runtime": "file:runtimes/current"
   }
 }
