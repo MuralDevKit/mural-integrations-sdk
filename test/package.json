@@ -13,7 +13,6 @@
     "@typescript-eslint/parser": "4.29.0"
   },
   "dependencies": {
-    "@material-ui/styles": "^4.11.5",
     "@muraldevkit/mural-integrations-common": "file:../packages/mural-common",
     "@muraldevkit/mural-integrations-mural-account-chooser": "file:../packages/mural-account-chooser",
     "@muraldevkit/mural-integrations-mural-canvas": "file:../packages/mural-canvas",
@@ -22,7 +21,6 @@
     "@testing-library/dom": "8.13.0",
     "@testing-library/react": "^11.2.0",
     "@testing-library/user-event": "^13.0.16",
-    "cucumber": "^6.0.7",
     "fetch-mock": "^9.11.0",
     "jsdom": "^16.4.0",
     "jsdom-global": "^3.0.2",
