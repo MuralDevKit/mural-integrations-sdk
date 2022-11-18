@@ -192,6 +192,7 @@ export interface AccountChooserPropTypes {
 interface Account {
   email: string;
   authMode?: AuthMode;
+  accountExist: boolean;
   requireConsent?: boolean;
 }
 
@@ -221,6 +222,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
           setAccount({
             email: hint,
             authMode,
+            accountExist,
             requireConsent: accountExist ? undefined : realm?.requireConsent,
           });
         }
@@ -257,7 +259,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
 
     // The hint email is already associated with a mural account
     // so sign in
-    if (account?.authMode === AuthMode.PASSWORD) {
+    if (account?.accountExist) {
       onSelection(
         await getAuthUrl({
           auto: {
