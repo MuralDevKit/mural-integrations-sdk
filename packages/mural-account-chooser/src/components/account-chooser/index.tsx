@@ -209,9 +209,6 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
 
   useEffect(() => {
     (async () => {
-      // Go directly to the murally sign up page
-      if (!hint && !visitor) await createNewAccount();
-
       if (hint) {
         const realm = await loadRealm(hint);
         if (realm) {
@@ -241,11 +238,8 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
     }
   };
 
-  const createNewAccount = async () => {
-    onSelection(
-      await getAuthUrl({ signup: true }),
-      ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT,
-    );
+  const signIn = async () => {
+    onSelection(await getAuthUrl(), ACCOUNT_CHOOSER_ACTION.SIGN_IN);
   };
 
   const useAnotherAccount = async () =>
@@ -253,7 +247,6 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
 
   const continueWithEmail = async () => {
     if (!hint) {
-      createNewAccount();
       return;
     }
 
@@ -336,7 +329,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
                     </EmailHintButton>
                   </EmailHintSignInDiv>
                 ) : (
-                  <SignInButton data-qa="sign-up" onClick={createNewAccount}>
+                  <SignInButton data-qa="sign-up" onClick={signIn}>
                     Sign in
                   </SignInButton>
                 )}
