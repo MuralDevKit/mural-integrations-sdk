@@ -25,7 +25,7 @@ const accountChooser: Page = {
     'account chooser': 'account-chooser',
     'initialization error': 'initialization-error',
     'sign up': 'sign-up',
-    'sign in as visitor': 'sign-in-as-visitor',
+    'continue as visitor': 'continue-as-visitor',
     'continue with email': 'continue-with-email',
     'sign up with': 'sign-up-with',
     'send verification email': 'send-verification-email',

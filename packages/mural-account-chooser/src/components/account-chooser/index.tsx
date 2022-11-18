@@ -342,7 +342,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
                 )}
                 {visitor && (
                   <VisitorButton
-                    data-qa="sign-in-as-visitor"
+                    data-qa="continue-as-visitor"
                     onClick={visitor.onSelect}
                     theme={theme === 'light' ? lightTheme : darkTheme}
                   >
