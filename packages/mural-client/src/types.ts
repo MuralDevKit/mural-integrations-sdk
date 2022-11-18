@@ -69,6 +69,12 @@ export type Template = {
   viewLink: string;
 };
 
+export type Asset = {
+  name: string;
+  url: string;
+  headers: Record<string, string>;
+};
+
 export type Tag = {
   id: string;
   text: string;
@@ -97,6 +103,7 @@ export type Widget = {
   lockedByFacilitator: boolean;
   parentId?: string;
   presentationIndex?: number;
+  rotation: number;
   type: string;
   updatedBy?: WidgetMember;
   updatedOn?: number;
@@ -115,14 +122,53 @@ export type StickyNote = {
   title?: string;
 } & Widget;
 
-export interface CreateStickyNotePayload {
+export type Image = {
+  aspectRatio?: number;
+  border: boolean;
+  caption: string;
+  description: string;
+  expiresInMinutes?: number;
+  instruction?: string;
+  mask?: {
+    top: number;
+    left: number;
+    height: number;
+    width: number;
+  };
+  naturalHeight: number;
+  naturalWidth: number;
+  showCaption: boolean;
+  thumbnailUrl: string;
+  url: string;
+} & Widget;
+
+interface BaseWidgetPayload {
   height?: number;
+  hidden?: boolean;
+  parentId?: string;
+  presentationIndex?: number;
+  rotation?: number;
+  width?: number;
+  x: number;
+  y: number;
+}
+
+export type CreateImagePayload = {
+  border?: boolean;
+  caption?: string;
+  description?: string;
+  height: number;
+  hyperlink?: string;
+  instruction?: string;
+  name: string;
+  showCaption?: boolean;
+  width: number;
+} & BaseWidgetPayload;
+
+export type CreateStickyNotePayload = {
   hyperlink?: string;
   hyperlinkTitle?: string;
   instruction?: string;
-  parentId?: string;
-  presentationIndex?: 1;
-  rotation?: number;
   shape: 'circle' | 'rectangle';
   style?: {
     backgroundColor?: string;
@@ -138,7 +184,7 @@ export interface CreateStickyNotePayload {
   tags?: string[];
   text?: string;
   title?: string;
-  width?: number;
-  x: number;
-  y: number;
-}
+} & BaseWidgetPayload;
+
+export interface UpdateStickyNotePayload
+  extends Partial<CreateStickyNotePayload> {}

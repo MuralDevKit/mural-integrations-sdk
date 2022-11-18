@@ -1,6 +1,5 @@
 import { authenticated, getFetchConfig, FetchError } from './fetch';
 import {
-  CreateStickyNotePayload,
   Mural,
   Room,
   StickyNote,
@@ -8,6 +7,11 @@ import {
   Template,
   User,
   Workspace,
+  UpdateStickyNotePayload,
+  CreateStickyNotePayload,
+  Asset,
+  CreateImagePayload,
+  Image,
 } from './types';
 
 export * from './fetch';
@@ -164,6 +168,23 @@ export interface ApiClient {
   fetch: FetchFunction;
   url: (path: string) => URL;
   track: (event: string, properties?: {}) => void;
+  createAsset: ResourceEndpoint<
+    Asset,
+    {
+      muralId: string;
+      payload: {
+        assetType?: string;
+        fileExtension: string;
+      };
+    }
+  >;
+  createImage: ResourceEndpoint<
+    Image,
+    {
+      muralId: string;
+      payload: CreateImagePayload;
+    }
+  >;
   createMural: ResourceEndpoint<
     Mural,
     {
@@ -197,6 +218,14 @@ export interface ApiClient {
     {
       muralId: string;
       payload: CreateStickyNotePayload;
+    }
+  >;
+  updateStickyNote: ResourceEndpoint<
+    StickyNote,
+    {
+      muralId: string;
+      widgetId: string;
+      payload: UpdateStickyNotePayload;
     }
   >;
   getCurrentUser: ResourceEndpoint<User>;
@@ -302,6 +331,26 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
         method: 'POST',
       }).catch(_err => {});
     },
+    // https://developers.mural.co/public/reference/createasset
+    createAsset: async ({ muralId, payload }) => {
+      const response = await fetchFn(api(`murals/${muralId}/assets`), {
+        body: JSON.stringify(payload),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      });
+
+      return response.json();
+    },
+    // https://developers.mural.co/public/reference/createimage
+    createImage: async ({ muralId, payload }) => {
+      const response = await fetchFn(api(`murals/${muralId}/widgets/image`), {
+        body: JSON.stringify(payload),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      });
+
+      return response.json();
+    },
     // https://developers.mural.co/public/reference/createmural
     createMural: async body => {
       const response = await fetchFn(api('murals'), {
@@ -342,6 +391,18 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
           body: JSON.stringify(payload),
           headers: { 'content-type': 'application/json' },
           method: 'POST',
+        },
+      );
+      return response.json();
+    },
+    // https://developers.mural.co/public/reference/updatestickynote
+    updateStickyNote: async ({ muralId, widgetId, payload }) => {
+      const response = await fetchFn(
+        api(`murals/${muralId}/widgets/sticky-note/${widgetId}`),
+        {
+          body: JSON.stringify(payload),
+          headers: { 'content-type': 'application/json' },
+          method: 'PATCH',
         },
       );
       return response.json();
