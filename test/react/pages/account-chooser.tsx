@@ -11,6 +11,10 @@ const accountChooser: Page = {
       <AccountChooser
         apiClient={apiClient}
         hint={getCtxItem('$user-principal')}
+        getAuthUrl={_options => {
+          return Promise.resolve('url');
+        }}
+        onSelection={(_url, _action) => {}}
         onError={console.error}
       >
         <div data-qa="logged-in-content" />
@@ -20,10 +24,11 @@ const accountChooser: Page = {
   items: {
     'account chooser': 'account-chooser',
     'initialization error': 'initialization-error',
-    // 'logged in content': 'logged-in-content',
-    'sign in from hint': 'sign-in-from-hint',
-    'sign up from hint': 'sign-up-from-hint',
+    'sign up': 'sign-up',
+    'continue as visitor': 'continue-as-visitor',
+    'continue with email': 'continue-with-email',
     'sign up with': 'sign-up-with',
+    'send verification email': 'send-verification-email',
     'use another account': 'use-another-account',
   },
 };

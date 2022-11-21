@@ -2,6 +2,8 @@ import { CircularProgress } from '@material-ui/core';
 import '@muraldevkit/mural-integrations-common/styles/fonts.css';
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import {
   AccountStatus,
   AuthMode,
@@ -13,41 +15,176 @@ import GoogleIcon from '../../images/google-icon.png?w=32&h=32';
 // @ts-ignore
 import MicrosoftIcon from '../../images/microsoft-icon.png?w=32&h=32';
 // @ts-ignore
+import MuralIcon from '../../images/mural-icon.png?w=32&h=32';
+// @ts-ignore
 import MuralLogo from '../../images/mural-logo.png?w=130';
-import AccountChoice from './account-choice';
-import './styles.scss';
-import { AuthorizeParams } from './types';
+import SignUpWith3rdParty from './sign-up-with-3rd-party';
+
+export const FONT_FAMILY = 'Proxima Nova, sans-serif';
+export const MURAL_COLOR = '#e8005a';
+export const MARGIN = '23px';
+
+export const lightTheme = {
+  primaryTextColor: '#2f2f2f',
+  secondaryTextColor: '#4d4d4d',
+  backgroundColor: '#f4f7fb',
+  contentBackgroundColor: '#ffffff',
+};
+
+export const darkTheme = {
+  primaryTextColor: '#f4f4f4',
+  secondaryTextColor: '#d6d6d6',
+  backgroundColor: '#1f1f1e',
+  contentBackgroundColor: '#292929',
+};
+
+const Loading = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
+
+const AccountChooserDiv = styled.div`
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  color: ${({ theme }) => theme.primaryTextColor};
+  background: ${({ theme }) => theme.backgroundColor};
+`;
+
+const MuralLogoImg = styled.img`
+  height: 26px;
+  margin: 41px 0px 41px 0px;
+`;
+
+const AccountChooserContent = styled.div`
+  background-color: ${({ theme }) => theme.contentBackgroundColor};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 450px;
+  padding: 32px;
+
+  border: 2px solid rgba(0, 0, 0, 0.02);
+  box-shadow: 0px 16px 12px -4px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+`;
+
+const Header = styled.h1`
+  margin-bottom: 25px;
+  margin-top: 15px;
+  font-family: ${FONT_FAMILY};
+  line-height: 100%;
+  text-align: center;
+  font-size: 2em;
+  font-weight: 800;
+  color: ${({ theme }) => theme.primaryTextColor};
+`;
+
+const EmailHintSignInDiv = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.08),
+    0px 5px 8px rgba(0, 0, 0, 0.08);
+  border: #cccccc 1px solid;
+  border-radius: 12px;
+`;
+
+const Email = styled.div`
+  font-family: ${FONT_FAMILY};
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 16px;
+  margin: 32px;
+  color: ${({ theme }) => theme.secondaryTextColor};
+`;
+
+const Button = styled.button`
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  height: 44px;
+  font-family: ${FONT_FAMILY};
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+`;
+
+const EmailHintButton = styled(Button)`
+  width: 90px;
+  background: ${MURAL_COLOR};
+  color: #ffffff;
+  margin: 20px;
+`;
+
+const SignInButton = styled(Button)`
+  width: 100%;
+  background: ${MURAL_COLOR};
+  color: #ffffff;
+  margin: 0px;
+`;
+
+const VisitorButton = styled(Button)`
+  border: 2px solid ${({ theme }) => theme.secondaryTextColor};
+  border-radius: 8px;
+  width: 176px;
+  background: ${({ theme }) => theme.contentBackgroundColor};
+  color: ${({ theme }) => theme.secondaryTextColor};
+  margin: 32px 32px 13px 32px;
+`;
+
+const UseDifferentEmail = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+`;
+
+const NotYourEmail = styled.div`
+  font-family: ${FONT_FAMILY};
+  color: ${({ theme }) => theme.primaryTextColor};
+  font-size: 0.9em;
+  line-height: 140%;
+`;
+
+const UseDifferentEmailLink = styled.a`
+  cursor: pointer;
+  background: none;
+  padding: 0;
+  margin: 3px;
+  border: none;
+  border-bottom: 1px dashed ${({ theme }) => theme.primaryTextColor};
+
+  /* Font */
+  font-family: ${FONT_FAMILY};
+  color: ${({ theme }) => theme.primaryTextColor};
+  font-weight: bold;
+  font-size: 0.9em;
+  line-height: 140%;
+`;
 
 const AUTH_MODE_ICONS = {
   [AuthMode.GOOGLE]: GoogleIcon,
   [AuthMode.MICROSOFT]: MicrosoftIcon,
   [AuthMode.ENTERPRISE_SSO]: null,
-  [AuthMode.PASSWORD]: null,
+  [AuthMode.PASSWORD]: MuralIcon,
 };
 
-export interface AccountChooserPropTypes {
-  apiClient: ApiClient;
-  activeSession?: { email: string; avatar: string; onSelect: () => void };
-  getAuthUrl: (options?: AuthorizeParams) => Promise<string>;
-  hint?: string;
-  onError: (e: Error) => void;
-  onSelection: (url: string, action?: ACCOUNT_CHOOSER_ACTION) => void;
-  silent?: boolean;
-  theme?: 'light' | 'dark';
-  visitor?: { onSelect: () => void };
+interface AutomaticOptions {
+  email: string;
+  action: 'signin' | 'signup';
+  consentSso?: boolean;
 }
 
-interface StateTypes {
-  hintEmailSignIn?: {
-    email: string;
-    authMode?: AuthMode;
-  };
-  hintEmailSignUp?: {
-    email: string;
-    authMode?: AuthMode;
-    requireConsent?: boolean;
-  };
-  isLoading: boolean;
+export interface AuthorizeParams {
+  auto?: boolean | AutomaticOptions;
+  signup?: boolean;
 }
 
 export enum ACCOUNT_CHOOSER_ACTION {
@@ -56,253 +193,200 @@ export enum ACCOUNT_CHOOSER_ACTION {
   NEW_ACCOUNT = 'NEW_ACCOUNT',
   ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
 }
+export interface AccountChooserPropTypes {
+  apiClient: ApiClient;
+  hint?: string;
+  getAuthUrl: (options?: AuthorizeParams) => Promise<string>;
+  onSelection: (url: string, action?: ACCOUNT_CHOOSER_ACTION) => void;
+  onError: (e: Error) => void;
+  theme?: 'light' | 'dark';
+  visitor?: { onSelect: () => void };
+}
 
-export default class AccountChooser extends React.Component<
-  AccountChooserPropTypes,
-  StateTypes
-> {
-  constructor(props: AccountChooserPropTypes) {
-    super(props);
-    this.state = {
-      isLoading: true,
-    };
-  }
+interface Account {
+  email: string;
+  authMode?: AuthMode;
+  accountExist: boolean;
+  requireConsent?: boolean;
+}
 
-  async componentDidMount() {
-    let hintEmailSignIn;
-    let hintEmailSignUp;
-    const { activeSession, hint, silent } = this.props;
+type PageName = 'Sign in' | 'SSO Option';
 
-    if (hint && hint !== activeSession?.email) {
-      const realm = await this.loadRealm(hint);
-      if (realm) {
-        const authMode = getAuthMode(realm);
-        const accountExist =
-          realm.accountStatus === AccountStatus.VALID ||
-          realm.accountStatus === AccountStatus.UNVERIFIED;
+const AccountChooser: React.FC<AccountChooserPropTypes> = (
+  props: AccountChooserPropTypes,
+) => {
+  const { hint, visitor, onError, getAuthUrl, apiClient, onSelection, theme } =
+    props;
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [page, setPage] = useState<PageName>('Sign in');
+  const [account, setAccount] = useState<Account>();
 
-        if (accountExist) {
-          hintEmailSignIn = { email: hint, authMode };
-        } else {
-          hintEmailSignUp = {
+  useEffect(() => {
+    (async () => {
+      if (hint) {
+        const realm = await loadRealm(hint);
+        if (realm) {
+          const authMode = getAuthMode(realm);
+          const accountExist =
+            realm.accountStatus === AccountStatus.VALID ||
+            realm.accountStatus === AccountStatus.UNVERIFIED;
+          setAccount({
             email: hint,
             authMode,
-            requireConsent: realm?.requireConsent,
-          };
+            accountExist,
+            requireConsent: accountExist ? undefined : realm?.requireConsent,
+          });
         }
       }
-    }
 
-    if (silent) return this.autoChoose(hintEmailSignIn, hintEmailSignUp);
+      setIsLoading(false);
+    })();
+  }, []);
 
-    this.setState({
-      hintEmailSignIn,
-      hintEmailSignUp,
-      isLoading: false,
-    });
-  }
-
-  loadRealm = async (email: string) => {
-    const { apiClient } = this.props;
+  const loadRealm = async (email: string) => {
     try {
       return await getMuralRealm(apiClient, email);
     } catch (e: any) {
-      this.props.onError(e);
+      onError(e);
       return null;
     }
   };
 
-  autoChoose = (
-    hintEmailSignIn: StateTypes['hintEmailSignIn'],
-    hintEmailSignUp: StateTypes['hintEmailSignUp'],
-  ) => {
-    const { activeSession } = this.props;
-    if (activeSession) return activeSession.onSelect();
-    if (hintEmailSignIn) return this.hintEmailSignIn();
-    if (hintEmailSignUp) {
-      if (hintEmailSignUp.requireConsent) return this.hintSsoSignUp();
-      return this.hintEmailSignUp();
+  const signIn = async () => {
+    onSelection(await getAuthUrl(), ACCOUNT_CHOOSER_ACTION.SIGN_IN);
+  };
+
+  const useAnotherAccount = async () =>
+    onSelection(await getAuthUrl(), ACCOUNT_CHOOSER_ACTION.ANOTHER_ACCOUNT);
+
+  const continueWithEmail = async () => {
+    if (!hint) {
+      return;
     }
-    return this.useAnotherAccount();
+
+    // The hint email is already associated with a mural account
+    // so sign in
+    if (account?.accountExist) {
+      onSelection(
+        await getAuthUrl({
+          auto: {
+            action: 'signin',
+            email: hint,
+          },
+        }),
+        ACCOUNT_CHOOSER_ACTION.SIGN_IN,
+      );
+      return;
+    }
+
+    // The hint email is not a mural account yet, but it requires consent
+    // from a third party like Google, Microsoft, or SSO.
+    if (account?.requireConsent) {
+      setPage('SSO Option');
+      return;
+    }
+
+    // The hint email is not a mural account yet
+    hintEmailSignUp();
   };
 
-  onSelection = (url: string, action?: ACCOUNT_CHOOSER_ACTION) => {
-    this.props.onSelection(url, action);
-  };
-
-  hintEmailSignIn = async () =>
-    this.onSelection(
-      await this.props.getAuthUrl({
-        auto: {
-          action: 'signin',
-          email: this.props.hint!,
-        },
-      }),
-      ACCOUNT_CHOOSER_ACTION.SIGN_IN,
-    );
-
-  hintEmailSignUp = async () =>
-    this.onSelection(
-      await this.props.getAuthUrl({
+  const hintEmailSignUp = async () =>
+    onSelection(
+      await getAuthUrl({
         auto: {
           action: 'signup',
           consentSso: false,
-          email: this.props.hint!,
+          email: hint!,
         },
       }),
       ACCOUNT_CHOOSER_ACTION.SIGN_UP,
     );
 
-  hintSsoSignUp = async () =>
-    this.onSelection(
-      await this.props.getAuthUrl({
+  const hintSsoSignUp = async () =>
+    onSelection(
+      await getAuthUrl({
         auto: {
           action: 'signup',
           consentSso: true,
-          email: this.props.hint!,
+          email: hint!,
         },
       }),
       ACCOUNT_CHOOSER_ACTION.SIGN_UP,
     );
 
-  useAnotherAccount = async () =>
-    this.onSelection(
-      await this.props.getAuthUrl(),
-      ACCOUNT_CHOOSER_ACTION.ANOTHER_ACCOUNT,
-    );
-
-  createNewAccount = async () =>
-    this.onSelection(
-      await this.props.getAuthUrl({ signup: true }),
-      ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT,
-    );
-
-  render() {
-    const { activeSession, hint, theme, visitor } = this.props;
-    const { hintEmailSignIn, hintEmailSignUp, isLoading } = this.state;
-
-    if (isLoading) {
-      return <CircularProgress />;
-    }
-
-    const haveAccountOptions =
-      activeSession || hintEmailSignIn || hintEmailSignUp;
-    return (
-      <div data-qa="account-chooser" className={`account-chooser ${theme}`}>
-        <span className="header">
-          {haveAccountOptions
-            ? 'Choose an account to get started'
-            : 'Sign in to get started'}
-        </span>
-
-        {haveAccountOptions && (
-          <div className="content">
-            {(activeSession || hintEmailSignIn) && (
-              <div className="button-group">
-                {activeSession && (
-                  <AccountChoice
-                    avatar={activeSession.avatar}
-                    email={activeSession.email}
-                    qa="active-session"
-                    onClick={activeSession.onSelect}
-                    status={'Signed in'}
-                  />
-                )}
-
-                {hintEmailSignIn && (
-                  <AccountChoice
-                    avatar={
-                      hintEmailSignIn.authMode
-                        ? AUTH_MODE_ICONS[hintEmailSignIn.authMode]
-                        : undefined
-                    }
-                    email={hint!}
-                    qa="sign-in-from-hint"
-                    onClick={this.hintEmailSignIn}
-                    status={'Signed out'}
-                  />
-                )}
-              </div>
-            )}
-
-            {hintEmailSignUp && hintEmailSignUp.requireConsent && (
+  return (
+    <>
+      {isLoading ? (
+        <Loading>
+          <CircularProgress />
+        </Loading>
+      ) : (
+        <AccountChooserDiv
+          data-qa="account-chooser"
+          theme={theme === 'light' ? lightTheme : darkTheme}
+        >
+          <MuralLogoImg src={MuralLogo} alt="MURAL" />
+          <AccountChooserContent
+            theme={theme === 'light' ? lightTheme : darkTheme}
+          >
+            {page === 'Sign in' ? (
               <>
-                <span className="notice">
-                  We noticed <b>{hintEmailSignUp.email}</b> is a{' '}
-                  {hintEmailSignUp.authMode} account
-                </span>
-                <button
-                  data-qa="sign-up-with"
-                  className="sign-up-with"
-                  onClick={this.hintSsoSignUp}
-                >
-                  <img
-                    alt="auth-mode-icon"
-                    className="logo"
-                    src={AUTH_MODE_ICONS[hintEmailSignUp.authMode!]}
-                  />
-                  <div className="text">
-                    Sign up with {hintEmailSignUp.authMode}
-                  </div>
-                </button>
-
-                <div className="separator">
-                  <span>OR</span>
-                </div>
+                <Header>Sign in to get started</Header>
+                {hint ? (
+                  <EmailHintSignInDiv>
+                    <Email>{hint}</Email>
+                    <EmailHintButton
+                      data-qa="continue-with-email"
+                      onClick={continueWithEmail}
+                    >
+                      Continue
+                    </EmailHintButton>
+                  </EmailHintSignInDiv>
+                ) : (
+                  <SignInButton data-qa="sign-up" onClick={signIn}>
+                    Sign in
+                  </SignInButton>
+                )}
+                {visitor && (
+                  <VisitorButton
+                    data-qa="continue-as-visitor"
+                    onClick={visitor.onSelect}
+                    theme={theme === 'light' ? lightTheme : darkTheme}
+                  >
+                    Continue as a visitor
+                  </VisitorButton>
+                )}
               </>
-            )}
-
-            {hintEmailSignUp && (
-              <AccountChoice
-                email={hintEmailSignUp!.email}
-                qa="sign-up-from-hint"
-                onClick={this.hintEmailSignUp}
-                status={'Create a MURAL account'}
+            ) : (
+              <SignUpWith3rdParty
+                name={account?.authMode?.toString() ?? ''}
+                iconSrc={
+                  account?.authMode
+                    ? AUTH_MODE_ICONS[account?.authMode]
+                    : undefined
+                }
+                signUp={hintSsoSignUp}
+                sendVerificationEmail={hintEmailSignUp}
+                theme={theme === 'light' ? lightTheme : darkTheme}
               />
             )}
-          </div>
-        )}
+          </AccountChooserContent>
+          {hint && page === 'Sign in' && (
+            <UseDifferentEmail>
+              <NotYourEmail>Not {hint}?</NotYourEmail>
+              <UseDifferentEmailLink
+                data-qa="use-another-account"
+                onClick={useAnotherAccount}
+                theme={theme === 'light' ? lightTheme : darkTheme}
+              >
+                Sign in with a different account
+              </UseDifferentEmailLink>
+            </UseDifferentEmail>
+          )}
+        </AccountChooserDiv>
+      )}
+    </>
+  );
+};
 
-        <div className="content">
-          <button
-            data-qa="use-another-account"
-            className={
-              haveAccountOptions ? 'link' : 'button light-color-button'
-            }
-            onClick={this.useAnotherAccount}
-          >
-            {haveAccountOptions ? 'Use another account' : 'Sign in'}
-          </button>
-
-          <div className="separator" />
-
-          <div className="button-group">
-            <button
-              data-qa="create-account"
-              className="button mural-color-button"
-              onClick={this.createNewAccount}
-            >
-              Create a MURAL account
-            </button>
-
-            {visitor && (
-              <div>
-                <button
-                  data-qa="continue-as-visitor"
-                  className="button light-color-button"
-                  onClick={visitor.onSelect}
-                >
-                  Continue as visitor
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="footer">
-          <img className="mural-logo" src={MuralLogo} alt="Mural logo" />
-        </div>
-      </div>
-    );
-  }
-}
+export default AccountChooser;

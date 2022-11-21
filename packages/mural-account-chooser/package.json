@@ -51,7 +51,8 @@
     "rollup-plugin-scss": "^3.0.0",
     "rollup-plugin-styles": "^4.0.0",
     "rollup-plugin-typescript2": "^0.32.1",
-    "sass": "^1.53.0"
+    "sass": "^1.53.0",
+    "styled-components": "^5.3.5"
   },
   "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9"
 }
