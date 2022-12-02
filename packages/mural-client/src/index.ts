@@ -12,6 +12,7 @@ import {
   Asset,
   CreateImagePayload,
   Image,
+  Widget,
 } from './types';
 
 export * from './fetch';
@@ -230,6 +231,11 @@ export interface ApiClient {
   >;
   getCurrentUser: ResourceEndpoint<User>;
   getMural: ResourceEndpoint<Mural, { id: string }, Integration>;
+  getMuralWidgets: ResourceEndpoint<
+    Widget[],
+    { muralId: string },
+    Paginated & Sorted
+  >;
   getMuralsByRoom: ResourceEndpoint<
     Mural[],
     { roomId: string },
@@ -431,6 +437,19 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
       const response = await fetchFn(api(`murals/${id}?${params}`), {
         method: 'GET',
       });
+
+      return await response.json();
+    },
+    // https://developers.mural.co/public/reference/getmuralwidgets
+    getMuralWidgets: async ({ muralId }, options) => {
+      const params = optionsParams(options);
+
+      const response = await fetchFn(
+        api(`murals/${muralId}/widgets?${params}`),
+        {
+          method: 'GET',
+        },
+      );
 
       return await response.json();
     },
