@@ -231,19 +231,34 @@ export const authorizeHandler =
   async (
     redirectUri?: string,
     opts: AuthorizeHandlerOptions = { storeState: false },
-  ): Promise<string> => {
-    const state = generateState();
+  ): Promise<string> =>
+    fetchAuthUrlHandler(config)({
+      redirectUri,
+      storeState: opts.storeState,
+      ...opts.authorizeParams,
+    });
+
+export const fetchAuthUrlHandler =
+  (config: TokenHandlerConfig) =>
+  async (opts: {
+    auto?: boolean | AutomaticOptions;
+    forward?: { [key: string]: unknown };
+    reauthenticate?: boolean;
+    redirectUri?: string;
+    signup?: boolean;
+    state?: string;
+    storeState?: boolean;
+  }) => {
+    const stateToUse = opts.state || generateState();
 
     const params = qs.stringify(
       {
-        state,
-        redirectUri,
-        auto: opts.authorizeParams?.auto
-          ? encodeAutoParam(opts.authorizeParams.auto)
-          : undefined,
-        signup: opts.authorizeParams?.signup || undefined,
-        reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
-        ...opts.authorizeParams?.forward,
+        auto: opts.auto ? encodeAutoParam(opts.auto) : undefined,
+        reauthenticate: opts.reauthenticate || undefined,
+        redirectUri: opts.redirectUri,
+        signup: opts.signup || undefined,
+        state: stateToUse,
+        ...opts.forward,
       },
       { encode: true },
     );
@@ -255,7 +270,7 @@ export const authorizeHandler =
       .then(res => res.text());
 
     if (opts.storeState) {
-      storeState(state);
+      storeState(stateToUse);
     }
 
     return authorizeUrl;
