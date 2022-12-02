@@ -15,7 +15,7 @@ export type TokenHandlerConfig = {
 };
 
 export type AuthenticatedFetchConfig = {
-  authorizeFn: ReturnType<typeof authorizeHandler>;
+  authorizeFn?: ReturnType<typeof authorizeHandler>;
   requestTokenFn: ReturnType<typeof requestTokenHandler>;
   refreshTokenFn: ReturnType<typeof refreshTokenHandler>;
   sessionStore: ReturnType<typeof setupSessionStore>;
