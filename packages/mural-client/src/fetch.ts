@@ -210,6 +210,7 @@ export interface AuthorizeParams {
 
 export interface AuthorizeHandlerOptions {
   authorizeParams?: AuthorizeParams;
+  state?: string;
   storeState: boolean;
 }
 
@@ -232,17 +233,17 @@ export const authorizeHandler =
     redirectUri?: string,
     opts: AuthorizeHandlerOptions = { storeState: false },
   ): Promise<string> => {
-    const state = generateState();
+    const stateToUse = opts.state || generateState();
 
     const params = qs.stringify(
       {
-        state,
-        redirectUri,
         auto: opts.authorizeParams?.auto
           ? encodeAutoParam(opts.authorizeParams.auto)
           : undefined,
-        signup: opts.authorizeParams?.signup || undefined,
         reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
+        redirectUri,
+        signup: opts.authorizeParams?.signup || undefined,
+        state: stateToUse,
         ...opts.authorizeParams?.forward,
       },
       { encode: true },
@@ -255,7 +256,7 @@ export const authorizeHandler =
       .then(res => res.text());
 
     if (opts.storeState) {
-      storeState(state);
+      storeState(stateToUse);
     }
 
     return authorizeUrl;
