@@ -15,7 +15,7 @@ export type TokenHandlerConfig = {
 };
 
 export type AuthenticatedFetchConfig = {
-  authorizeFn?: ReturnType<typeof authorizeHandler>;
+  authorizeFn: ReturnType<typeof authorizeHandler>;
   requestTokenFn: ReturnType<typeof requestTokenHandler>;
   refreshTokenFn: ReturnType<typeof refreshTokenHandler>;
   sessionStore: ReturnType<typeof setupSessionStore>;
@@ -210,6 +210,7 @@ export interface AuthorizeParams {
 
 export interface AuthorizeHandlerOptions {
   authorizeParams?: AuthorizeParams;
+  state?: string;
   storeState: boolean;
 }
 
@@ -231,34 +232,19 @@ export const authorizeHandler =
   async (
     redirectUri?: string,
     opts: AuthorizeHandlerOptions = { storeState: false },
-  ): Promise<string> =>
-    fetchAuthUrlHandler(config)({
-      redirectUri,
-      storeState: opts.storeState,
-      ...opts.authorizeParams,
-    });
-
-export const fetchAuthUrlHandler =
-  (config: TokenHandlerConfig) =>
-  async (opts: {
-    auto?: boolean | AutomaticOptions;
-    forward?: { [key: string]: unknown };
-    reauthenticate?: boolean;
-    redirectUri?: string;
-    signup?: boolean;
-    state?: string;
-    storeState?: boolean;
-  }) => {
+  ): Promise<string> => {
     const stateToUse = opts.state || generateState();
 
     const params = qs.stringify(
       {
-        auto: opts.auto ? encodeAutoParam(opts.auto) : undefined,
-        reauthenticate: opts.reauthenticate || undefined,
-        redirectUri: opts.redirectUri,
-        signup: opts.signup || undefined,
+        auto: opts.authorizeParams?.auto
+          ? encodeAutoParam(opts.authorizeParams.auto)
+          : undefined,
+        reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
+        redirectUri,
+        signup: opts.authorizeParams?.signup || undefined,
         state: stateToUse,
-        ...opts.forward,
+        ...opts.authorizeParams?.forward,
       },
       { encode: true },
     );
