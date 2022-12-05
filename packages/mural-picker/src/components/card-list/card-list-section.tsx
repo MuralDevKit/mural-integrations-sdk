@@ -41,7 +41,7 @@ export class CardListSection extends React.Component<PropTypes> {
   renderTitle() {
     if (!this.props.title) return null;
 
-    return <h5 className="subsection-header">{this.props.title}</h5>;
+    return <h3 className="subsection-header">{this.props.title}</h3>;
   }
 
   render() {
