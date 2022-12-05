@@ -3,6 +3,7 @@ export type PageName =
   | 'create mural from template'
   | 'home page'
   | 'mural picker'
+  | 'mural picker form'
   | 'mural view'
   | 'oauth session activation';
 

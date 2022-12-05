@@ -11,6 +11,7 @@ import { delay } from '../utils';
 import { Page, PageName } from './types';
 import createMuralFromTemplate from './create-mural-from-template';
 import muralPicker from './mural-picker';
+import muralPickerForm from './mural-picker-form';
 import muralView from './mural-view';
 import oAuthSessionActivation from './oauth-session-activation';
 import accountChooser from './account-chooser';
@@ -25,6 +26,7 @@ const PAGES: Record<PageName, Page> = {
   'create mural from template': createMuralFromTemplate,
   'home page': homePage,
   'mural picker': muralPicker,
+  'mural picker form': muralPickerForm,
   'mural view': muralView,
   'oauth session activation': oAuthSessionActivation,
   'account chooser': accountChooser,
