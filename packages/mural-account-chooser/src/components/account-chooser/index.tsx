@@ -10,28 +10,31 @@ import {
   getAuthMode,
   getMuralRealm,
 } from '../../common/realm';
-// @ts-ignore
 import GoogleIcon from '../../images/google-icon.png?w=32&h=32';
-// @ts-ignore
 import MicrosoftIcon from '../../images/microsoft-icon.png?w=32&h=32';
-// @ts-ignore
 import MuralIcon from '../../images/mural-icon.png?w=32&h=32';
-// @ts-ignore
-import MuralLogo from '../../images/mural-logo.png?w=130';
+import MuralLogoMono from '../../images/mural-logo-mono.svg';
+import MuralLogo from '../../images/mural-logo.svg';
 import SignUpWith3rdParty from './sign-up-with-3rd-party';
 
 export const FONT_FAMILY = 'Proxima Nova, sans-serif';
-export const MURAL_COLOR = '#e8005a';
-export const MARGIN = '23px';
+export const MURAL_COLOR = '#E02935';
 
-export const lightTheme = {
+interface Theme {
+  primaryTextColor: string;
+  secondaryTextColor: string;
+  backgroundColor: string;
+  contentBackgroundColor: string;
+}
+
+export const LIGHT_THEME: Theme = {
   primaryTextColor: '#2f2f2f',
   secondaryTextColor: '#4d4d4d',
   backgroundColor: '#f4f7fb',
   contentBackgroundColor: '#ffffff',
 };
 
-export const darkTheme = {
+export const DARK_THEME: Theme = {
   primaryTextColor: '#f4f4f4',
   secondaryTextColor: '#d6d6d6',
   backgroundColor: '#1f1f1e',
@@ -55,8 +58,15 @@ const AccountChooserDiv = styled.div`
 `;
 
 const MuralLogoImg = styled.img`
-  height: 26px;
-  margin: 41px 0px 41px 0px;
+  width: 140px;
+  margin: 45px 0;
+
+  ${({ theme }) => {
+    if (theme === 'dark')
+      return {
+        filter: 'invert(1)',
+      };
+  }}
 `;
 
 const AccountChooserContent = styled.div`
@@ -64,17 +74,16 @@ const AccountChooserContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 30px;
   width: 450px;
-  padding: 32px;
+  padding: 45px 30px;
 
   border: 2px solid rgba(0, 0, 0, 0.02);
-  box-shadow: 0px 16px 12px -4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 12px -4px rgba(0, 0, 0, 0.08);
   border-radius: 16px;
 `;
 
 const Header = styled.h1`
-  margin-bottom: 25px;
-  margin-top: 15px;
   font-family: ${FONT_FAMILY};
   line-height: 100%;
   text-align: center;
@@ -127,16 +136,15 @@ const SignInButton = styled(Button)`
   width: 100%;
   background: ${MURAL_COLOR};
   color: #ffffff;
-  margin: 0px;
+  margin: 0;
 `;
 
 const VisitorButton = styled(Button)`
   border: 2px solid ${({ theme }) => theme.secondaryTextColor};
   border-radius: 8px;
-  width: 176px;
+  width: 40%;
   background: ${({ theme }) => theme.contentBackgroundColor};
   color: ${({ theme }) => theme.secondaryTextColor};
-  margin: 32px 32px 13px 32px;
 `;
 
 const UseDifferentEmail = styled.div`
@@ -187,12 +195,14 @@ export interface AuthorizeParams {
   signup?: boolean;
 }
 
+// eslint-disable-next-line no-shadow
 export enum ACCOUNT_CHOOSER_ACTION {
   SIGN_IN = 'SIGN_IN',
   SIGN_UP = 'SIGN_UP',
   NEW_ACCOUNT = 'NEW_ACCOUNT',
   ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
 }
+
 export interface AccountChooserPropTypes {
   apiClient: ApiClient;
   hint?: string;
@@ -323,11 +333,15 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
       ) : (
         <AccountChooserDiv
           data-qa="account-chooser"
-          theme={theme === 'light' ? lightTheme : darkTheme}
+          theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
         >
-          <MuralLogoImg src={MuralLogo} alt="MURAL" />
+          <MuralLogoImg
+            src={theme === 'light' ? MuralLogo : MuralLogoMono}
+            theme={theme}
+            alt="MURAL"
+          />
           <AccountChooserContent
-            theme={theme === 'light' ? lightTheme : darkTheme}
+            theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
           >
             {page === 'Sign in' ? (
               <>
@@ -351,7 +365,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
                   <VisitorButton
                     data-qa="continue-as-visitor"
                     onClick={visitor.onSelect}
-                    theme={theme === 'light' ? lightTheme : darkTheme}
+                    theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
                   >
                     Continue as a visitor
                   </VisitorButton>
@@ -367,7 +381,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
                 }
                 signUp={hintSsoSignUp}
                 sendVerificationEmail={hintEmailSignUp}
-                theme={theme === 'light' ? lightTheme : darkTheme}
+                theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
               />
             )}
           </AccountChooserContent>
@@ -377,7 +391,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
               <UseDifferentEmailLink
                 data-qa="use-another-account"
                 onClick={useAnotherAccount}
-                theme={theme === 'light' ? lightTheme : darkTheme}
+                theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
               >
                 Sign in with a different account
               </UseDifferentEmailLink>
