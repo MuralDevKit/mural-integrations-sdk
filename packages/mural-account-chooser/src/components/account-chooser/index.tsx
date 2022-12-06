@@ -299,7 +299,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
           email: hint!,
         },
       }),
-      ACCOUNT_CHOOSER_ACTION.SIGN_UP,
+      ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT,
     );
 
   const hintSsoSignUp = async () =>
@@ -311,7 +311,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
           email: hint!,
         },
       }),
-      ACCOUNT_CHOOSER_ACTION.SIGN_UP,
+      ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT,
     );
 
   return (
