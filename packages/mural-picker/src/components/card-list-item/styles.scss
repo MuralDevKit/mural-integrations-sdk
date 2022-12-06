@@ -20,7 +20,7 @@
 
   .card-action {
     height: 100%;
-    font-size: 1.33em;
+    font-size: 1.375em;
     text-align: center;
   }
 
@@ -35,7 +35,7 @@
 
   .card-title {
     font-weight: 600;
-    margin-top: 0.8em;
+    margin-top: 0.875em;
 
     // ellipsis
     white-space: nowrap;
@@ -50,13 +50,13 @@
     }
 
     display: flex;
-    margin-top: 0.66em;
+    margin-top: 0.675em;
 
     .card-details {
       color: #737373;
-      font-size: 0.66em;
+      font-size: 0.675em;
       font-weight: 600;
-      line-height: 1.33em;
+      line-height: 1.375em;
       align-self: center;
 
       text-overflow: ellipsis;
@@ -65,7 +65,7 @@
     }
   
     .card-avatar {
-      margin-right: 0.33em;
+      margin-right: 0.375em;
       height: 32px;
       width: 32px;
 
@@ -83,7 +83,7 @@
   }
 
   &.small-card {
-    font-size: 0.66em;
+    font-size: 0.675em;
     width: 140px;
 
     .card-thumbnail {
@@ -111,8 +111,8 @@
 
   h4 {
     font-weight: 400;
-    font-size: 1.2rem;
-    margin-top: 0.6em;
+    font-size: 1.25rem;
+    margin-top: 0.675em;
   }
 
   svg {

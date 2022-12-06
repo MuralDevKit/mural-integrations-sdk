@@ -2,7 +2,7 @@
   "devDependencies": {
     "@babel/core": "^7.18.13",
     "@rollup/plugin-commonjs": "^22.0.1",
-    "@rollup/plugin-image": "^2.1.1",
+    "@rollup/plugin-image": "^3.0.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@storybook/addon-actions": "^6.5.10",
     "@storybook/addon-essentials": "^6.5.10",
@@ -13,6 +13,8 @@
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^6.5.10",
     "@storybook/testing-library": "^0.0.13",
+    "@svgr/rollup": "^6.5.1",
+    "@svgr/webpack": "^5.5.0",
     "@types/classnames": "^2.3.1",
     "@types/humanize-duration": "^3.27.1",
     "@types/jsonwebtoken": "^8.5.6",

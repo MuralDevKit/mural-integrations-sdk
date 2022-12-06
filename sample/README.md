@@ -35,7 +35,7 @@ To start ngrok run command (in this case port will be 2022 by default):
 ```
 ngrok http 2022
 ```
-The second step is to create an app in MURAL
+The second step is to create an app in Mural
    1. Go to mural dashboard
    2. Down in the left corner click user options
    3. Choose My apps

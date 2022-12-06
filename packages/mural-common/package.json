@@ -1,7 +1,7 @@
 {
   "name": "@muraldevkit/mural-integrations-common",
   "version": "3.0.0",
-  "description": "MURAL integration basic components and assets.",
+  "description": "Mural integration basic components and assets.",
   "main": "src/index.ts",
   "files": [
     "fonts/",

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  darkTheme,
-  lightTheme,
+  DARK_THEME,
+  LIGHT_THEME,
 } from '../packages/mural-account-chooser/src/components/account-chooser';
 import SignUpWith3rdParty from '../packages/mural-account-chooser/src/components/account-chooser/sign-up-with-3rd-party';
 // @ts-ignore
@@ -19,7 +19,7 @@ export const Google = () => (
     name="Google"
     iconSrc={GoogleIcon}
     signUp={() => alert('Sign in with Google')}
-    theme={lightTheme}
+    theme={LIGHT_THEME}
   />
 );
 
@@ -28,7 +28,7 @@ export const Microsoft = () => (
     name="Microsoft"
     iconSrc={MicrosoftIcon}
     signUp={() => alert('Sign in with Microsoft')}
-    theme={lightTheme}
+    theme={LIGHT_THEME}
   />
 );
 
@@ -36,7 +36,7 @@ export const SSO = () => (
   <SignUpWith3rdParty
     name="SSO"
     signUp={() => alert('Sign in with SSO')}
-    theme={lightTheme}
+    theme={LIGHT_THEME}
   />
 );
 
@@ -45,7 +45,7 @@ export const GoogleDark = () => (
     name="Google"
     iconSrc={GoogleIcon}
     signUp={() => alert('Sign in with Google')}
-    theme={darkTheme}
+    theme={DARK_THEME}
   />
 );
 
@@ -54,7 +54,7 @@ export const MicrosoftDark = () => (
     name="Microsoft"
     iconSrc={MicrosoftIcon}
     signUp={() => alert('Sign in with Microsoft')}
-    theme={darkTheme}
+    theme={DARK_THEME}
   />
 );
 
@@ -62,6 +62,6 @@ export const SSODark = () => (
   <SignUpWith3rdParty
     name="SSO"
     signUp={() => alert('Sign in with SSO')}
-    theme={darkTheme}
+    theme={DARK_THEME}
   />
 );
