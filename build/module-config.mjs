@@ -7,6 +7,7 @@ import typescript from 'rollup-plugin-typescript2';
 import styles from 'rollup-plugin-styles';
 import commonjs from '@rollup/plugin-commonjs';
 import { visualizer } from 'rollup-plugin-visualizer';
+import svgr from '@svgr/rollup';
 
 const truthy = value => {
   return ['t', 'true', '1', 'on', 'yes', 'y'].includes(
@@ -49,7 +50,8 @@ export const moduleConfig = descriptor => {
       useTsconfigDeclarationDir: true,
     }),
     styles(),
-    image(),
+    svgr({ exportType: 'named' }),
+    image({ include: ['*.png', '*.jpg'] }),
     imagetools(),
   ];
 

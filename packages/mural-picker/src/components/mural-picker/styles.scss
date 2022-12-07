@@ -15,11 +15,11 @@
     align-items: end;
     flex-wrap: wrap;
     min-height: fit-content;
-    margin: 0.33em 0;
+    margin: 0.375em 0;
 
     & > * {
-      margin-top: 0.33rem;
-      margin-right: 0.2rem;
+      margin-top: 0.375rem;
+      margin-right: 0.5rem;
     }
 
     .workspace-select,
@@ -38,10 +38,10 @@
   }
 
   .header {
-    margin: 0.33rem 0;
+    margin: 0.375rem 0;
 
     &__logo, &__action {
-      margin-right: 0.33rem;
+      margin-right: 0.375rem;
     }
 
     &__title {
@@ -55,7 +55,7 @@
   }
 
   .mural-picker-error {
-    margin: 0.33rem 0;
+    margin: 0.375rem 0;
   }
 
   .card-list-spinner {

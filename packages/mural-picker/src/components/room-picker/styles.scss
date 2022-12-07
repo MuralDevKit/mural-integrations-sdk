@@ -8,8 +8,8 @@
     align-items: end;
 
     > * {
-      margin-top: 0.33rem;
-      margin-right: 0.2rem;
+      margin-top: 0.375rem;
+      margin-right: 0.5rem;
     }
 
     .workspace-select,
@@ -27,7 +27,7 @@
   }
 
   .room-picker-error {
-    margin-top: 0.33em;
+    margin-top: 0.375em;
   }
 }
 
@@ -41,7 +41,7 @@
   .MuiListSubheader-root {
     font-family: inherit;
     font-weight: 700;
-    font-size: 0.8rem;
+    font-size: 0.875rem;
   }
 
   .MuiAutocomplete-groupUl {

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 35 28">
+  <g clip-path="url(#mrl-brand-symbol-clip-1)">
+    <g clip-path="url(#mrl-brand-symbol-clip-2)">
+      <path fill="#000" d="M34.96 8.225h-5.052V27.96h5.053V8.225Z"/>
+      <path fill="#FF4B4B" d="M8.04 5.21c1.63 0 2.947 1.36 2.947 3.015h5.052c0-4.51-3.592-8.185-8-8.185-4.408 0-8 3.675-8 8.185h5.053c0-1.656 1.316-3.015 2.947-3.015Z"/>
+      <path fill="#5887FF" d="M10.987 27.96h5.052V8.225h-5.052V27.96Z"/>
+      <path fill="#FA0" d="M24.013 27.946v-5.155H16.04v5.169l7.973-.014Z"/>
+      <path fill="#00843F" d="M24.013 8.225c0-1.67 1.33-3.015 2.947-3.015V.04c-4.407 0-8 3.675-8 8.185v14.566h5.053V8.225Z"/>
+      <path fill="#FC83FF" d="M29.908 8.225h5.053c0-4.51-3.593-8.185-8-8.185v5.17c1.631 0 2.947 1.346 2.947 3.015Z"/>
+      <path fill="#000" d="M5.092 8.225H.039V27.96h5.053V8.225Z"/>
+    </g>
+  </g>
+  <defs>
+    <clipPath id="mrl-brand-symbol-clip-1">
+      <path fill="#fff" d="M0 0h35v28H0z"/>
+    </clipPath>
+    <clipPath id="mrl-brand-symbol-clip-2">
+      <path fill="#fff" d="M0 0h35v28H0z"/>
+    </clipPath>
+  </defs>
+</svg>

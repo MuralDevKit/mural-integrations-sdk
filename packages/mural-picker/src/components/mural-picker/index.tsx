@@ -37,25 +37,8 @@ import './styles.scss';
 
 // @TECHDEBT — Once we have the @tactivos/ds-icons library
 // We can remove this atrocity and `import { plus } from '@tactivos/ds-icons'`
-const Plus = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path d="M9.875 13.625a.5.5 0 0 1 .5.5v3.625c0 .69.56 1.25 1.25 1.25h.75c.69 0 1.25-.56 1.25-1.25v-3.625a.5.5 0 0 1 .5-.5h3.625c.69 0 1.25-.56 1.25-1.25v-.75c0-.69-.56-1.25-1.25-1.25h-3.625a.5.5 0 0 1-.5-.5V6.25c0-.69-.56-1.25-1.25-1.25h-.75c-.69 0-1.25.56-1.25 1.25v3.625a.5.5 0 0 1-.5.5H6.25c-.69 0-1.25.56-1.25 1.25v.75c0 .69.56 1.25 1.25 1.25h3.625Z" />
-  </svg>
-);
-
-const BackArrow = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path d="M8.293 18.707a1 1 0 0 0 1.414-1.414L5.414 13H21a1 1 0 1 0 0-2H5.414l4.293-4.293a1 1 0 0 0-1.414-1.414l-6 6a1 1 0 0 0 0 1.414l6 6Z" />
-  </svg>
-);
+import { ReactComponent as Plus } from '@muraldevkit/mural-integrations-common/assets/icons/plus.svg';
+import { ReactComponent as BackArrow } from '@muraldevkit/mural-integrations-common/assets/icons/arrow-back.svg';
 
 export type ThemeOptions = {
   preset: Preset;

@@ -10,28 +10,30 @@ import {
   getAuthMode,
   getMuralRealm,
 } from '../../common/realm';
-// @ts-ignore
-import GoogleIcon from '../../images/google-icon.png?w=32&h=32';
-// @ts-ignore
-import MicrosoftIcon from '../../images/microsoft-icon.png?w=32&h=32';
-// @ts-ignore
-import MuralIcon from '../../images/mural-icon.png?w=32&h=32';
-// @ts-ignore
-import MuralLogo from '../../images/mural-logo.png?w=130';
+
+import { ReactComponent as MuralLogoMono } from '@muraldevkit/mural-integrations-common/assets/brands/mural-wordmark-mono.svg';
+import { ReactComponent as MuralLogo } from '@muraldevkit/mural-integrations-common/assets/brands/mural-wordmark.svg';
+
 import SignUpWith3rdParty from './sign-up-with-3rd-party';
 
 export const FONT_FAMILY = 'Proxima Nova, sans-serif';
-export const MURAL_COLOR = '#e8005a';
-export const MARGIN = '23px';
+export const MURAL_COLOR = '#e02935';
 
-export const lightTheme = {
+interface Theme {
+  primaryTextColor: string;
+  secondaryTextColor: string;
+  backgroundColor: string;
+  contentBackgroundColor: string;
+}
+
+export const LIGHT_THEME: Theme = {
   primaryTextColor: '#2f2f2f',
   secondaryTextColor: '#4d4d4d',
   backgroundColor: '#f4f7fb',
   contentBackgroundColor: '#ffffff',
 };
 
-export const darkTheme = {
+export const DARK_THEME: Theme = {
   primaryTextColor: '#f4f4f4',
   secondaryTextColor: '#d6d6d6',
   backgroundColor: '#1f1f1e',
@@ -54,9 +56,10 @@ const AccountChooserDiv = styled.div`
   background: ${({ theme }) => theme.backgroundColor};
 `;
 
-const MuralLogoImg = styled.img`
-  height: 26px;
-  margin: 41px 0px 41px 0px;
+const MuralLogoContainer = styled.div`
+  display: inline-block;
+  width: 140px;
+  margin: 45px 0;
 `;
 
 const AccountChooserContent = styled.div`
@@ -64,17 +67,16 @@ const AccountChooserContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 30px;
   width: 450px;
-  padding: 32px;
+  padding: 45px 30px;
 
   border: 2px solid rgba(0, 0, 0, 0.02);
-  box-shadow: 0px 16px 12px -4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 12px -4px rgba(0, 0, 0, 0.08);
   border-radius: 16px;
 `;
 
 const Header = styled.h1`
-  margin-bottom: 25px;
-  margin-top: 15px;
   font-family: ${FONT_FAMILY};
   line-height: 100%;
   text-align: center;
@@ -127,16 +129,15 @@ const SignInButton = styled(Button)`
   width: 100%;
   background: ${MURAL_COLOR};
   color: #ffffff;
-  margin: 0px;
+  margin: 0;
 `;
 
 const VisitorButton = styled(Button)`
   border: 2px solid ${({ theme }) => theme.secondaryTextColor};
   border-radius: 8px;
-  width: 176px;
+  width: 40%;
   background: ${({ theme }) => theme.contentBackgroundColor};
   color: ${({ theme }) => theme.secondaryTextColor};
-  margin: 32px 32px 13px 32px;
 `;
 
 const UseDifferentEmail = styled.div`
@@ -169,13 +170,6 @@ const UseDifferentEmailLink = styled.a`
   line-height: 140%;
 `;
 
-const AUTH_MODE_ICONS = {
-  [AuthMode.GOOGLE]: GoogleIcon,
-  [AuthMode.MICROSOFT]: MicrosoftIcon,
-  [AuthMode.ENTERPRISE_SSO]: null,
-  [AuthMode.PASSWORD]: MuralIcon,
-};
-
 interface AutomaticOptions {
   email: string;
   action: 'signin' | 'signup';
@@ -187,12 +181,14 @@ export interface AuthorizeParams {
   signup?: boolean;
 }
 
+// eslint-disable-next-line no-shadow
 export enum ACCOUNT_CHOOSER_ACTION {
   SIGN_IN = 'SIGN_IN',
   SIGN_UP = 'SIGN_UP',
   NEW_ACCOUNT = 'NEW_ACCOUNT',
   ANOTHER_ACCOUNT = 'ANOTHER_ACCOUNT',
 }
+
 export interface AccountChooserPropTypes {
   apiClient: ApiClient;
   hint?: string;
@@ -314,6 +310,8 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
       ACCOUNT_CHOOSER_ACTION.NEW_ACCOUNT,
     );
 
+  const Logo = theme === 'light' ? MuralLogo : MuralLogoMono;
+
   return (
     <>
       {isLoading ? (
@@ -323,11 +321,13 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
       ) : (
         <AccountChooserDiv
           data-qa="account-chooser"
-          theme={theme === 'light' ? lightTheme : darkTheme}
+          theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
         >
-          <MuralLogoImg src={MuralLogo} alt="MURAL" />
+          <MuralLogoContainer theme={theme}>
+            <Logo alt="Mural" />
+          </MuralLogoContainer>
           <AccountChooserContent
-            theme={theme === 'light' ? lightTheme : darkTheme}
+            theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
           >
             {page === 'Sign in' ? (
               <>
@@ -351,7 +351,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
                   <VisitorButton
                     data-qa="continue-as-visitor"
                     onClick={visitor.onSelect}
-                    theme={theme === 'light' ? lightTheme : darkTheme}
+                    theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
                   >
                     Continue as a visitor
                   </VisitorButton>
@@ -360,24 +360,22 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
             ) : (
               <SignUpWith3rdParty
                 name={account?.authMode?.toString() ?? ''}
-                iconSrc={
-                  account?.authMode
-                    ? AUTH_MODE_ICONS[account?.authMode]
-                    : undefined
-                }
+                authMode={account?.authMode ?? AuthMode.PASSWORD}
                 signUp={hintSsoSignUp}
                 sendVerificationEmail={hintEmailSignUp}
-                theme={theme === 'light' ? lightTheme : darkTheme}
+                theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
               />
             )}
           </AccountChooserContent>
           {hint && page === 'Sign in' && (
             <UseDifferentEmail>
-              <NotYourEmail>Not {hint}?</NotYourEmail>
+              <NotYourEmail>
+                Not <em>{hint}</em> ?
+              </NotYourEmail>
               <UseDifferentEmailLink
                 data-qa="use-another-account"
                 onClick={useAnotherAccount}
-                theme={theme === 'light' ? lightTheme : darkTheme}
+                theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
               >
                 Sign in with a different account
               </UseDifferentEmailLink>

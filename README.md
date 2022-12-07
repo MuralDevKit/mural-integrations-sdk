@@ -1,6 +1,6 @@
-## MURAL Integration SDK
+## Mural Integration SDK
 
-This repository hosts the MURAL integration SDK
+This repository hosts the Mural integration SDK
 
 ### Components
 
@@ -49,7 +49,7 @@ npm run build:watch
 
 ### Testing
 
-The testing rig setup follows the conventional testing philosophy at MURAL — test behaviors, not implementation.
+The testing rig setup follows the conventional testing philosophy at Mural — test behaviors, not implementation.
 We are using the Gherkin syntax to create high-level behavior description and assert that the components replicate it accurately.
 
 In order to develop and build, it is useful to use the _npm run build -- --watch_ command on the component you are currently developing for.

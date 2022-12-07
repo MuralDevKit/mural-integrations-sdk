@@ -59,7 +59,7 @@
       padding-top: 1em;
 
       & * {
-        margin: 0 0.33em;
+        margin: 0 0.375em;
       }
 
       & .new-mural-create {
@@ -132,10 +132,10 @@
 
   &-typography {
     &-container {
-      padding: 0.66em;
-      font-size: 0.8em;
-      line-height: 1.2rem;
-      height: 3.6rem;
+      padding: 0.675em;
+      font-size: 0.875em;
+      line-height: 1.25rem;
+      height: 3.675rem;
       white-space: nowrap;
 
       * {
@@ -145,7 +145,7 @@
     }
 
     &-title {
-      font-size: 1.2em;
+      font-size: 1.25em;
       font-weight: 700;
       color: #585858;
     }
@@ -155,7 +155,7 @@
     }
 
     &-desc {
-      margin-top: 0.66em;
+      margin-top: 0.675em;
       color: #333;
     }
   }
