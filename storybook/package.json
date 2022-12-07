@@ -1,0 +1,35 @@
+{
+  "name": "@muraldevkit/storybook",
+  "version": "1.0.0",
+  "description": "Storybook",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "author": "",
+  "license": "ISC",
+	"private": true,
+  "dependencies": {
+    "@muraldevkit/mural-integrations-common": "file:../packages/mural-common",
+    "@muraldevkit/mural-integrations-mural-account-chooser": "file:../packages/mural-account-chooser",
+    "@muraldevkit/mural-integrations-mural-canvas": "file:../packages/mural-canvas",
+    "@muraldevkit/mural-integrations-mural-client": "file:../packages/mural-client",
+    "@muraldevkit/mural-integrations-mural-picker": "file:../packages/mural-picker"
+	},
+	"devDependencies": {
+    "@storybook/addon-actions": "^6.5.10",
+    "@storybook/addon-essentials": "^6.5.10",
+    "@storybook/addon-interactions": "^6.5.10",
+    "@storybook/addon-links": "^6.5.10",
+    "@storybook/builder-webpack4": "^6.5.10",
+    "@storybook/manager-webpack4": "^6.5.10",
+    "@storybook/preset-scss": "^1.0.3",
+    "@storybook/react": "^6.5.10",
+    "@storybook/testing-library": "^0.0.13",
+    "storybook-addon-mock": "^2.4.1",
+    "storybook-addon-sass-postcss": "^0.1.3",
+    "html-webpack-plugin": "^5.5.0"
+	}
+}

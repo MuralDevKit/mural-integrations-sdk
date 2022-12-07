@@ -1,17 +1,25 @@
 import React from 'react';
-import { ACCOUNT_CHOOSER_ACTION } from '../packages/mural-account-chooser/dist';
-import AccountChooser, {
-  AuthorizeParams,
-} from '../packages/mural-account-chooser/src/components/account-chooser';
+import {
+  AccountChooser,
+  ACCOUNT_CHOOSER_ACTION,
+} from '@muraldevkit/mural-integrations-mural-account-chooser';
+
+// TODO: Remove this
+const blackHole: any = new Proxy(() => {}, {
+  get: () => {
+    return blackHole;
+  },
+  apply: () => {
+    return blackHole;
+  },
+});
+
+const apiClient = blackHole;
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
-export default {
-  title: 'Account Chooser',
-  component: AccountChooser,
-};
+export default { title: 'Account Chooser', component: AccountChooser };
 
-const apiClient = {};
-const authUrl = (_options?: AuthorizeParams) => Promise.resolve('url');
+const authUrl = (_options?: any) => Promise.resolve('url');
 const onSelection = (_url: string, action?: ACCOUNT_CHOOSER_ACTION) => {
   alert(action);
 };
