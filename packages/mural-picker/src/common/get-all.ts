@@ -15,16 +15,16 @@ export const getAllRoomsByWorkspace: GetAllRoomsByWorkspace = async (
   let next: string | undefined;
 
   const queryOptions = options ? cloneDeep(options) : {};
-  queryOptions.paginate = options?.paginate ?? {};
+  queryOptions.paginate = options?.paginate ?? undefined;
 
   do {
     // Get a page of rooms
-    queryOptions.paginate.next = next;
+    if (queryOptions.paginate) queryOptions.paginate.next = next;
     const result = await apiClient.getRoomsByWorkspace(query, queryOptions);
     rooms.push(...result.value);
 
     // Get the token to request the next page
-    next = result.next;
+    next = result.next ?? undefined;
   } while (next);
 
   return rooms;

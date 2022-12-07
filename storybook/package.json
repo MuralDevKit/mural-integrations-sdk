@@ -16,7 +16,8 @@
     "@muraldevkit/mural-integrations-mural-account-chooser": "file:../packages/mural-account-chooser",
     "@muraldevkit/mural-integrations-mural-canvas": "file:../packages/mural-canvas",
     "@muraldevkit/mural-integrations-mural-client": "file:../packages/mural-client",
-    "@muraldevkit/mural-integrations-mural-picker": "file:../packages/mural-picker"
+    "@muraldevkit/mural-integrations-mural-picker": "file:../packages/mural-picker",
+    "style-loader": "^3.3.1"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^6.5.10",
