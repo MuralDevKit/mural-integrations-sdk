@@ -12,6 +12,7 @@ import {
   Asset,
   CreateImagePayload,
   Image,
+  Widget,
 } from './types';
 
 export * from './fetch';
@@ -105,7 +106,7 @@ type TResolvedOptions<TResource, TOptions> = Partial<
 export type ResourceEndpoint<
   TResource,
   TParams = void,
-  TOptions = null
+  TOptions = null,
 > = TParams extends void
   ? (
       options?: TResolvedOptions<TResource, TOptions>,
@@ -217,7 +218,7 @@ export interface ApiClient {
     StickyNote,
     {
       muralId: string;
-      payload: CreateStickyNotePayload;
+      payload: CreateStickyNotePayload | CreateStickyNotePayload[];
     }
   >;
   updateStickyNote: ResourceEndpoint<
@@ -230,6 +231,11 @@ export interface ApiClient {
   >;
   getCurrentUser: ResourceEndpoint<User>;
   getMural: ResourceEndpoint<Mural, { id: string }, Integration>;
+  getMuralWidgets: ResourceEndpoint<
+    Widget[],
+    { muralId: string },
+    Paginated & Sorted
+  >;
   getMuralsByRoom: ResourceEndpoint<
     Mural[],
     { roomId: string },
@@ -293,10 +299,12 @@ export interface ApiClient {
 export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
   const clientConfig = { ...DEFAULT_CONFIG, ...config };
 
-  const urlBuilderFor = (host: string) => (path: string): URL => {
-    const protocol = clientConfig.secure ? 'https' : 'http';
-    return new URL(path, `${protocol}://${host}`);
-  };
+  const urlBuilderFor =
+    (host: string) =>
+    (path: string): URL => {
+      const protocol = clientConfig.secure ? 'https' : 'http';
+      return new URL(path, `${protocol}://${host}`);
+    };
 
   const muralUrl = urlBuilderFor(clientConfig.muralHost);
   const integrationsUrl = urlBuilderFor(clientConfig.integrationsHost);
@@ -431,6 +439,19 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
       const response = await fetchFn(api(`murals/${id}?${params}`), {
         method: 'GET',
       });
+
+      return await response.json();
+    },
+    // https://developers.mural.co/public/reference/getmuralwidgets
+    getMuralWidgets: async ({ muralId }, options) => {
+      const params = optionsParams(options);
+
+      const response = await fetchFn(
+        api(`murals/${muralId}/widgets?${params}`),
+        {
+          method: 'GET',
+        },
+      );
 
       return await response.json();
     },
