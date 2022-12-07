@@ -71,7 +71,7 @@ export const THEMES: Record<Preset, ThemeOptions> = {
         primary: '#2F2F2F',
       },
       primary: {
-        main: '#e8005a',
+        main: '#e02935',
         light: '#d7004b',
       },
     },
@@ -85,7 +85,7 @@ export const THEMES: Record<Preset, ThemeOptions> = {
         action: '#fff',
       },
       primary: {
-        main: '#e8005a',
+        main: '#e02935',
         light: '#d7004b',
       },
       background: {

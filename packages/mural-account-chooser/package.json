@@ -1,6 +1,6 @@
 {
   "name": "@muraldevkit/mural-integrations-mural-account-chooser",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Account Chooser component for MURAL integrations",
   "main": "dist/mural-account-chooser.bundle.js",
   "module": "dist/mural-account-chooser.esm.js",
@@ -30,8 +30,8 @@
   },
   "homepage": "https://github.com/tactivos/mural-integrations-sdk/tree/packages/mural-account-chooser",
   "dependencies": {
-    "@muraldevkit/mural-integrations-common": "^3.0.0",
-    "@muraldevkit/mural-integrations-mural-client": "^3.0.1"
+    "@muraldevkit/mural-integrations-common": "^3.1.0",
+    "@muraldevkit/mural-integrations-mural-client": "^3.1.0"
   },
   "peerDependencies": {
     "@material-ui/core": ">=4.11.4",

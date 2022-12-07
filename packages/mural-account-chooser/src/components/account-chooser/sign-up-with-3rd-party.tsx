@@ -1,10 +1,16 @@
 import * as React from 'react';
 import { MouseEventHandler } from 'react';
 import styled from 'styled-components';
+
 // @ts-ignore
-import MuralIcon from '../../images/mural-icon.png?w=32&h=32';
+import GoogleIcon from '@muraldevkit/mural-integrations-common/assets/brands/google-icon.png?w=32&h=32';
+// @ts-ignore
+import MicrosoftIcon from '@muraldevkit/mural-integrations-common/assets/brands/microsoft-icon.png?w=32&h=32';
+import { ReactComponent as MuralIcon } from '@muraldevkit/mural-integrations-common/assets/brands/mural-symbol.svg';
+import { AuthMode } from '../../common/realm';
 
 export const FONT_FAMILY = 'Proxima Nova, sans-serif';
+
 const ThirdPartySignUp = styled.div`
   display: flex;
   flex-direction: column;
@@ -13,6 +19,7 @@ const ThirdPartySignUp = styled.div`
   border-color: ${({ theme }) => theme.secondaryTextColor};
   background: ${({ theme }) => theme.contentBackgroundColor};
 `;
+
 const Header = styled.h1`
   margin: 20px;
   font-family: ${FONT_FAMILY};
@@ -21,6 +28,7 @@ const Header = styled.h1`
   font-size: 2em;
   font-weight: bold;
 `;
+
 const ThirdPartySignUpButton = styled.button`
   cursor: pointer;
   width: 70%;
@@ -38,14 +46,17 @@ const ThirdPartySignUpButton = styled.button`
   border-radius: 10px;
   padding: 10px;
 `;
+
 const Icon = styled.img`
   height: 32px;
 `;
+
 const Text = styled.div`
   font-family: ${FONT_FAMILY};
   color: ${({ theme }) => theme.secondaryTextColor};
   margin: 10px;
 `;
+
 const Separator = styled.div`
   /* Size / Position */
   position: relative;
@@ -76,6 +87,7 @@ const Separator = styled.div`
     margin: 0 -55% 0 0.5em;
   }
 `;
+
 const SendVerificationEmail = styled.button`
   /* Button */
   cursor: pointer;
@@ -93,9 +105,20 @@ const SendVerificationEmail = styled.button`
   line-height: 120%;
 `;
 
+const AUTH_MODE_ICONS = {
+  [AuthMode.GOOGLE]: <Icon src={GoogleIcon} />,
+  [AuthMode.MICROSOFT]: <Icon src={MicrosoftIcon} />,
+  [AuthMode.ENTERPRISE_SSO]: null,
+  [AuthMode.PASSWORD]: (
+    <Icon>
+      <MuralIcon />
+    </Icon>
+  ),
+};
+
 interface PropTypes {
+  authMode: AuthMode;
   name: string;
-  iconSrc?: string;
   signUp: MouseEventHandler;
   sendVerificationEmail?: MouseEventHandler;
   theme?: {
@@ -107,8 +130,7 @@ interface PropTypes {
 }
 
 const SignUpWith3rdParty: React.FC<PropTypes> = (props: PropTypes) => {
-  const { name, iconSrc, signUp, sendVerificationEmail, theme } = props;
-  const icon = iconSrc ?? MuralIcon;
+  const { name, authMode, signUp, sendVerificationEmail, theme } = props;
 
   return (
     <ThirdPartySignUp theme={theme}>
@@ -118,7 +140,7 @@ const SignUpWith3rdParty: React.FC<PropTypes> = (props: PropTypes) => {
         data-qa="sign-up-with"
         theme={theme}
       >
-        <Icon src={icon} alt="avatar" />
+        {AUTH_MODE_ICONS[authMode]}
         <Text>Continue with {name}</Text>
       </ThirdPartySignUpButton>
 
