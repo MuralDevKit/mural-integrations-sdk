@@ -25,7 +25,7 @@ const base = createMuiTheme({
         },
       },
       listbox: {
-        border: '1px solid lightgray',
+        border: '1px solid #737373',
       },
     },
     MuiFormLabel: {
