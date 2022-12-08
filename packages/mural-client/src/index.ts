@@ -1,6 +1,7 @@
 import { authenticated, getFetchConfig, FetchError } from './fetch';
 import {
   Mural,
+  MuralContentSession,
   Room,
   StickyNote,
   Tag,
@@ -179,6 +180,12 @@ export interface ApiClient {
       };
     }
   >;
+  createContentSession: ResourceEndpoint<
+    MuralContentSession,
+    {
+      muralId: string;
+    }
+  >;
   createImage: ResourceEndpoint<
     Image,
     {
@@ -343,6 +350,15 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
     createAsset: async ({ muralId, payload }) => {
       const response = await fetchFn(api(`murals/${muralId}/assets`), {
         body: JSON.stringify(payload),
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      });
+
+      return response.json();
+    },
+    // Documented internally
+    createContentSession: async ({ muralId }) => {
+      const response = await fetchFn(api(`murals/${muralId}/content-session`), {
         headers: { 'content-type': 'application/json' },
         method: 'POST',
       });
