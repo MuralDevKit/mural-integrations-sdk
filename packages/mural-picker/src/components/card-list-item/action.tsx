@@ -16,7 +16,7 @@ export default (props: PropTypes) => {
   const { source, onClick, cardSize } = props;
 
   return (
-    <Grid item>
+    <Grid item component="li">
       <Card
         variant="outlined"
         className={classnames(
