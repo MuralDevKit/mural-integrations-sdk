@@ -57,6 +57,18 @@ export type Mural = {
   _canvasLink: string;
 };
 
+export type MuralContentSession = {
+  token: string;
+  workspaceId: string;
+  zone: {
+    endpoints: {
+      api: string;
+      realtime: string;
+    };
+    id: string;
+  };
+};
+
 export type Template = {
   description: string;
   id: string;
