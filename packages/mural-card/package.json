@@ -1,0 +1,58 @@
+{
+  "name": "@muraldevkit/mural-integrations-mural-card",
+  "version": "3.0.1",
+  "description": "Mural Card component for Mural integrations",
+  "main": "dist/mural-card.bundle.js",
+  "module": "dist/mural-card.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "pack": "npm pack --pack-destination ../../dist/",
+    "build": "npx rollup --config build/rollup.config.mjs",
+    "compile": "npx tsc --project build/tsconfig.json",
+    "test": "npm run test",
+    "clean": "rm -rf dist out"
+  },
+  "keywords": [
+    "mural",
+    "mural-card"
+  ],
+  "author": "mural.co",
+  "license": "ISC",
+  "repository": "https://github.com/tactivos/mural-integrations-sdk",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/tactivos/mural-integrations-sdk/issues"
+  },
+  "homepage": "https://github.com/tactivos/mural-integrations-sdk/tree/packages/mural-card",
+  "dependencies": {
+    "@muraldevkit/mural-integrations-common": "^3.0.0",
+    "@muraldevkit/mural-integrations-mural-client": "^3.0.1"
+  },
+  "peerDependencies": {
+    "@material-ui/core": ">=4.11.4",
+    "axios": ">=0.26.0",
+    "react": ">=16.13.0",
+    "react-dom": ">=16.13.0",
+    "typescript": ">=4.3.5"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^22.0.1",
+    "@rollup/plugin-image": "^2.1.1",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "rollup": "^2.75.7",
+    "rollup-plugin-imagetools": "^3.0.5",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-scss": "^3.0.0",
+    "rollup-plugin-styles": "^4.0.0",
+    "rollup-plugin-typescript2": "^0.32.1",
+    "sass": "^1.53.0",
+    "styled-components": "^5.3.5"
+  },
+  "gitHead": "7a74abce0064269fd331cb7108c8b11ed1427bb9"
+}
