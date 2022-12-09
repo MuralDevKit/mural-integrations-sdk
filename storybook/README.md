@@ -13,7 +13,7 @@ npm run build:watch
 ```
 
 
-Then, you can start the Storybook using `npm run storybook`
+Then, you can start the Storybook using `npm run storybook` in the `storybook` folder.
 
 ## Development
 
@@ -39,6 +39,4 @@ Also, running the compiled component ensures parity with how the components are 
 
 * It doesn't work, what should I do?
 
-Lerna (the monorepo tooling) is something a bit finicky, so `cd` in the monorepo root and run `npx lerna bootstrap`.
-
-
+Lerna (the monorepo tooling) is something a bit finicky, so `cd` in the monorepo root and run `npx lerna bootstrap` and then `npx lerna run build`.
