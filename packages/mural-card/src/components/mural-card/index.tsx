@@ -3,7 +3,7 @@ import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import * as React from 'react';
 import styled from 'styled-components';
 
-export type CardSize = 'small' | 'normal';
+export type CardSize = 'normal' | 'small';
 
 export type CardItemSource = {
   title: string;
@@ -14,9 +14,9 @@ export type CardItemSource = {
 
 export interface MuralCardPropTypes {
   source: CardItemSource;
-  cardSize: CardSize;
-  isSelected: boolean;
   onClick: EventHandler;
+  cardSize?: CardSize;
+  isSelected?: boolean;
   theme?: 'light' | 'dark';
 }
 
@@ -39,13 +39,37 @@ export const DARK_THEME: Theme = {
   backgroundColor: '#424242',
 };
 
-// The MUI style overwrite styled-component by default, so add && to win
-const MuralCardDiv = styled(Card)`
+interface SizeSetting {
+  size: {
+    fontSize: string;
+    cardWidth: string;
+    thumbnailHeight: string;
+    displayDetails: string;
+  };
+}
+
+const NORMAL_SIZE = {
+  fontSize: '1em',
+  cardWidth: '230px',
+  thumbnailHeight: '130px',
+  displayDetails: 'flex',
+};
+
+const SMALL_SIZE = {
+  fontSize: '0.675em',
+  cardWidth: '140px',
+  thumbnailHeight: '70px',
+  displayDetails: 'none',
+};
+
+// The MUI style overwrite styled-component by default, so add a && to win
+const MuralCardDiv = styled(Card)<SizeSetting>`
   && {
-    width: 230px;
+    width: ${props => props.size.cardWidth};
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
     position: relative;
 
+    font-size: ${props => props.size.fontSize};
     font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
       'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
@@ -70,11 +94,11 @@ const MuralCardActionArea = styled(CardActionArea)`
 `;
 
 // The MUI style overwrite styled-component by default, so add && to win
-const CardThumbnail = styled(CardMedia)`
+const CardThumbnail = styled(CardMedia)<SizeSetting>`
   && {
     border-radius: 1rem;
     width: 100%;
-    height: 130px;
+    height: ${props => props.size.thumbnailHeight};
 
     // vignette effect
     box-shadow: inset 2px 2px 15px rgba(0, 0, 0, 0.06);
@@ -91,13 +115,13 @@ const CardTitle = styled.div`
   overflow: hidden;
 `;
 
-const CardInfo = styled.div`
+const CardInfo = styled.div<SizeSetting>`
   * {
     // prevents click event from happening on button children
     pointer-events: none;
   }
 
-  display: flex;
+  display: ${props => props.size.displayDetails};
   margin-top: 0.675em;
 `;
 
@@ -129,18 +153,20 @@ const CardDetails = styled.div`
 `;
 
 const MuralCard: React.FC<MuralCardPropTypes> = (props: MuralCardPropTypes) => {
-  const { source, onClick, theme } = props; // isSelected, cardSize
+  const { source, onClick, cardSize, theme } = props;
+  const size = cardSize === 'small' ? SMALL_SIZE : NORMAL_SIZE;
 
   return (
     <MuralCardDiv
       variant="outlined"
-      theme={theme === 'dark' ? DARK_THEME : LIGHT_THEME}
       onClick={onClick}
+      size={size}
+      theme={theme === 'dark' ? DARK_THEME : LIGHT_THEME}
     >
       <MuralCardActionArea>
-        <CardThumbnail image={source.thumbnailUrl.toString()} />
+        <CardThumbnail image={source.thumbnailUrl.toString()} size={size} />
         <CardTitle data-qa="card-title">{source.title}</CardTitle>
-        <CardInfo>
+        <CardInfo size={size}>
           {/* TECHDEBT fetch avatar info from the API? */}
           {source.initials && (
             <CardAvatar data-qa="card-avatar">{source.initials}</CardAvatar>
