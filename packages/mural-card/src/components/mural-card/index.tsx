@@ -39,13 +39,14 @@ export const DARK_THEME: Theme = {
   backgroundColor: '#424242',
 };
 
-interface SizeSetting {
+interface CSSProps {
   size: {
     fontSize: string;
     cardWidth: string;
     thumbnailHeight: string;
     displayDetails: string;
   };
+  isSelected?: boolean;
 }
 
 const NORMAL_SIZE = {
@@ -63,26 +64,32 @@ const SMALL_SIZE = {
 };
 
 // The MUI style overwrite styled-component by default, so add a && to win
-const MuralCardDiv = styled(Card)<SizeSetting>`
+const MuralCardDiv = styled(Card)<CSSProps>`
   && {
     width: ${props => props.size.cardWidth};
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
     position: relative;
+    background-color: ${({ theme }) => theme.backgroundColor};
 
     font-size: ${props => props.size.fontSize};
     font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI',
       'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
+    color: ${({ theme }) => theme.primaryTextColor};
 
     margin: 0.675em 0.375em;
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    border: 1px solid
+      ${props => (props.isSelected ? '#ff0066' : 'rgba(0, 0, 0, 0.12)')};
     border-radius: 8px;
-    color: ${({ theme }) => theme.primaryTextColor};
+    box-shadow: ${props =>
+      props.isSelected
+        ? '0px 20px 12px rgba(0, 0, 0, 0.12)'
+        : '0px 04px 04px rgba(0, 0, 0, 0.08)'};
+    transform: ${props =>
+      props.isSelected ? 'translate(0, -0.33em)' : 'none'};
+
     transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     transition-delay: 30ms;
     transition-property: translate, box-shadow;
-
-    background-color: ${({ theme }) => theme.backgroundColor};
   }
 `;
 
@@ -94,7 +101,7 @@ const MuralCardActionArea = styled(CardActionArea)`
 `;
 
 // The MUI style overwrite styled-component by default, so add && to win
-const CardThumbnail = styled(CardMedia)<SizeSetting>`
+const CardThumbnail = styled(CardMedia)<CSSProps>`
   && {
     border-radius: 1rem;
     width: 100%;
@@ -115,7 +122,7 @@ const CardTitle = styled.div`
   overflow: hidden;
 `;
 
-const CardInfo = styled.div<SizeSetting>`
+const CardInfo = styled.div<CSSProps>`
   * {
     // prevents click event from happening on button children
     pointer-events: none;
@@ -153,7 +160,7 @@ const CardDetails = styled.div`
 `;
 
 const MuralCard: React.FC<MuralCardPropTypes> = (props: MuralCardPropTypes) => {
-  const { source, onClick, cardSize, theme } = props;
+  const { source, onClick, cardSize, isSelected, theme } = props;
   const size = cardSize === 'small' ? SMALL_SIZE : NORMAL_SIZE;
 
   return (
@@ -161,6 +168,7 @@ const MuralCard: React.FC<MuralCardPropTypes> = (props: MuralCardPropTypes) => {
       variant="outlined"
       onClick={onClick}
       size={size}
+      isSelected={isSelected ?? false}
       theme={theme === 'dark' ? DARK_THEME : LIGHT_THEME}
     >
       <MuralCardActionArea>
