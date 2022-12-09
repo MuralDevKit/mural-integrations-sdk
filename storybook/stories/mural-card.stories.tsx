@@ -50,3 +50,19 @@ export const NoDetailsNoInitials = () => (
     onClick={onClick}
   />
 );
+
+export const DarkMode = () => (
+  <MuralCard
+    source={{
+      title: 'Project Retrospective',
+      thumbnailUrl:
+        'https://app.mural.co/static/images/mural-thumb.svg?v=1670255663027',
+      details: 'Created 5 days ago \nModified 3 days, 2 hours ago',
+      initials: 'BC',
+    }}
+    cardSize={'small'}
+    isSelected={false}
+    onClick={onClick}
+    theme='dark'
+  />
+);

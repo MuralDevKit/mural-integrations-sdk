@@ -17,7 +17,27 @@ export interface MuralCardPropTypes {
   cardSize: CardSize;
   isSelected: boolean;
   onClick: EventHandler;
+  theme?: 'light' | 'dark';
 }
+
+export const FONT_FAMILY = 'Proxima Nova, sans-serif';
+export const MURAL_COLOR = '#e8005a';
+export const MARGIN = '23px';
+
+interface Theme {
+  primaryTextColor: string;
+  backgroundColor: string;
+}
+
+export const LIGHT_THEME: Theme = {
+  primaryTextColor: '#2f2f2f',
+  backgroundColor: '#fff',
+};
+
+export const DARK_THEME: Theme = {
+  primaryTextColor: '#a7a7a7',
+  backgroundColor: '#424242',
+};
 
 // The MUI style overwrite styled-component by default, so add && to win
 const MuralCardDiv = styled(Card)`
@@ -33,10 +53,12 @@ const MuralCardDiv = styled(Card)`
     margin: 0.675em 0.375em;
     border: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 8px;
-    color: #2f2f2f;
+    color: ${({ theme }) => theme.primaryTextColor};
     transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     transition-delay: 30ms;
     transition-property: translate, box-shadow;
+
+    background-color: ${({ theme }) => theme.backgroundColor};
   }
 `;
 
@@ -107,10 +129,14 @@ const CardDetails = styled.div`
 `;
 
 const MuralCard: React.FC<MuralCardPropTypes> = (props: MuralCardPropTypes) => {
-  const { source, onClick } = props; // isSelected, cardSize
+  const { source, onClick, theme } = props; // isSelected, cardSize
 
   return (
-    <MuralCardDiv variant="outlined" onClick={onClick}>
+    <MuralCardDiv
+      variant="outlined"
+      theme={theme === 'dark' ? DARK_THEME : LIGHT_THEME}
+      onClick={onClick}
+    >
       <MuralCardActionArea>
         <CardThumbnail image={source.thumbnailUrl.toString()} />
         <CardTitle data-qa="card-title">{source.title}</CardTitle>
