@@ -14,15 +14,13 @@ export type CardItemSource = {
 
 export interface MuralCardPropTypes {
   source: CardItemSource;
-  onClick: EventHandler;
+  onClick?: EventHandler;
   cardSize?: CardSize;
   isSelected?: boolean;
   theme?: 'light' | 'dark';
 }
 
-export const FONT_FAMILY = 'Proxima Nova, sans-serif';
 export const MURAL_COLOR = '#e8005a';
-export const MARGIN = '23px';
 
 interface Theme {
   primaryTextColor: string;
@@ -78,7 +76,7 @@ const MuralCardDiv = styled(Card)<CSSProps>`
 
     margin: 0.675em 0.375em;
     border: 1px solid
-      ${props => (props.isSelected ? '#ff0066' : 'rgba(0, 0, 0, 0.12)')};
+      ${props => (props.isSelected ? MURAL_COLOR : 'rgba(0, 0, 0, 0.12)')};
     border-radius: 8px;
     box-shadow: ${props =>
       props.isSelected
