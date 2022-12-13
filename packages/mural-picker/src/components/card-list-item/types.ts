@@ -5,5 +5,5 @@ export type CardSize = 'small' | 'normal';
 export interface PropTypes {
   cardSize: CardSize;
   isSelected: boolean;
-  onClick: EventHandler;
+  onClick?: EventHandler;
 }
