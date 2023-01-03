@@ -59,7 +59,7 @@ export class CardListSection extends React.Component<PropTypes> {
         <Grid container className="mural-grid" direction="row" component="ul">
           {startActions?.map(this.renderActionItem)}
           {this.props.items.map((item, i) => (
-            <Grid item>
+            <Grid item component="li">
               <CardItem
                 key={i}
                 source={item}
