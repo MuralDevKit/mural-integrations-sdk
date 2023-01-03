@@ -27,8 +27,10 @@ export default (props: PropTypes) => {
     >
       <CardActionArea>
         <CardMedia
+          component="span"
           image={source.thumbnailUrl.toString()}
           className="card-thumbnail"
+          title={`${source.title} thumbnail preview`}
         />
         <span className="card-title" data-qa="card-title">
           {source.title}
