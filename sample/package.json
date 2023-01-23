@@ -59,7 +59,7 @@
     "@types/jsonwebtoken": "^8.5.4",
     "@types/react": "^17.0.15",
     "@types/react-dom": "^17.0.9",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "moment": "^2.29.4",
     "react-error-overlay": "6.0.9",
     "react-router-dom": "^6.2.1"
