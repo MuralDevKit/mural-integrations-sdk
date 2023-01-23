@@ -24,7 +24,7 @@
     "fetch-mock": "^9.11.0",
     "jsdom": "^16.4.0",
     "jsdom-global": "^3.0.2",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "npm": "^7.24.2",
     "pickled-cucumber": "^3.3.1",
     "qs": "^6.10.3",
