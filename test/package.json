@@ -25,7 +25,7 @@
     "jsdom": "^16.4.0",
     "jsdom-global": "^3.0.2",
     "jsonwebtoken": "^8.5.1",
-    "npm": "^7.24.2",
+    "npm": "^8.11.0",
     "pickled-cucumber": "^3.3.1",
     "qs": "^6.10.3",
     "react-router": "5.2.0",
