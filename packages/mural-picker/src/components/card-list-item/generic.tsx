@@ -27,26 +27,28 @@ export default (props: PropTypes) => {
     >
       <CardActionArea>
         <CardMedia
+          component="span"
           image={source.thumbnailUrl.toString()}
           className="card-thumbnail"
+          title={`${source.title} thumbnail preview`}
         />
-        <div className="card-title" data-qa="card-title">
+        <span className="card-title" data-qa="card-title">
           {source.title}
-        </div>
-        <div className="card-info">
+        </span>
+        <span className="card-info">
           {/* TECHDEBT fetch avatar info from the API? */}
           {source.initials && (
-            <div
+            <span
               className="card-avatar card-avatar--initials"
               data-qa="card-avatar"
             >
               {source.initials}
-            </div>
+            </span>
           )}
-          <div className="card-details" data-qa="card-details">
+          <span className="card-details" data-qa="card-details">
             {source.details || ''}
-          </div>
-        </div>
+          </span>
+        </span>
       </CardActionArea>
     </Card>
   );

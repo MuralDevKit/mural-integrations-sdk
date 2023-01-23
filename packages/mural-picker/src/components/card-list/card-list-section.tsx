@@ -41,7 +41,7 @@ export class CardListSection extends React.Component<PropTypes> {
   renderTitle() {
     if (!this.props.title) return null;
 
-    return <h5 className="subsection-header">{this.props.title}</h5>;
+    return <h3 className="subsection-header">{this.props.title}</h3>;
   }
 
   render() {
@@ -56,10 +56,10 @@ export class CardListSection extends React.Component<PropTypes> {
     return (
       <>
         {this.renderTitle()}
-        <Grid container className="mural-grid" direction="row">
+        <Grid container className="mural-grid" direction="row" component="ul">
           {startActions?.map(this.renderActionItem)}
           {this.props.items.map((item, i) => (
-            <Grid item>
+            <Grid item component="li">
               <CardItem
                 key={i}
                 source={item}

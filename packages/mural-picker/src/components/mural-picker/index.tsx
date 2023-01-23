@@ -347,6 +347,7 @@ export default class MuralPicker extends React.Component<
                       ref={measureRef}
                       disabled={!this.state.room}
                       onClick={this.handleCreate}
+                      title="Create new mural"
                     >
                       <SvgIcon>
                         <Plus />
