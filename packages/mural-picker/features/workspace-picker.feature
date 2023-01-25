@@ -20,3 +20,14 @@ Feature: workspace picker
     When I select "workspace2" in [workspace select]
     And I click on [workspace select button]
     Then the last selected workspace is ${W2}
+
+  Scenario: loads multiple pages of workspaces
+    # Force loading multiple pages by setting a small page size
+    Given route /api/public/v1/workspaces has page size 2
+    # Add more workspaces
+    And a workspace W3 with { "name": "workspace3" }
+    And a workspace W4 with { "name": "workspace4" }
+    And a workspace W5 with { "name": "workspace5" }
+    # Reopen the workspace picker to reload the workspaces
+    And the page rerenders
+    Then [workspace select] has 5 options

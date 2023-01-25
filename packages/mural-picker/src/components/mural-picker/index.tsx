@@ -15,7 +15,7 @@ import {
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
-import { getAllRoomsByWorkspace } from '../../common/get-all';
+import { getAllRoomsByWorkspace, getAllWorkspaces } from '../../common/get-all';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import CardList from '../card-list';
 import { CardSize } from '../card-list-item';
@@ -137,19 +137,17 @@ export default class MuralPicker extends React.Component<
     try {
       this.transition(Segue.LOADING);
 
-      const eWorkspaces = await this.props.apiClient.getWorkspaces();
-      const currentUser = await this.props.apiClient.getCurrentUser();
+      const [workspaces, currentUser] = await Promise.all([
+        getAllWorkspaces(this.props.apiClient),
+        this.props.apiClient.getCurrentUser(),
+      ]);
       const lastActiveWorkspaceId = currentUser.value.lastActiveWorkspace;
 
-      if (eWorkspaces.value.length) {
+      if (workspaces.length) {
         const workspace =
-          eWorkspaces.value.find(w => w.id === lastActiveWorkspaceId) ||
-          eWorkspaces.value[0];
+          workspaces.find(w => w.id === lastActiveWorkspaceId) || workspaces[0];
 
-        this.setState(
-          { workspaces: eWorkspaces.value, workspace },
-          this.trackDisplay,
-        );
+        this.setState({ workspaces, workspace }, this.trackDisplay);
 
         await this.handleWorkspaceSelect(workspace);
       }

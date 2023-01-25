@@ -10,6 +10,7 @@ import {
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
+import { getAllWorkspaces } from '../../common/get-all';
 import { PrimaryButton } from '../common';
 import createTheme, { Preset } from '../theme';
 import WorkspaceSelect from '../workspace-select';
@@ -59,15 +60,15 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
     this.setState({ isLoading: true });
 
     try {
-      const eWorkspaces = await this.props.apiClient.getWorkspaces();
-      if (eWorkspaces.value.length) {
+      const workspaces = await getAllWorkspaces(this.props.apiClient);
+      if (workspaces.length) {
         const workspace =
-          eWorkspaces.value.find(w => w.id === this.props.initialWorkspaceId) ||
-          eWorkspaces.value[0];
+          workspaces.find(w => w.id === this.props.initialWorkspaceId) ||
+          workspaces[0];
 
         this.setState({
           workspace,
-          workspaces: eWorkspaces.value,
+          workspaces,
           isLoading: false,
         });
       }

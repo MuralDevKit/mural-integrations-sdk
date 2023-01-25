@@ -519,8 +519,9 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
       return response.json();
     },
     // https://developers.mural.co/public/reference/getworkspaces
-    getWorkspaces: async () => {
-      const response = await fetchFn(api(`workspaces`), {
+    getWorkspaces: async options => {
+      const params = optionsParams(options);
+      const response = await fetchFn(api(`workspaces?${params}`), {
         method: 'GET',
       });
       return await response.json();

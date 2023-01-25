@@ -92,6 +92,50 @@ const parseNextParam = (nextParam: string | null) => {
 const getRoutePageSize = (route: string): number | undefined =>
   getCtxItem<PageSizeByRouteMap>(MURAL_API_PAGE_SIZE_BY_ROUTE_KEY)?.get(route);
 
+/**
+ * Fetch a single page of a resource according to the pagination parameters.
+ */
+const fetchPage = async <TResource>(
+  url: URL,
+  findEntities: () => Promise<TResource[]>,
+) => {
+  const parsedUrl = new URL(url);
+
+  let limit;
+  try {
+    limit = parseLimitParam(parsedUrl.searchParams.get('limit'));
+  } catch (err) {
+    return INVALID_LIMIT_RESPONSE;
+  }
+
+  // Allow overriding the specified limit from context
+  limit = getRoutePageSize(parsedUrl.pathname) ?? limit;
+
+  let next;
+  try {
+    next = parseNextParam(parsedUrl.searchParams.get('next'));
+  } catch (err) {
+    return INVALID_PAGINATION_RESPONSE;
+  }
+
+  let values = await findEntities();
+  const numValues = values.length;
+
+  // Create a page according to the pagination parameters
+  values = values.slice(next, next + limit);
+
+  // Create the token to request the next page
+  next += limit;
+  if (next >= numValues) {
+    next = undefined;
+  }
+
+  return {
+    value: values,
+    next: next ? next.toString() : undefined,
+  };
+};
+
 export const registerGlobalRoutes = () => {
   fetchMock.get(ROUTES.ME, async () => {
     return {
@@ -112,39 +156,9 @@ export const registerGlobalRoutes = () => {
     const parsedUrl = new URL(url);
     const workspaceId = parsedUrl.pathname.split('/')[5];
 
-    let limit;
-    try {
-      limit = parseLimitParam(parsedUrl.searchParams.get('limit'));
-    } catch (err) {
-      return INVALID_LIMIT_RESPONSE;
-    }
-
-    // Allow overriding the specified limit from context
-    limit = getRoutePageSize(parsedUrl.pathname) ?? limit;
-
-    let next;
-    try {
-      next = parseNextParam(parsedUrl.searchParams.get('next'));
-    } catch (err) {
-      return INVALID_PAGINATION_RESPONSE;
-    }
-
-    let rooms = await muralApiEntities.room.findAllBy({ workspaceId });
-    const numRooms = rooms.length;
-
-    // Create a page of rooms according to the pagination parameters
-    rooms = rooms.slice(next, next + limit);
-
-    // Create the token to request the next page
-    next += limit;
-    if (next >= numRooms) {
-      next = undefined;
-    }
-
-    return {
-      value: rooms,
-      next: next ? next.toString() : undefined,
-    };
+    return fetchPage(parsedUrl, () =>
+      muralApiEntities.room.findAllBy({ workspaceId }),
+    );
   });
 
   fetchMock.get(ROUTES.WORKSPACES_TEMPLATES, async (url: string) => {
@@ -170,9 +184,9 @@ export const registerGlobalRoutes = () => {
     return { value: mural };
   });
 
-  fetchMock.get(ROUTES.WORKSPACES, async () => {
-    const workspaces = await muralApiEntities.workspace.findAll();
-    return { value: workspaces };
+  fetchMock.get(ROUTES.WORKSPACES, async (url: string) => {
+    const parsedUrl = new URL(url);
+    return fetchPage(parsedUrl, muralApiEntities.workspace.findAll);
   });
 
   fetchMock.get(ROUTES.TEMPLATES, async () => {
