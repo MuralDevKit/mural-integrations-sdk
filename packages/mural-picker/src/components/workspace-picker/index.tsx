@@ -116,7 +116,10 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
 
     return (
       <ThemeProvider theme={muiTheme}>
-        <div className={cx('workspace-picker-body', muiTheme?.palette?.type)}>
+        <div
+          className={cx('workspace-picker-body', muiTheme?.palette?.type)}
+          data-qa="workspace-picker"
+        >
           <div className="select-row">
             <WorkspaceSelect
               workspace={this.state.workspace}

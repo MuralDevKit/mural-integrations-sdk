@@ -190,7 +190,10 @@ export default class RoomPicker extends React.Component<PropTypes> {
 
     return (
       <ThemeProvider theme={muiTheme}>
-        <div className={cx('room-picker-body', muiTheme?.palette?.type)}>
+        <div
+          className={cx('room-picker-body', muiTheme?.palette?.type)}
+          data-qa="room-picker"
+        >
           <div className="select-row">
             <slots.WorkspaceSelect.Self
               workspace={this.state.workspace}
