@@ -14,6 +14,7 @@ import {
 import cx from 'classnames';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
+import { getAllWorkspaces } from '../../common/get-all';
 import { ReactSlot } from '../../common/react';
 import { PrimaryButton } from '../common';
 import RoomSelect from '../room-select';
@@ -87,9 +88,9 @@ export default class RoomPicker extends React.Component<PropTypes> {
   loadWorkspaces = async () => {
     this.setState({ isLoading: true });
     try {
-      const eWorkspaces = await this.props.apiClient.getWorkspaces();
-      if (eWorkspaces.value.length) {
-        this.setState({ workspaces: eWorkspaces.value, isLoading: false });
+      const workspaces = await getAllWorkspaces(this.props.apiClient);
+      if (workspaces.length) {
+        this.setState({ workspaces, isLoading: false });
       }
     } catch (e: any) {
       this.handleError(e, 'Error retrieving workspaces.');
@@ -190,7 +191,10 @@ export default class RoomPicker extends React.Component<PropTypes> {
 
     return (
       <ThemeProvider theme={muiTheme}>
-        <div className={cx('room-picker-body', muiTheme?.palette?.type)}>
+        <div
+          className={cx('room-picker-body', muiTheme?.palette?.type)}
+          data-qa="room-picker"
+        >
           <div className="select-row">
             <slots.WorkspaceSelect.Self
               workspace={this.state.workspace}

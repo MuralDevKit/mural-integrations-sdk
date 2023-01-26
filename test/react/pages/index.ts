@@ -15,6 +15,8 @@ import muralView from './mural-view';
 import oAuthSessionActivation from './oauth-session-activation';
 import accountChooser from './account-chooser';
 import homePage from './homepage';
+import roomPicker from './room-picker';
+import workspacePicker from './workspace-picker';
 
 const CURRENT_PAGE_NAME = '$currentPageName';
 export const CURRENT_PAGE = '$currentPage';
@@ -28,6 +30,8 @@ const PAGES: Record<PageName, Page> = {
   'mural view': muralView,
   'oauth session activation': oAuthSessionActivation,
   'account chooser': accountChooser,
+  'room picker': roomPicker,
+  'workspace picker': workspacePicker,
 };
 
 const getErrorMessage = (header: string, body?: string) => `

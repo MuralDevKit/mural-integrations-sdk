@@ -50,3 +50,14 @@ Feature: mural picker
     And typing "room2" on the [input room select]
     And I select "room2" in [room select]
     Then the [card title] at index 0 content is "${M3.title}"
+
+  Scenario: loads multiple pages of workspaces
+    # Force loading multiple pages by setting a small page size
+    Given route /api/public/v1/workspaces has page size 2
+    # Add more workspaces
+    And a workspace W3 with { "name": "workspace3" }
+    And a workspace W4 with { "name": "workspace4" }
+    And a workspace W5 with { "name": "workspace5" }
+    # Reopen the mural picker to reload the workspaces
+    And the page rerenders
+    Then [workspace select] has 5 options

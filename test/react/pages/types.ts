@@ -4,7 +4,9 @@ export type PageName =
   | 'home page'
   | 'mural picker'
   | 'mural view'
-  | 'oauth session activation';
+  | 'oauth session activation'
+  | 'room picker'
+  | 'workspace picker';
 
 // A `Page` is a representation of the DOM element we will render for a given
 // route with some useful metadata.
