@@ -10,7 +10,7 @@ export const Loading = styled.div`
   height: 100vh;
 `;
 
-export const AccountChooserDiv = styled.div`
+export const AccountChooserContainer = styled.div`
   display: flex;
   height: 100vh;
   flex-direction: column;
@@ -26,14 +26,17 @@ export const MuralLogoContainer = styled.div`
 `;
 
 export const AccountChooserContent = styled.div`
-  background-color: ${({ theme }) => theme.contentBackgroundColor};
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 30px;
-  width: 450px;
+
+  box-sizing: border-box;
+  max-width: 450px;
+  width: 90%;
   padding: 45px 30px;
 
+  background-color: ${({ theme }) => theme.contentBackgroundColor};
   border: 2px solid rgba(0, 0, 0, 0.02);
   box-shadow: 0 16px 12px -4px rgba(0, 0, 0, 0.08);
   border-radius: 16px;
@@ -46,34 +49,45 @@ export const Header = styled.h1`
   font-size: 2em;
   font-weight: 800;
   color: ${({ theme }) => theme.primaryTextColor};
+  margin: 0;
 `;
 
-export const EmailHintSignInDiv = styled.div`
-  width: 100%;
+export const HintContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
 
-  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.08),
-    0px 5px 8px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 5px 8px rgba(0, 0, 0, 0.08);
   border: #cccccc 1px solid;
   border-radius: 12px;
 `;
 
 export const Email = styled.div`
+  flex-grow: 1;
+  width: 60%;
+
   font-family: ${FONT_FAMILY};
   font-weight: 700;
   font-size: 16px;
   line-height: 16px;
-  margin: 32px;
   color: ${({ theme }) => theme.secondaryTextColor};
+
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 `;
 
 export const Button = styled.button`
   cursor: pointer;
   border: none;
   border-radius: 8px;
-  height: 44px;
+  height: 40px;
   font-family: ${FONT_FAMILY};
   font-style: normal;
   font-weight: 700;
@@ -81,11 +95,12 @@ export const Button = styled.button`
   line-height: 20px;
 `;
 
-export const EmailHintButton = styled(Button)`
-  width: 90px;
+export const ContinueButton = styled(Button)`
+  flex-grow: 1;
+
   background: ${MURAL_COLOR};
   color: #ffffff;
-  margin: 20px;
+  padding: 0 14px;
 `;
 
 export const SignInButton = styled(Button)`
@@ -98,7 +113,8 @@ export const SignInButton = styled(Button)`
 export const VisitorButton = styled(Button)`
   border: 2px solid ${({ theme }) => theme.secondaryTextColor};
   border-radius: 8px;
-  width: 40%;
+  max-width: 175px;
+  width: 100%;
   background: ${({ theme }) => theme.contentBackgroundColor};
   color: ${({ theme }) => theme.secondaryTextColor};
 `;

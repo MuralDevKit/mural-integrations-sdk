@@ -13,12 +13,12 @@ import {
 } from '../../common/realm';
 import SignUpWith3rdParty from './sign-up-with-3rd-party';
 import {
+  AccountChooserContainer,
   AccountChooserContent,
-  AccountChooserDiv,
+  ContinueButton,
   Email,
-  EmailHintButton,
-  EmailHintSignInDiv,
   Header,
+  HintContainer,
   Loading,
   MuralLogoContainer,
   NotYourEmail,
@@ -198,7 +198,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
           <CircularProgress />
         </Loading>
       ) : (
-        <AccountChooserDiv
+        <AccountChooserContainer
           data-qa="account-chooser"
           theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
         >
@@ -212,15 +212,15 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
               <>
                 <Header>Sign in to get started</Header>
                 {hint ? (
-                  <EmailHintSignInDiv>
+                  <HintContainer>
                     <Email>{hint}</Email>
-                    <EmailHintButton
+                    <ContinueButton
                       data-qa="continue-with-email"
                       onClick={continueWithEmail}
                     >
                       Continue
-                    </EmailHintButton>
-                  </EmailHintSignInDiv>
+                    </ContinueButton>
+                  </HintContainer>
                 ) : (
                   <SignInButton data-qa="sign-up" onClick={signIn}>
                     Sign in
@@ -260,7 +260,7 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
               </UseDifferentEmailLink>
             </UseDifferentEmail>
           )}
-        </AccountChooserDiv>
+        </AccountChooserContainer>
       )}
     </>
   );

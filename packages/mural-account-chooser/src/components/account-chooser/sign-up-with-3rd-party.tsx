@@ -58,7 +58,8 @@ const Text = styled.div`
 const Separator = styled.div`
   /* Size / Position */
   position: relative;
-  width: 260px;
+  max-width: 260px;
+  width: 90%;
   margin: 20px;
 
   /* Other */
@@ -79,7 +80,6 @@ const Separator = styled.div`
     content: '';
     display: inline-block;
     width: 50%;
-    margin: 0 0.5em 0 -55%;
     vertical-align: middle;
     border-bottom: 1px solid;
     margin: 0 -55% 0 0.5em;
