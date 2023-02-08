@@ -1,15 +1,13 @@
-import * as React from 'react';
-import { MouseEventHandler } from 'react';
-import styled from 'styled-components';
-
 // @ts-ignore
 import GoogleIcon from '@muraldevkit/mural-integrations-common/assets/brands/google-icon.png?w=32&h=32';
 // @ts-ignore
 import MicrosoftIcon from '@muraldevkit/mural-integrations-common/assets/brands/microsoft-icon.png?w=32&h=32';
 import { ReactComponent as MuralIcon } from '@muraldevkit/mural-integrations-common/assets/brands/mural-symbol.svg';
+import * as React from 'react';
+import { MouseEventHandler } from 'react';
+import styled from 'styled-components';
 import { AuthMode } from '../../common/realm';
-
-export const FONT_FAMILY = 'Proxima Nova, sans-serif';
+import { FONT_FAMILY } from './styles';
 
 const ThirdPartySignUp = styled.div`
   display: flex;
