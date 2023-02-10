@@ -21,10 +21,10 @@ import {
   HintContainer,
   Loading,
   MuralLogoContainer,
-  ChangeAccount,
+  AdditionalOptionText,
   SignInButton,
-  CreateOrUseADifferentAccount,
-  CreateOrSignin,
+  AdditionalOptionContainer,
+  Link,
   VisitorButton,
 } from './styles';
 
@@ -253,31 +253,34 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
               />
             )}
           </AccountChooserContent>
-          {hint && page === 'Sign in' ? (
-            <CreateOrUseADifferentAccount>
-              <ChangeAccount>
-                Not <em>{hint}</em> ?
-              </ChangeAccount>
-              <CreateOrSignin
-                data-qa="create-or-signin"
-                onClick={useAnotherAccount}
-                theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
-              >
-                Sign in with a different account
-              </CreateOrSignin>
-            </CreateOrUseADifferentAccount>
-          ) : (
-            <CreateOrUseADifferentAccount>
-              <ChangeAccount>Don't have an account ?</ChangeAccount>
-              <CreateOrSignin
-                data-qa="create-or-signin"
-                onClick={signUpForAccount}
-                theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
-              >
-                Get started for free
-              </CreateOrSignin>
-            </CreateOrUseADifferentAccount>
-          )}
+          {page === 'Sign in' &&
+            (hint ? (
+              <AdditionalOptionContainer>
+                <AdditionalOptionText>
+                  Not <em>{hint}</em> ?
+                </AdditionalOptionText>
+                <Link
+                  data-qa="create-or-signin"
+                  onClick={useAnotherAccount}
+                  theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
+                >
+                  Sign in with a different account
+                </Link>
+              </AdditionalOptionContainer>
+            ) : (
+              <AdditionalOptionContainer>
+                <AdditionalOptionText>
+                  Don't have an account ?
+                </AdditionalOptionText>
+                <Link
+                  data-qa="create-or-signin"
+                  onClick={signUpForAccount}
+                  theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
+                >
+                  Get started for free
+                </Link>
+              </AdditionalOptionContainer>
+            ))}
         </AccountChooserContainer>
       )}
     </>
