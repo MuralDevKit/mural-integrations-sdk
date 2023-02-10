@@ -7,6 +7,7 @@ import {
   Room,
   Template,
   Workspace,
+  getApiError,
 } from '@muraldevkit/mural-integrations-mural-client';
 import cx from 'classnames';
 import debounce from 'lodash/debounce';
@@ -190,9 +191,16 @@ export default class MuralCreate extends React.Component<
           clientAppId: this.props.apiClient.config.appId,
           template: template.name,
         });
-      } catch (exception) {
+      } catch (exception: any) {
+        let errorStr = 'Error creating a new mural.';
+
+        const apiError = await getApiError(exception);
+        if (apiError && apiError.status === 403) {
+          errorStr = apiError.message;
+        }
+
         this.setState({
-          error: 'Error creating a new mural.',
+          error: errorStr,
           btnLoading: false,
         });
       }
