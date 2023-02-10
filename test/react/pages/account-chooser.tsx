@@ -11,10 +11,10 @@ const accountChooser: Page = {
       <AccountChooser
         apiClient={apiClient}
         hint={getCtxItem('$user-principal')}
-        getAuthUrl={_options => {
+        getAuthUrl={(_options: any) => {
           return Promise.resolve('url');
         }}
-        onSelection={(_url, _action) => {}}
+        onSelection={(_url: any, _action: any) => {}}
         onError={console.error}
       >
         <div data-qa="logged-in-content" />
@@ -29,7 +29,7 @@ const accountChooser: Page = {
     'continue with email': 'continue-with-email',
     'sign up with': 'sign-up-with',
     'send verification email': 'send-verification-email',
-    'use another account': 'use-another-account',
+    'create or signin': 'create-or-signin',
   },
 };
 

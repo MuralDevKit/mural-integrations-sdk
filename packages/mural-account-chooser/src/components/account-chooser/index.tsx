@@ -21,10 +21,10 @@ import {
   HintContainer,
   Loading,
   MuralLogoContainer,
-  NotYourEmail,
+  ChangeAccount,
   SignInButton,
-  UseDifferentEmail,
-  UseDifferentEmailLink,
+  CreateOrUseADifferentAccount,
+  CreateOrSignin,
   VisitorButton,
 } from './styles';
 
@@ -133,6 +133,13 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
 
   const useAnotherAccount = async () =>
     onSelection(await getAuthUrl(), ACCOUNT_CHOOSER_ACTION.ANOTHER_ACCOUNT);
+
+  const signUpForAccount = async () => {
+    onSelection(
+      await getAuthUrl({ signup: true }),
+      ACCOUNT_CHOOSER_ACTION.SIGN_UP,
+    );
+  };
 
   const continueWithEmail = async () => {
     if (!hint) {
@@ -246,19 +253,30 @@ const AccountChooser: React.FC<AccountChooserPropTypes> = (
               />
             )}
           </AccountChooserContent>
-          {hint && page === 'Sign in' && (
-            <UseDifferentEmail>
-              <NotYourEmail>
+          {hint && page === 'Sign in' ? (
+            <CreateOrUseADifferentAccount>
+              <ChangeAccount>
                 Not <em>{hint}</em> ?
-              </NotYourEmail>
-              <UseDifferentEmailLink
-                data-qa="use-another-account"
+              </ChangeAccount>
+              <CreateOrSignin
+                data-qa="create-or-signin"
                 onClick={useAnotherAccount}
                 theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
               >
                 Sign in with a different account
-              </UseDifferentEmailLink>
-            </UseDifferentEmail>
+              </CreateOrSignin>
+            </CreateOrUseADifferentAccount>
+          ) : (
+            <CreateOrUseADifferentAccount>
+              <ChangeAccount>Don't have an account ?</ChangeAccount>
+              <CreateOrSignin
+                data-qa="create-or-signin"
+                onClick={signUpForAccount}
+                theme={theme === 'light' ? LIGHT_THEME : DARK_THEME}
+              >
+                Get started for free
+              </CreateOrSignin>
+            </CreateOrUseADifferentAccount>
           )}
         </AccountChooserContainer>
       )}

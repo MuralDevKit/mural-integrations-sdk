@@ -119,21 +119,21 @@ export const VisitorButton = styled(Button)`
   color: ${({ theme }) => theme.secondaryTextColor};
 `;
 
-export const UseDifferentEmail = styled.div`
+export const CreateOrUseADifferentAccount = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 30px;
 `;
 
-export const NotYourEmail = styled.div`
+export const ChangeAccount = styled.div`
   font-family: ${FONT_FAMILY};
   color: ${({ theme }) => theme.primaryTextColor};
   font-size: 0.9em;
   line-height: 140%;
 `;
 
-export const UseDifferentEmailLink = styled.a`
+export const CreateOrSignin = styled.a`
   cursor: pointer;
   background: none;
   padding: 0;
