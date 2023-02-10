@@ -11,10 +11,10 @@ const accountChooser: Page = {
       <AccountChooser
         apiClient={apiClient}
         hint={getCtxItem('$user-principal')}
-        getAuthUrl={(_options: any) => {
+        getAuthUrl={(_options) => {
           return Promise.resolve('url');
         }}
-        onSelection={(_url: any, _action: any) => {}}
+        onSelection={(_url: any, _action) => {}}
         onError={console.error}
       >
         <div data-qa="logged-in-content" />
