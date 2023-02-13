@@ -29,7 +29,7 @@ const accountChooser: Page = {
     'continue with email': 'continue-with-email',
     'sign up with': 'sign-up-with',
     'send verification email': 'send-verification-email',
-    'use another account': 'use-another-account',
+    'create or signin': 'create-or-signin',
   },
 };
 

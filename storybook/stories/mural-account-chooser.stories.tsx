@@ -1,8 +1,8 @@
-import React from 'react';
 import {
   AccountChooser,
   ACCOUNT_CHOOSER_ACTION,
 } from '@muraldevkit/mural-integrations-mural-account-chooser';
+import React from 'react';
 
 // TODO: Remove this
 const blackHole: any = new Proxy(() => {}, {
