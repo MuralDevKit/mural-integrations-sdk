@@ -89,8 +89,38 @@
     font-size: 0.675em;
     width: 140px;
 
+    .card-action-area {
+      padding: 0.8em;
+    }
+
     .card-thumbnail {
-      height: 70px;
+      height: 74px;
+      border-radius: 0.7em;
+    }
+    .card-title {
+      margin-top: 0.675em;
+    }
+
+    .card-info {
+      display: none;
+    }
+  }
+
+  &.tiny-card {
+    font-size: 0.5em;
+    width: 100px;
+
+    .card-action-area {
+      padding: 0.6em;
+    }
+
+    .card-thumbnail {
+      height: 55px;
+      border-radius: 0.7em;
+    }
+
+    .card-title {
+      margin-top: 0.5em;
     }
 
     .card-info {

@@ -25,7 +25,7 @@ export default (props: PropTypes) => {
       })}
       onClick={onClick}
     >
-      <CardActionArea>
+      <CardActionArea className="card-action-area">
         <CardMedia
           component="span"
           image={source.thumbnailUrl.toString()}

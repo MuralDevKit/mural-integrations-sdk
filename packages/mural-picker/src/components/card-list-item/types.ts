@@ -1,6 +1,6 @@
 import { EventHandler } from '@muraldevkit/mural-integrations-common';
 
-export type CardSize = 'small' | 'normal';
+export type CardSize = 'normal' | 'small' | 'tiny';
 
 export interface PropTypes {
   cardSize: CardSize;

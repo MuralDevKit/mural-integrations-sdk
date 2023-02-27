@@ -134,3 +134,36 @@ export const Small = () => (
     />
   </div>
 );
+
+export const Tiny = () => (
+  <div
+    style={{
+      display: 'flex',
+      minHeight: '600px',
+    }}
+  >
+    <MuralPicker
+      apiClient={apiClient}
+      onSelect={onSelect}
+      onError={onError}
+      theme={{ cardSize: 'tiny' }}
+    />
+  </div>
+);
+
+export const Width250PX = () => (
+  <div
+    style={{
+      display: 'flex',
+      minHeight: '600px',
+      width: '250px',
+    }}
+  >
+    <MuralPicker
+      apiClient={apiClient}
+      onSelect={onSelect}
+      onError={onError}
+      theme={{ cardSize: 'tiny' }}
+    />
+  </div>
+);
