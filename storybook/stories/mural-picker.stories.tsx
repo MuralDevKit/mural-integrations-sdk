@@ -151,12 +151,12 @@ export const Tiny = () => (
   </div>
 );
 
-export const Width250PX = () => (
+export const PPTMinWidth340PX = () => (
   <div
     style={{
       display: 'flex',
       minHeight: '600px',
-      width: '250px',
+      width: '340px',
     }}
   >
     <MuralPicker
