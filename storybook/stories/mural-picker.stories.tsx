@@ -151,19 +151,19 @@ export const Tiny = () => (
   </div>
 );
 
-export const PPTMinWidth340PX = () => (
+export const PPTMinWidth320PX = () => (
   <div
     style={{
       display: 'flex',
       minHeight: '600px',
-      width: '340px',
+      width: '320px',
     }}
   >
     <MuralPicker
       apiClient={apiClient}
       onSelect={onSelect}
       onError={onError}
-      theme={{ cardSize: 'tiny' }}
+      theme={{ cardSize: 'small' }}
     />
   </div>
 );
