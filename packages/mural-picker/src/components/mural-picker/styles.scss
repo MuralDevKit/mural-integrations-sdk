@@ -25,10 +25,13 @@
     .workspace-select,
     .room-select {
       flex-grow: 5;
+      min-width: 200px;
     }
 
     .mural-picker-control {
       flex: 1 0 4rem;
+      min-width:140px;
+      padding-top:15px;
     }
   }
 
