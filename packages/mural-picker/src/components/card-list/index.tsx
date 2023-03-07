@@ -88,11 +88,17 @@ export default class MuralCardList extends React.Component<PropTypes> {
       m => !m.favorite && m.id === this.props.selectedMural?.id,
     );
 
+    // If there aren't any favorite murals, we don't need the "All murals" title there.
+    const title =
+      this.props.murals.filter(mural => mural.favorite).length === 0
+        ? ' '
+        : 'All murals';
+
     // Display all murals or all murals in selected room
     if (this.props.murals.length) {
       return (
         <CardListSection
-          title="All murals"
+          title={title}
           items={this.props.murals.map(muralCardItemSource)}
           cardSize={this.props.cardSize}
           onSelect={this.handleSelectFor(this.props.murals, 'murals')}
