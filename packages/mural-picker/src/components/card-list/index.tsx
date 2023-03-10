@@ -83,19 +83,17 @@ export default class MuralCardList extends React.Component<PropTypes> {
     );
   };
 
-  renderMurals = () => {
-    const selected = this.props.murals.findIndex(
-      m => !m.favorite && m.id === this.props.selectedMural?.id,
-    );
-
-    // Display all murals or all murals in selected room
-    if (this.props.murals.length) {
+  renderMurals = (murals: Mural[], title?: string) => {
+    if (murals.length) {
+      const selected = murals.findIndex(
+        m => m.id === this.props.selectedMural?.id,
+      );
       return (
         <CardListSection
-          title="All murals"
-          items={this.props.murals.map(muralCardItemSource)}
+          title={title}
+          items={murals.map(muralCardItemSource)}
           cardSize={this.props.cardSize}
-          onSelect={this.handleSelectFor(this.props.murals, 'murals')}
+          onSelect={this.handleSelectFor(murals, 'murals')}
           onAction={this.handleAction}
           selected={selected}
         />
@@ -104,11 +102,15 @@ export default class MuralCardList extends React.Component<PropTypes> {
   };
 
   render() {
+    const favoriteMurals = this.props.murals.filter(mural => mural.favorite);
     return (
       <div className="mural-selector-container">
         <div className="mural-selector-grid">
-          {this.renderFavoriteMurals()}
-          {this.renderMurals()}
+          {this.renderMurals(favoriteMurals, 'Your favorite murals')}
+          {this.renderMurals(
+            this.props.murals,
+            favoriteMurals.length ? 'All murals' : ' ',
+          )}
         </div>
       </div>
     );

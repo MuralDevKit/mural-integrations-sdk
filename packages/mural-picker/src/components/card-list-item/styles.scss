@@ -25,7 +25,7 @@
   }
 
   .card-thumbnail {
-    border-radius: 1rem;
+    border-radius: 8px;
     width: 100%;
     height: 130px;
 
@@ -89,8 +89,36 @@
     font-size: 0.675em;
     width: 140px;
 
+    .card-action-area {
+      padding: 0.8em;
+    }
+
     .card-thumbnail {
-      height: 70px;
+      height: 74px;
+    }
+    .card-title {
+      margin-top: 0.675em;
+    }
+
+    .card-info {
+      display: none;
+    }
+  }
+
+  &.tiny-card {
+    font-size: 0.5em;
+    width: 100px;
+
+    .card-action-area {
+      padding: 0.6em;
+    }
+
+    .card-thumbnail {
+      height: 55px;
+    }
+
+    .card-title {
+      margin-top: 0.5em;
     }
 
     .card-info {
