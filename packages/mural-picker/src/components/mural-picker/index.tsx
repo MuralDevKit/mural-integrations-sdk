@@ -66,6 +66,7 @@ interface PropTypes {
 
   theme?: DeepPartial<ThemeOptions>;
   slots?: DeepPartial<Slots>;
+  disableCreate?: boolean;
 }
 
 interface StateTypes {
@@ -330,32 +331,34 @@ export default class MuralPicker extends React.Component<
               onSelect={this.handleRoomSelect}
               slots={slots.RoomSelect}
             />
-            <FormControl
-              className="mural-picker-control"
-              data-qa="mural-picker-control"
-            >
-              <Measure bounds>
-                {({ measureRef, contentRect }) => {
-                  const sz = threshold(contentRect.bounds?.width, {
-                    l: 140,
-                  });
-                  return (
-                    <PrimaryButton
-                      color="primary"
-                      ref={measureRef}
-                      disabled={!this.state.room}
-                      onClick={this.handleCreate}
-                      title="Create new mural"
-                    >
-                      <SvgIcon>
-                        <Plus />
-                      </SvgIcon>
-                      {sz.l && <span>New mural</span>}
-                    </PrimaryButton>
-                  );
-                }}
-              </Measure>
-            </FormControl>
+            {!this.props.disableCreate && (
+              <FormControl
+                className="mural-picker-control"
+                data-qa="mural-picker-control"
+              >
+                <Measure bounds>
+                  {({ measureRef, contentRect }) => {
+                    const sz = threshold(contentRect.bounds?.width, {
+                      l: 140,
+                    });
+                    return (
+                      <PrimaryButton
+                        color="primary"
+                        ref={measureRef}
+                        disabled={!this.state.room}
+                        onClick={this.handleCreate}
+                        title="Create new mural"
+                      >
+                        <SvgIcon>
+                          <Plus />
+                        </SvgIcon>
+                        {sz.l && <span>New mural</span>}
+                      </PrimaryButton>
+                    );
+                  }}
+                </Measure>
+              </FormControl>
+            )}
           </div>
 
           {this.state.error && <MuralPickerError error={this.state.error} />}

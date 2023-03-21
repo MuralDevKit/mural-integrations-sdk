@@ -61,3 +61,8 @@ Feature: mural picker
     # Reopen the mural picker to reload the workspaces
     And the page rerenders
     Then [workspace select] has 5 options
+
+  Scenario: Create new mural shouldn't show when create is disabled
+    Given mural picker create is disabled
+    And the page rerenders
+    Then [mural picker control] is not shown

@@ -103,6 +103,23 @@ const onSelect = (mural, room, workspace) => {
 };
 const onError = () => {};
 
+export const CreateDisabled = () => (
+  <div
+    style={{
+      display: 'flex',
+      minHeight: '600px',
+    }}
+  >
+    <MuralPicker
+      apiClient={apiClient}
+      onSelect={onSelect}
+      onError={onError}
+      theme={{ cardSize: 'normal' }}
+      disableCreate={true}
+    />
+  </div>
+);
+
 export const Normal = () => (
   <div
     style={{
