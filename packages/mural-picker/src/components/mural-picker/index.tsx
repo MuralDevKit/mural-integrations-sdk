@@ -1,3 +1,4 @@
+import { Box, FormControl, SvgIcon } from '@material-ui/core';
 import {
   ThemeOptions as MuiThemeOptions,
   ThemeProvider,
@@ -13,32 +14,31 @@ import {
   Room,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
+import cx from 'classnames';
 import * as React from 'react';
+import Measure from 'react-measure';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getAllRoomsByWorkspace, getAllWorkspaces } from '../../common/get-all';
+import { ReactSlot } from '../../common/react';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import CardList from '../card-list';
 import { CardSize } from '../card-list-item';
+import { BackButton, PrimaryButton, threshold } from '../common';
 import MuralPickerError from '../error';
 import Header from '../header';
 import Loading from '../loading';
 import MuralCreate from '../mural-create';
 import RoomSelect from '../room-select';
-import WorkspaceSelect from '../workspace-select';
 import createTheme, { Preset } from '../theme';
-import { ReactSlot } from '../../common/react';
-import { BackButton, PrimaryButton, threshold } from '../common';
-import { Box, FormControl, SvgIcon } from '@material-ui/core';
-import cx from 'classnames';
-import Measure from 'react-measure';
+import WorkspaceSelect from '../workspace-select';
 
 import '@muraldevkit/mural-integrations-common/styles/common.scss';
 import './styles.scss';
 
 // @TECHDEBT — Once we have the @tactivos/ds-icons library
 // We can remove this atrocity and `import { plus } from '@tactivos/ds-icons'`
-import { ReactComponent as Plus } from '@muraldevkit/mural-integrations-common/assets/icons/plus.svg';
 import { ReactComponent as BackArrow } from '@muraldevkit/mural-integrations-common/assets/icons/arrow-back.svg';
+import { ReactComponent as Plus } from '@muraldevkit/mural-integrations-common/assets/icons/plus.svg';
 
 export type ThemeOptions = {
   preset: Preset;
@@ -66,6 +66,7 @@ interface PropTypes {
 
   theme?: DeepPartial<ThemeOptions>;
   slots?: DeepPartial<Slots>;
+  disableCreate?: boolean;
 }
 
 interface StateTypes {
@@ -330,32 +331,34 @@ export default class MuralPicker extends React.Component<
               onSelect={this.handleRoomSelect}
               slots={slots.RoomSelect}
             />
-            <FormControl
-              className="mural-picker-control"
-              data-qa="mural-picker-control"
-            >
-              <Measure bounds>
-                {({ measureRef, contentRect }) => {
-                  const sz = threshold(contentRect.bounds?.width, {
-                    l: 140,
-                  });
-                  return (
-                    <PrimaryButton
-                      color="primary"
-                      ref={measureRef}
-                      disabled={!this.state.room}
-                      onClick={this.handleCreate}
-                      title="Create new mural"
-                    >
-                      <SvgIcon>
-                        <Plus />
-                      </SvgIcon>
-                      {sz.l && <span>New mural</span>}
-                    </PrimaryButton>
-                  );
-                }}
-              </Measure>
-            </FormControl>
+            {!this.props.disableCreate && (
+              <FormControl
+                className="mural-picker-control"
+                data-qa="mural-picker-control"
+              >
+                <Measure bounds>
+                  {({ measureRef, contentRect }) => {
+                    const sz = threshold(contentRect.bounds?.width, {
+                      l: 140,
+                    });
+                    return (
+                      <PrimaryButton
+                        color="primary"
+                        ref={measureRef}
+                        disabled={!this.state.room}
+                        onClick={this.handleCreate}
+                        title="Create new mural"
+                      >
+                        <SvgIcon>
+                          <Plus />
+                        </SvgIcon>
+                        {sz.l && <span>New mural</span>}
+                      </PrimaryButton>
+                    );
+                  }}
+                </Measure>
+              </FormControl>
+            )}
           </div>
 
           {this.state.error && <MuralPickerError error={this.state.error} />}

@@ -1,6 +1,6 @@
-import { SetupFnArgs } from 'pickled-cucumber/types';
 import { setSession } from '@muraldevkit/mural-integrations-mural-client';
 import { DELAYS as MURAL_PICKER_DELAY } from '@muraldevkit/mural-integrations-mural-picker';
+import { SetupFnArgs } from 'pickled-cucumber/types';
 import { dummyToken, get, set } from '../../../utils';
 import {
   MURAL_API_PAGE_SIZE_BY_ROUTE_KEY,
@@ -87,4 +87,15 @@ export default function registerGiven({
     },
     { inline: true },
   );
+
+  // USAGE:
+  //
+  // Given mural picker create is disabled
+  Given('mural picker create is disabled', () => {
+    setCtx('$mural-picker-create-disabled', true);
+
+    onTearDown(() => {
+      setCtx('$mural-picker-create-disabled', false);
+    });
+  });
 }
