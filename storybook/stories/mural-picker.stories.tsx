@@ -23,7 +23,7 @@ const generateMurals = (count: number, type: string): Mural[] => {
 
       favorite: false,
       id: 'murally-org.1663596120234',
-      roomId: '1624391458942',
+      roomId: 1624391458942,
 
       thumbnailUrl:
         'https://murally.blob.core.windows.net/thumbnails/murally-org%2Fmurals%2Fmurally-org.1659575140738-undefined-a439ef0d-4aed-41e4-8328-7ff5e466a8de.png?v=a33a421a-3492-4503-bc93-d8e6060b655b',
@@ -77,7 +77,7 @@ const apiClient: ApiClient = {
     Promise.resolve({
       value: [
         {
-          id: '1439228318329',
+          id: 1439228318329,
           name: 'my room',
           type: 'private',
           workspaceId: 'myWorkspaceId',

@@ -7,20 +7,19 @@ import {
 } from '../../../packages/mural-client';
 import generateMemoryEntity from './memory-entity';
 
-interface BaseEntity {
-  id: string;
-}
+const generateUuid = () => uuid();
 
-const generateUuid = <T extends BaseEntity>() => {
-  return uuid() as T['id'];
-};
+// Generate room IDs as incremental integers
+let lastRoomId = new Date().getTime();
+const generateRoomId = () => lastRoomId++;
 
-const generate = <T extends BaseEntity>(defaults?: {}) =>
-  generateMemoryEntity<T, keyof T>('id', generateUuid, defaults);
+const workspace = generateMemoryEntity<Workspace, 'id'>('id', generateUuid);
 
-const workspace = generate<Workspace>();
-const room = generate<Room>({ type: 'private' });
-const mural = generate<Mural>({
+const room = generateMemoryEntity<Room, 'id'>('id', generateRoomId, {
+  type: 'private',
+});
+
+const mural = generateMemoryEntity<Mural, 'id'>('id', generateUuid, {
   thumbnailUrl: 'https://static.testing.rig/mural-thumbnail.png',
   createdBy: {
     firstName: 'Created',
@@ -31,7 +30,8 @@ const mural = generate<Mural>({
     lastName: 'By',
   },
 });
-const template = generate<Template>({
+
+const template = generateMemoryEntity<Template, 'id'>('id', generateUuid, {
   thumbUrl: 'https://static.testing.rig/template-thumbnail.png',
   createdBy: {
     firstName: 'Created',

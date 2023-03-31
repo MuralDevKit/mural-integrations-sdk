@@ -225,14 +225,14 @@ export interface ApiClient {
     {
       title: string;
       workspaceId: string;
-      roomId: string;
+      roomId: number;
     }
   >;
   createMuralFromTemplate: ResourceEndpoint<
     Mural,
     {
       title: string;
-      roomId: string;
+      roomId: number;
       templateId: string;
     }
   >;
@@ -272,7 +272,7 @@ export interface ApiClient {
   >;
   getMuralsByRoom: ResourceEndpoint<
     Mural[],
-    { roomId: string },
+    { roomId: number },
     Paginated & Sorted & Integration
   >;
   getMuralsByWorkspace: ResourceEndpoint<
