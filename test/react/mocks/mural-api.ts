@@ -1,7 +1,7 @@
 import fetchMock from 'fetch-mock';
 import { getCtxItem } from 'pickled-cucumber/context';
 import muralApiEntities from '../entities/mural-api';
-
+import { delay } from '../utils';
 import { FAKE_MURAL_HOST } from '../../utils';
 
 export const ROUTES = {
@@ -31,6 +31,11 @@ export const ROUTES = {
 // Allows tests to configure to default page size to help test paginated endpoints.
 export type PageSizeByRouteMap = Map<string, number>;
 export const MURAL_API_PAGE_SIZE_BY_ROUTE_KEY = '$mural-api-page-size-by-route';
+
+// Map of API route to response delay in milliseconds.
+// Allows tests to configure to a delay when responding to the request.
+export type DelayByRouteMap = Map<string, number>;
+export const MURAL_API_DELAY_BY_ROUTE_KEY = '$mural-api-delay-by-route';
 
 const DEFAULT_LIMIT = 100;
 
@@ -99,21 +104,19 @@ const fetchPage = async <TResource>(
   url: URL,
   findEntities: () => Promise<TResource[]>,
 ) => {
-  const parsedUrl = new URL(url);
-
   let limit;
   try {
-    limit = parseLimitParam(parsedUrl.searchParams.get('limit'));
+    limit = parseLimitParam(url.searchParams.get('limit'));
   } catch (err) {
     return INVALID_LIMIT_RESPONSE;
   }
 
   // Allow overriding the specified limit from context
-  limit = getRoutePageSize(parsedUrl.pathname) ?? limit;
+  limit = getRoutePageSize(url.pathname) ?? limit;
 
   let next;
   try {
-    next = parseNextParam(parsedUrl.searchParams.get('next'));
+    next = parseNextParam(url.searchParams.get('next'));
   } catch (err) {
     return INVALID_PAGINATION_RESPONSE;
   }
@@ -136,81 +139,129 @@ const fetchPage = async <TResource>(
   };
 };
 
+/**
+ * Get the configured delay for a route, or undefined.
+ * The route is the URL pathname: the leading '/' followed by the path, without
+ * the query string or fragment.
+ */
+const getRouteDelayMs = (route: string): number | undefined =>
+  getCtxItem<DelayByRouteMap>(MURAL_API_DELAY_BY_ROUTE_KEY)?.get(route);
+
+/**
+ * Delay the response by the configured delay for the route, if any.
+ */
+const delayResponse = async (url: URL) => {
+  // Get the configured delay in milliseconds for the route
+  const delayMs = getRouteDelayMs(url.pathname);
+  if (!delayMs) {
+    return;
+  }
+
+  return delay(delayMs);
+};
+
+/**
+ * Wrapper function to delay for the configuration duration before returning the
+ * value.
+ */
+const response = async (url: URL, value: unknown) => {
+  await delayResponse(url);
+  return value;
+};
+
 export const registerGlobalRoutes = () => {
   fetchMock.get(ROUTES.ME, async () => {
-    return {
+    const parsedUrl = new URL(ROUTES.ME);
+    return response(parsedUrl, {
       value: {
         lastActiveWorkspace: getCtxItem<string>('LAST_ACTIVE_WORKSPACE'),
       },
-    };
+    });
   });
 
   fetchMock.get(ROUTES.WORKSPACES_MURALS, async (url: string) => {
-    const workspaceId = new URL(url).pathname.split('/')[5];
+    const parsedUrl = new URL(url);
+    const workspaceId = parsedUrl.pathname.split('/')[5];
     const murals = await muralApiEntities.mural.findAllBy({ workspaceId });
 
-    return { value: murals };
+    return response(parsedUrl, { value: murals });
   });
 
   fetchMock.get(ROUTES.WORKSPACES_ROOMS, async (url: string) => {
     const parsedUrl = new URL(url);
     const workspaceId = parsedUrl.pathname.split('/')[5];
 
-    return fetchPage(parsedUrl, () =>
-      muralApiEntities.room.findAllBy({ workspaceId }),
+    return response(
+      parsedUrl,
+      fetchPage(parsedUrl, () =>
+        muralApiEntities.room.findAllBy({ workspaceId }),
+      ),
     );
   });
 
   fetchMock.get(ROUTES.WORKSPACES_TEMPLATES, async (url: string) => {
-    const workspaceId = new URL(url).pathname.split('/')[5];
+    const parsedUrl = new URL(url);
+    const workspaceId = parsedUrl.pathname.split('/')[5];
     const templates = await muralApiEntities.template.findAllBy({
       workspaceId,
     });
 
-    return { value: templates };
+    return response(parsedUrl, { value: templates });
   });
 
   fetchMock.get(ROUTES.ROOMS_MURALS, async (url: string) => {
-    const roomId = new URL(url).pathname.split('/')[5];
+    const parsedUrl = new URL(url);
+    const roomId = parsedUrl.pathname.split('/')[5];
     const murals = await muralApiEntities.mural.findAllBy({ roomId });
 
-    return { value: murals };
+    return response(parsedUrl, { value: murals });
   });
 
   fetchMock.get(ROUTES.MURAL, async (url: string) => {
-    const muralId = new URL(url).pathname.split('/')[5];
+    const parsedUrl = new URL(url);
+    const muralId = parsedUrl.pathname.split('/')[5];
     const mural = await muralApiEntities.mural.findBy({ id: muralId });
 
-    return { value: mural };
+    return response(parsedUrl, { value: mural });
   });
 
   fetchMock.get(ROUTES.WORKSPACES, async (url: string) => {
     const parsedUrl = new URL(url);
-    return fetchPage(parsedUrl, muralApiEntities.workspace.findAll);
+    return response(
+      parsedUrl,
+      fetchPage(parsedUrl, muralApiEntities.workspace.findAll),
+    );
   });
 
   fetchMock.get(ROUTES.TEMPLATES, async () => {
+    const parsedUrl = new URL(ROUTES.TEMPLATES);
     const templates = await muralApiEntities.template.findAll();
-    return { value: templates };
+    return response(parsedUrl, { value: templates });
   });
 
   fetchMock.get(ROUTES.GLOBAL_TEMPLATES, () => {
-    return muralApiEntities.template.findAll();
+    const parsedUrl = new URL(ROUTES.TEMPLATES);
+    return response(parsedUrl, { value: muralApiEntities.template.findAll() });
   });
 
-  fetchMock.post(ROUTES.TEMPLATES_MURALS, async (_, opts) => {
+  fetchMock.post(ROUTES.TEMPLATES_MURALS, async (url, opts) => {
+    const parsedUrl = new URL(url);
     const payload = JSON.parse(opts?.body?.toString() || '{}');
     if (!payload.id) payload.id = 'wid.mid';
     const mural = await muralApiEntities.mural.create(payload);
-    return { value: mural };
+    return response(parsedUrl, { value: mural });
   });
 
   fetchMock.put(ROUTES.MURALLY_OAUTH_SESSION, (url: string) => {
-    const params = new URLSearchParams(new URL(url).search);
+    const parsedUrl = new URL(url);
+    const params = new URLSearchParams(parsedUrl.search);
     const redirectUrl = params.get('redirectUrl');
 
-    return JSON.stringify(
-      `https://${FAKE_MURAL_HOST}/claim_url?redirectUrl=${redirectUrl}`,
+    return response(
+      parsedUrl,
+      JSON.stringify(
+        `https://${FAKE_MURAL_HOST}/claim_url?redirectUrl=${redirectUrl}`,
+      ),
     );
   });
 
@@ -220,12 +271,12 @@ export const registerGlobalRoutes = () => {
     const rooms = await muralApiEntities.room.findAllBy({ workspaceId });
     const title = parsedUrl.searchParams.get('title');
     if (title) {
-      return {
+      return response(parsedUrl, {
         value: rooms.filter((room: { name: string }) =>
           room.name.includes(title),
         ),
-      };
+      });
     }
-    return { value: rooms };
+    return response(parsedUrl, { value: rooms });
   });
 };
