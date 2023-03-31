@@ -62,6 +62,33 @@ Feature: mural picker
     And the page rerenders
     Then [workspace select] has 5 options
 
+  Scenario: selecting a workspace aborts in-flight requests
+    Given a fake timer
+    And route /api/public/v1/workspaces/${W1.id}/rooms has delay 5000 ms
+    # Reopen the mural picker to reload the murals
+    And the page rerenders
+    # Select a different workspace
+    When I select "workspace2" in [workspace select]
+    And the fake timer advances 5000 ms
+    And all fetch requests complete
+    # The picker shows the murals in workspace2
+    Then the [card title] at index 0 content is "${M4.title}"
+
+  Scenario: selecting a room aborts in-flight requests
+    Given a fake timer
+    And route /api/public/v1/workspaces/${W1.id}/murals has delay 5000 ms
+    # Add another room with a mural to workspace 2
+    And a room R10 with { "name": "room10", "workspaceId": "${W2.id}" }
+    And a mural M10 with { "title": "mural10", "roomId": "${R10.id}", "workspaceId": "${W2.id}" }
+    # Reopen the mural picker to reload the murals
+    And the page rerenders
+    # Select a different workspace and a room
+    When I select "workspace2" in [workspace select]
+    And I select "room10" in [room select]
+    And the fake timer advances 5000 ms
+    And all fetch requests complete
+    Then the [card title] at index 0 content is "${M10.title}"
+
   Scenario: Create new mural shouldn't show when create is disabled
     Given mural picker create is disabled
     And the page rerenders
