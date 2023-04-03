@@ -60,6 +60,7 @@ const apiClient: ApiClient = {
     muralHost: undefined,
     secure: true,
   } as ClientConfig,
+  abort: () => {},
   track: () => {},
   getCurrentUser: () =>
     Promise.resolve({ value: { email: '', id: 'xxx' } as User }),
