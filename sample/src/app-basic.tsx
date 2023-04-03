@@ -175,8 +175,13 @@ class App extends React.Component<{}, AppState> {
               buttonTitle="Select"
             />
             <hr />
+            {/*
+            * MuralPicker aborts in-flight requests when selecting a new
+            * workspace or room. Clone the ApiClient to prevent affecting
+            * requests in other components.
+            */}
             <MuralPicker
-              apiClient={apiClient}
+              apiClient={apiClient.clone()}
               onSelect={this.handleMural}
               onError={handleError}
             />
