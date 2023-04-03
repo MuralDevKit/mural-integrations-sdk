@@ -3,7 +3,9 @@ import { DELAYS as MURAL_PICKER_DELAY } from '@muraldevkit/mural-integrations-mu
 import { SetupFnArgs } from 'pickled-cucumber/types';
 import { dummyToken, get, set } from '../../../utils';
 import {
+  MURAL_API_DELAY_BY_ROUTE_KEY,
   MURAL_API_PAGE_SIZE_BY_ROUTE_KEY,
+  DelayByRouteMap,
   PageSizeByRouteMap,
 } from '../../mocks/mural-api';
 
@@ -75,6 +77,19 @@ export default function registerGiven({
     pageSizes.set(route, limit);
 
     setCtx(MURAL_API_PAGE_SIZE_BY_ROUTE_KEY, pageSizes);
+  });
+
+  // USAGE:
+  //
+  // Given route /api/public/v1/workspaces/${WORKSPACE.id}/rooms has delay 2000 ms
+  Given('route {word} has delay {int} ms', (route, delayStr) => {
+    const delays =
+      getCtx<DelayByRouteMap>(MURAL_API_DELAY_BY_ROUTE_KEY) ?? new Map();
+
+    const delay = parseInt(delayStr, 10);
+    delays.set(route, delay);
+
+    setCtx(MURAL_API_DELAY_BY_ROUTE_KEY, delays);
   });
 
   // USAGE:

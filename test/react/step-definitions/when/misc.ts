@@ -1,3 +1,4 @@
+import fetchMock from 'fetch-mock';
 import { SetupFnArgs } from 'pickled-cucumber/types';
 import { rerenderPage } from '../../pages';
 import { delay } from '../../utils';
@@ -24,4 +25,11 @@ export default function registerWhen({ When }: SetupFnArgs) {
   When('the page rerenders', async () => {
     await rerenderPage();
   });
+
+  // USAGE:
+  //
+  // When all fetch requests complete
+  //
+  // Wait for all fetch requests handled by fetch-mock to resolve.
+  When('all fetch requests complete', () => fetchMock.flush());
 }

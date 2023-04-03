@@ -47,6 +47,16 @@ export type ApiQueryFor<T extends keyof ApiClient> = ApiClient[T] extends (
   ? TQuery
   : never;
 
+/**
+ * Error thrown when a request is aborted after calling `ApiClient.abort()`.
+ */
+export class AbortError extends Error {
+  constructor(message: string, public cause?: unknown) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
 const DEFAULT_CONFIG = {
   muralHost: 'app.mural.co',
   integrationsHost: 'integrations.mural.co',
@@ -169,6 +179,23 @@ export interface ApiClient {
   };
   fetch: FetchFunction;
   url: (path: string) => URL;
+
+  /**
+   * Abort in-flight requests. The request promises will reject with an
+   * AbortError.
+   *
+   * To abort only a subset of requests, `.clone()` the client and call
+   * `abort()` on the corresponding ApiClient instance.
+   */
+  abort: () => void;
+
+  /**
+   * Create a new instance of the client using the same configuration as the
+   * original instance.
+   *
+   * @returns ApiClient
+   */
+  clone: () => ApiClient;
   track: (event: string, properties?: {}) => void;
   createAsset: ResourceEndpoint<
     Asset,
@@ -303,7 +330,10 @@ export interface ApiClient {
  *
  * @returns ApiClient
  */
-export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
+const buildApiClient = (
+  aFetchFn: FetchFunction,
+  config: ClientConfig,
+): ApiClient => {
   const clientConfig = { ...DEFAULT_CONFIG, ...config };
 
   const urlBuilderFor =
@@ -318,11 +348,38 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
 
   const api = (path: string) => new URL(path, muralUrl('/api/public/v1/')).href;
 
+  // Controller to enable aborting requests
+  let controller = new AbortController();
+
+  // Wrapped fetch function that:
+  // - Attaches the AbortController's signal to the request's signal
+  // - Intercepts errors from aborted requests and throws our AbortError
+  const fetchFn: FetchFunction = async (input, init) => {
+    try {
+      return await aFetchFn(input, {
+        ...init,
+        signal: controller.signal,
+      });
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        // In-flight requests were aborted
+        throw new AbortError(err.message, err);
+      }
+
+      throw err;
+    }
+  };
+
   const client: ApiClient = {
     authenticated,
     config: clientConfig,
     fetch: fetchFn,
     url: muralUrl,
+    abort: () => {
+      controller.abort();
+      controller = new AbortController();
+    },
+    clone: () => buildApiClient(aFetchFn, config),
     track: (event: string, properties?: {}) => {
       const body = {
         event,
@@ -598,3 +655,5 @@ export default (fetchFn: FetchFunction, config: ClientConfig): ApiClient => {
 
   return client;
 };
+
+export default buildApiClient;

@@ -160,6 +160,9 @@ export default class MuralPicker extends React.Component<
   }
 
   handleWorkspaceSelect = async (workspace: Workspace | null) => {
+    // Abort in-flight requests
+    this.props.apiClient.abort();
+
     if (!workspace) {
       // clear selections
       return this.setState({
@@ -205,6 +208,9 @@ export default class MuralPicker extends React.Component<
     if (!room) {
       return this.handleWorkspaceSelect(this.state.workspace);
     }
+
+    // Abort in-flight requests
+    this.props.apiClient.abort();
 
     try {
       this.transition(Segue.LOADING);
@@ -270,6 +276,11 @@ export default class MuralPicker extends React.Component<
   };
 
   handleError = async (e: Error, displayMsg: string) => {
+    // Ignore aborted request errors
+    if (e.name === 'AbortError') {
+      return;
+    }
+
     this.setState({ error: displayMsg });
 
     if (this.props.onError) {
