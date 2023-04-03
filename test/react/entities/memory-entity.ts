@@ -10,6 +10,7 @@ const generate = <T, Tid extends keyof T>(
   idField: Tid,
   newId: () => T[Tid],
   defaults?: {},
+  validate?: (data: unknown) => T,
 ): CustomEntity<T, Tid> => {
   const entities: T[] = [];
 
@@ -19,6 +20,9 @@ const generate = <T, Tid extends keyof T>(
   const entityMethods: CustomEntity<T, Tid> = {
     create: async record => {
       const e = { [idField]: newId(), ...defaults, ...(record as T) };
+      if (validate) {
+        validate(e);
+      }
       entities.push(e);
       return e;
     },
