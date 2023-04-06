@@ -122,11 +122,22 @@ export default class MuralPicker extends React.Component<
     error: '',
   };
 
+  private apiClient: ApiClient;
+
+  constructor(props: PropTypes) {
+    super(props);
+
+    // Clone the ApiClient to avoid impacting other consumers of the client when
+    // we call abort()
+    this.apiClient = this.props.apiClient.clone();
+  }
+
   useTransition = (to: Segue) => () => this.transition(to);
 
   transition = (to: Segue) => this.setState({ segue: to });
 
   trackDisplay = () => {
+    // Track using the original ApiClient to avoid aborting these requests
     this.props.apiClient.track('Mural picker displayed', {
       ...getCommonTrackingProperties(),
       clientAppId: this.props.apiClient.config.appId,
@@ -139,8 +150,8 @@ export default class MuralPicker extends React.Component<
       this.transition(Segue.LOADING);
 
       const [workspaces, currentUser] = await Promise.all([
-        getAllWorkspaces(this.props.apiClient),
-        this.props.apiClient.getCurrentUser(),
+        getAllWorkspaces(this.apiClient),
+        this.apiClient.getCurrentUser(),
       ]);
       const lastActiveWorkspaceId = currentUser.value.lastActiveWorkspace;
 
@@ -161,7 +172,7 @@ export default class MuralPicker extends React.Component<
 
   handleWorkspaceSelect = async (workspace: Workspace | null) => {
     // Abort in-flight requests
-    this.props.apiClient.abort();
+    this.apiClient.abort();
 
     if (!workspace) {
       // clear selections
@@ -183,8 +194,8 @@ export default class MuralPicker extends React.Component<
       };
 
       const [uponRooms, uponMurals] = await Promise.all([
-        getAllRoomsByWorkspace(this.props.apiClient, q),
-        this.props.apiClient.getMuralsByWorkspace(q),
+        getAllRoomsByWorkspace(this.apiClient, q),
+        this.apiClient.getMuralsByWorkspace(q),
       ]);
 
       const rooms = uponRooms.sort((a, b) => b.type.localeCompare(a.type));
@@ -210,7 +221,7 @@ export default class MuralPicker extends React.Component<
     }
 
     // Abort in-flight requests
-    this.props.apiClient.abort();
+    this.apiClient.abort();
 
     try {
       this.transition(Segue.LOADING);
@@ -218,7 +229,7 @@ export default class MuralPicker extends React.Component<
         roomId: room.id,
       };
 
-      const eMurals = await this.props.apiClient.getMuralsByRoom(q);
+      const eMurals = await this.apiClient.getMuralsByRoom(q);
 
       this.setState({
         room: room,
@@ -390,7 +401,7 @@ export default class MuralPicker extends React.Component<
             this.state.room &&
             this.state.workspace && (
               <MuralCreate
-                apiClient={this.props.apiClient}
+                apiClient={this.apiClient}
                 cardSize={cardSize}
                 onError={this.handleError}
                 onCreate={this.handleFinishCreation}
