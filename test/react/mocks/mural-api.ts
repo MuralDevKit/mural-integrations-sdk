@@ -211,7 +211,7 @@ export const registerGlobalRoutes = () => {
 
   fetchMock.get(ROUTES.ROOMS_MURALS, async (url: string) => {
     const parsedUrl = new URL(url);
-    const roomId = parsedUrl.pathname.split('/')[5];
+    const roomId = parseInt(parsedUrl.pathname.split('/')[5], 10);
     const murals = await muralApiEntities.mural.findAllBy({ roomId });
 
     return response(parsedUrl, { value: murals });

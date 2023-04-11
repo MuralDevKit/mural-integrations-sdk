@@ -5,13 +5,13 @@ Feature: mural picker
     Given a workspace W1 with { "name": "workspace1" }
     And a room R1 with { "name": "room1", "workspaceId": "${W1.id}" }
     And a room R2 with { "name": "room2", "workspaceId": "${W1.id}" }
-    And a mural M1 with { "title": "mural1", "roomId": "${R1.id}", "workspaceId": "${W1.id}" }
-    And a mural M2 with { "title": "mural2", "roomId": "${R1.id}", "workspaceId": "${W1.id}" }
-    And a mural M3 with { "title": "mural3", "roomId": "${R2.id}", "workspaceId": "${W1.id}" }
+    And a mural M1 with { "title": "mural1", "roomId": ${R1.id}, "workspaceId": "${W1.id}" }
+    And a mural M2 with { "title": "mural2", "roomId": ${R1.id}, "workspaceId": "${W1.id}" }
+    And a mural M3 with { "title": "mural3", "roomId": ${R2.id}, "workspaceId": "${W1.id}" }
     # Workspace 2
     And a workspace W2 with { "name": "workspace2" }
     And a room R3 with { "name": "room3", "workspaceId": "${W2.id}" }
-    And a mural M4 with { "title": "mural4", "roomId": "${R3.id}", "workspaceId": "${W2.id}" }
+    And a mural M4 with { "title": "mural4", "roomId": ${R3.id}, "workspaceId": "${W2.id}" }
     # Opening mural picker modal
     And I visit the "mural picker" route
     And the route has finished loading
@@ -79,7 +79,7 @@ Feature: mural picker
     And route /api/public/v1/workspaces/${W1.id}/murals has delay 5000 ms
     # Add another room with a mural to workspace 2
     And a room R10 with { "name": "room10", "workspaceId": "${W2.id}" }
-    And a mural M10 with { "title": "mural10", "roomId": "${R10.id}", "workspaceId": "${W2.id}" }
+    And a mural M10 with { "title": "mural10", "roomId": ${R10.id}, "workspaceId": "${W2.id}" }
     # Reopen the mural picker to reload the murals
     And the page rerenders
     # Select a different workspace and a room

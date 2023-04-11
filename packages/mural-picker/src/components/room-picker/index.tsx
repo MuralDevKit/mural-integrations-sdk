@@ -103,7 +103,6 @@ export default class RoomPicker extends React.Component<PropTypes> {
       return this.setState({
         workspace: null,
         rooms: [],
-        roomId: '',
       });
     }
     try {
@@ -116,7 +115,6 @@ export default class RoomPicker extends React.Component<PropTypes> {
         isLoading: false,
         workspace,
         rooms: rooms,
-        roomId: '',
         room: null,
       });
     } catch (e: any) {

@@ -15,7 +15,7 @@ export type Workspace = {
 };
 
 export type Room = {
-  id: string;
+  id: number;
   name: string;
   type: string;
   workspaceId: string;
@@ -36,7 +36,7 @@ export type Mural = {
   favorite: boolean;
   title: string;
   thumbnailUrl: string;
-  roomId: string;
+  roomId: number;
   /** @deprecated
    * This field will require the new DR content API in the future
    */

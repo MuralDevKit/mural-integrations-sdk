@@ -6,42 +6,88 @@ import {
   Workspace,
 } from '../../../packages/mural-client';
 import generateMemoryEntity from './memory-entity';
+import {
+  MuralSchema,
+  RoomSchema,
+  TemplateSchema,
+  WorkspaceSchema,
+  validateTypeFactory,
+} from './schema';
 
-interface BaseEntity {
-  id: string;
-}
+const generateUuid = () => uuid();
+const generateTimestamp = () => Date.now();
 
-const generateUuid = <T extends BaseEntity>() => {
-  return uuid() as T['id'];
-};
+// Generate room IDs as incremental integers
+let lastRoomId = new Date().getTime();
+const generateRoomId = () => lastRoomId++;
 
-const generate = <T extends BaseEntity>(defaults?: {}) =>
-  generateMemoryEntity<T, keyof T>('id', generateUuid, defaults);
+const validateMural = validateTypeFactory(MuralSchema);
+const validateRoom = validateTypeFactory(RoomSchema);
+const validateTemplate = validateTypeFactory(TemplateSchema);
+const validateWorkspace = validateTypeFactory(WorkspaceSchema);
 
-const workspace = generate<Workspace>();
-const room = generate<Room>({ type: 'private' });
-const mural = generate<Mural>({
-  thumbnailUrl: 'https://static.testing.rig/mural-thumbnail.png',
-  createdBy: {
-    firstName: 'Created',
-    lastName: 'By',
+const workspace = generateMemoryEntity<Workspace, 'id'>(
+  'id',
+  generateUuid,
+  {},
+  validateWorkspace,
+);
+
+const room = generateMemoryEntity<Room, 'id'>(
+  'id',
+  generateRoomId,
+  {
+    type: 'private',
   },
-  updatedBy: {
-    firstName: 'Updated',
-    lastName: 'By',
+  validateRoom,
+);
+
+const mural = generateMemoryEntity<Mural, 'id'>(
+  'id',
+  generateUuid,
+  {
+    thumbnailUrl: 'https://static.testing.rig/mural-thumbnail.png',
+    createdBy: {
+      firstName: 'Created',
+      lastName: 'By',
+      email: 'creator@example.com',
+      id: generateUuid(),
+    },
+    createdOn: generateTimestamp(),
+    favorite: false,
+    updatedBy: {
+      firstName: 'Updated',
+      lastName: 'By',
+      email: 'updater@example.com',
+      id: generateUuid(),
+    },
+    updatedOn: generateTimestamp(),
+    visitorsSettings: {
+      link: '',
+      visitors: 'none',
+      workspaceMembers: 'none',
+    },
+    _canvasLink: '',
   },
-});
-const template = generate<Template>({
-  thumbUrl: 'https://static.testing.rig/template-thumbnail.png',
-  createdBy: {
-    firstName: 'Created',
-    lastName: 'By',
+  validateMural,
+);
+
+const template = generateMemoryEntity<Template, 'id'>(
+  'id',
+  generateUuid,
+  {
+    thumbUrl: 'https://static.testing.rig/template-thumbnail.png',
+    createdBy: {
+      firstName: 'Created',
+      lastName: 'By',
+    },
+    updatedBy: {
+      firstName: 'Updated',
+      lastName: 'By',
+    },
   },
-  updatedBy: {
-    firstName: 'Updated',
-    lastName: 'By',
-  },
-});
+  validateTemplate,
+);
 
 export default {
   workspace,
