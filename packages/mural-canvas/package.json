@@ -1,6 +1,6 @@
 {
   "name": "@muraldevkit/mural-integrations-mural-canvas",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Canvas component for Mural integrations",
   "main": "dist/mural-canvas.bundle.js",
   "module": "dist/mural-canvas.esm.js",
@@ -30,8 +30,8 @@
   },
   "homepage": "https://github.com/tactivos/mural-integrations-sdk/tree/packages/mural-canvas",
   "dependencies": {
-    "@muraldevkit/mural-integrations-common": "^3.1.0",
-    "@muraldevkit/mural-integrations-mural-client": "^3.1.0",
+    "@muraldevkit/mural-integrations-common": "^3.2.0",
+    "@muraldevkit/mural-integrations-mural-client": "^3.2.0",
     "classnames": "^2.3.1",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"
