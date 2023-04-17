@@ -117,5 +117,3 @@ Use the generated release notes.
 
 > It seems like there is an issue with Node *v16.15.1* where the `npx lerna bootstrap` command do not properly work in CI.
 > We need more investigation to figure out the issue. For now we will stick to *v16.13.0*
-
-[Create a new release](https://github.com/tactivos/mural-integrations-sdk/releases/new) from the latest tag.
