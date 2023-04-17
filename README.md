@@ -94,13 +94,19 @@ Read diff between the latest version and master, and decide on the version numbe
 2. Create a new release branch
 
 ```
-git checkout -b release/<current-version>-next
+git fetch origin
+git checkout -b release/$(git describe --abbrev=0)-next origin/master
+```
+
+3. Update the packages version
+
+```
 npx lerna version <(pre)patch|minor|major>
 ```
 
 Once the tag has been pushed, create the PR on GitHub, review it, and merge it.
 
-3. Create the release on GitHub
+4. Create the release on GitHub
 
 Publishing is handled through GitHub Actions after a Release is created on GitHub.
 Head to https://github.com/MuralDevKit/mural-integrations-sdk/releases/new and select the tag that was pushed by Lerna.
