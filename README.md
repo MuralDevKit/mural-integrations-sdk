@@ -79,13 +79,35 @@ npm run test:react features/mural-picker
 |DEBUG|Off|Turn on inline source maps for all bundles. This will cause the bundles to be significantly larger, but enables debuging from the browser development tools.|
 |BUNDLE_STATS|Off|Outputs a `dist/stats.html` file alongside the bundle that describes the topology and imports.|
 
-### Versioning
+### Publishing
+
+In order to publish a new version of the SDK on `npm`, follow this process:
+
+1. Decide on the version number
+
+Read diff between the latest version and master, and decide on the version number:
+
+  - `major`: There are breaking changes (i.e. incompatible interfaces)
+  - `minor`: There are behavioral changes, but changes are backward compatible
+  - `patch`: Bug-fixes only
+
+2. Create a new release branch
 
 ```
+git checkout -b release/<current-version>-next
 npx lerna version <(pre)patch|minor|major>
 ```
 
-### Publishing
+Once the tag has been pushed, create the PR on GitHub, review it, and merge it.
+
+3. Create the release on GitHub
+
+Publishing is handled through GitHub Actions after a Release is created on GitHub.
+Head to https://github.com/MuralDevKit/mural-integrations-sdk/releases/new and select the tag that was pushed by Lerna.
+
+Use the generated release notes.
+
+### Notes 
 
 > It seems like there is an issue with Node *v16.15.1* where the `npx lerna bootstrap` command do not properly work in CI.
 > We need more investigation to figure out the issue. For now we will stick to *v16.13.0*
