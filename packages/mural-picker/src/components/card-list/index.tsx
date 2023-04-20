@@ -7,13 +7,17 @@ import { CardListSection } from './card-list-section';
 import './styles.scss';
 
 export const muralCardItemSource = (mural: Mural) => {
-  const { firstName, lastName } = mural.createdBy;
+  const firstName = mural.createdBy?.firstName;
+  const lastName = mural.createdBy?.lastName;
+
+  const firstInitial = firstName ? firstName[0] : '';
+  const lastInitial = lastName ? lastName[0] : '';
 
   return {
     title: mural.title || 'Untitled mural',
     details: dateMarkers(mural),
-    thumbnailUrl: mural.thumbnailUrl,
-    initials: (firstName[0] || '') + (lastName[0] || ''),
+    thumbnailUrl: mural.thumbnailUrl ?? '',
+    initials: firstInitial + lastInitial,
   };
 };
 
