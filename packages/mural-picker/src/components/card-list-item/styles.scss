@@ -53,6 +53,7 @@
     }
 
     display: flex;
+    height: 32px;
     margin-top: 0.675em;
 
     .card-details {
@@ -69,7 +70,6 @@
 
     .card-avatar {
       margin-right: 0.375em;
-      height: 32px;
       width: 32px;
 
       background: rgba(35, 186, 150, 0.08);

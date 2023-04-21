@@ -18,29 +18,35 @@ export const validateTypeFactory =
 
 export const MuralSchema = z.object({
   id: z.string(),
-  createdBy: z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string(),
-    id: z.string(),
-  }),
+  createdBy: z
+    .object({
+      firstName: z.string(),
+      lastName: z.string(),
+      email: z.string(),
+      id: z.string(),
+    })
+    .optional(),
   createdOn: z.number().int(),
-  favorite: z.boolean(),
+  favorite: z.boolean().optional(),
   title: z.string(),
-  thumbnailUrl: z.string(),
+  thumbnailUrl: z.string().optional(),
   roomId: z.number().int(),
-  updatedBy: z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string(),
-    id: z.string(),
-  }),
+  updatedBy: z
+    .object({
+      firstName: z.string(),
+      lastName: z.string(),
+      email: z.string(),
+      id: z.string(),
+    })
+    .optional(),
   updatedOn: z.number().int(),
-  visitorsSettings: z.object({
-    link: z.string(),
-    visitors: z.string(),
-    workspaceMembers: z.string(),
-  }),
+  visitorsSettings: z
+    .object({
+      link: z.string(),
+      visitors: z.string(),
+      workspaceMembers: z.string(),
+    })
+    .optional(),
   workspaceId: z.string(),
   _canvasLink: z.string(),
 });

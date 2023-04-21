@@ -61,6 +61,7 @@ const apiClient: ApiClient = {
     secure: true,
   } as ClientConfig,
   abort: () => {},
+  clone: () => apiClient,
   track: () => {},
   getCurrentUser: () =>
     Promise.resolve({ value: { email: '', id: 'xxx' } as User }),
