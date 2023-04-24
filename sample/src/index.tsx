@@ -7,6 +7,12 @@ import App from './app-basic';
 // import App from './app-automation';
 import reportWebVitals from './reportWebVitals';
 
+// this does not work
+// import { defineDSComponents } from '@muraldevkit/mural-integrations-mural-picker';
+
+// local import works
+import { defineDSComponents } from './design-system';
+defineDSComponents();
 ReactDOM.render(
   <React.StrictMode>
     <Router>

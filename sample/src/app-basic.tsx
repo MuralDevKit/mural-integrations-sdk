@@ -12,8 +12,8 @@ import buildApiClient, {
 } from '@muraldevkit/mural-integrations-mural-client';
 import {
   MuralPicker,
-  RoomPicker,
-  WorkspacePicker,
+  // RoomPicker,
+  // WorkspacePicker,
 } from '@muraldevkit/mural-integrations-mural-picker';
 import * as React from 'react';
 import { Route, Routes } from 'react-router-dom';
@@ -162,7 +162,7 @@ class App extends React.Component<{}, AppState> {
       case Segue.PICKER: {
         return (
           <>
-            <WorkspacePicker
+            {/* <WorkspacePicker
               apiClient={apiClient}
               onSelect={console.log}
               onError={console.log}
@@ -174,7 +174,7 @@ class App extends React.Component<{}, AppState> {
               onError={console.log}
               buttonTitle="Select"
             />
-            <hr />
+            <hr /> */}
             <MuralPicker
               apiClient={apiClient}
               onSelect={this.handleMural}

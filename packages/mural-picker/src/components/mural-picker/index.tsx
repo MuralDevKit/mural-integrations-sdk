@@ -3,6 +3,9 @@ import {
   ThemeOptions as MuiThemeOptions,
   ThemeProvider,
 } from '@material-ui/core/styles';
+import { MrlShadowButton } from '@muraldevkit/ds-component-button-react';
+import { MrlSvg } from '@muraldevkit/ds-component-svg-react';
+import { plus } from '@muraldevkit/ds-icons';
 import {
   DeepPartial,
   defaultBuilder,
@@ -23,7 +26,7 @@ import { ReactSlot } from '../../common/react';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import CardList from '../card-list';
 import { CardSize } from '../card-list-item';
-import { BackButton, PrimaryButton, threshold } from '../common';
+import { BackButton, threshold } from '../common';
 import MuralPickerError from '../error';
 import Header from '../header';
 import Loading from '../loading';
@@ -38,7 +41,6 @@ import './styles.scss';
 // @TECHDEBT — Once we have the @tactivos/ds-icons library
 // We can remove this atrocity and `import { plus } from '@tactivos/ds-icons'`
 import { ReactComponent as BackArrow } from '@muraldevkit/mural-integrations-common/assets/icons/arrow-back.svg';
-import { ReactComponent as Plus } from '@muraldevkit/mural-integrations-common/assets/icons/plus.svg';
 
 export type ThemeOptions = {
   preset: Preset;
@@ -126,7 +128,6 @@ export default class MuralPicker extends React.Component<
 
   constructor(props: PropTypes) {
     super(props);
-
     // Clone the ApiClient to avoid impacting other consumers of the client when
     // we call abort()
     this.apiClient = this.props.apiClient.clone();
@@ -364,18 +365,21 @@ export default class MuralPicker extends React.Component<
                       l: 140,
                     });
                     return (
-                      <PrimaryButton
-                        color="primary"
-                        ref={measureRef}
-                        disabled={!this.state.room}
-                        onClick={this.handleCreate}
-                        title="Create new mural"
-                      >
-                        <SvgIcon>
-                          <Plus />
-                        </SvgIcon>
-                        {sz.l && <span>New mural</span>}
-                      </PrimaryButton>
+                      <>
+                        <MrlShadowButton
+                          text="Create new mural"
+                          kind="primary"
+                          ref={measureRef}
+                          onClick={this.handleCreate}
+                          icon-pos="after"
+                          state={
+                            'disabled' /*!this.state.room ? 'disabled' : 'default'*/
+                          }
+                        >
+                          {sz.l && <span>New murals here</span>}
+                          <MrlSvg slot="icon" svg={plus} />
+                        </MrlShadowButton>
+                      </>
                     );
                   }}
                 </Measure>
