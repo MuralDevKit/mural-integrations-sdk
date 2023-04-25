@@ -107,7 +107,7 @@ export default class RoomSelect extends React.Component<PropTypes, StateTypes> {
                 options={this.props.rooms}
                 ListboxProps={this.props.ListboxProps}
                 getOptionLabel={option => {
-                  return option?.name || '';
+                  return option?.name || 'All Rooms';
                 }}
                 renderInput={params => (
                   <TextField

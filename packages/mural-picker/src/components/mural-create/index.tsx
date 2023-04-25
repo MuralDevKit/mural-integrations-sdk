@@ -355,7 +355,7 @@ export default class MuralCreate extends React.Component<
                         title: event.target.value,
                       })
                     }
-                    variant="standard"
+                    variant="outlined"
                     label="Mural title"
                     placeholder="Untitled mural"
                   />

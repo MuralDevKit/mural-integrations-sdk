@@ -42,7 +42,6 @@ interface PropTypes {
 
   selectedMural?: Mural | null;
 }
-
 export default class MuralCardList extends React.Component<PropTypes> {
   handleSelectFor =
     (murals: Mural[], section: 'favorites' | 'murals') => (idx: number) => {
@@ -83,14 +82,13 @@ export default class MuralCardList extends React.Component<PropTypes> {
     );
   };
 
-  renderMurals = (murals: Mural[], title?: string) => {
+  renderMurals = (murals: Mural[]) => {
     if (murals.length) {
       const selected = murals.findIndex(
         m => m.id === this.props.selectedMural?.id,
       );
       return (
         <CardListSection
-          title={title}
           items={murals.map(muralCardItemSource)}
           cardSize={this.props.cardSize}
           onSelect={this.handleSelectFor(murals, 'murals')}
@@ -102,15 +100,14 @@ export default class MuralCardList extends React.Component<PropTypes> {
   };
 
   render() {
-    const favoriteMurals = this.props.murals.filter(mural => mural.favorite);
     return (
       <div className="mural-selector-container">
         <div className="mural-selector-grid">
-          {this.renderMurals(favoriteMurals, 'Your favorite murals')}
-          {this.renderMurals(
-            this.props.murals,
-            favoriteMurals.length ? 'All murals' : ' ',
-          )}
+          <div>
+            <div className="murals-container">
+              {this.renderMurals(this.props.murals)}
+            </div>
+          </div>
         </div>
       </div>
     );

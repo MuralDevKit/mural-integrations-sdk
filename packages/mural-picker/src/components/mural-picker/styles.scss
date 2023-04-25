@@ -1,4 +1,5 @@
 .mural-picker-body {
+  margin: 2em;
   outline: 0;
   display: flex;
   flex-direction: column;
@@ -9,7 +10,35 @@
   &.dark {
     color: white;
   }
+  .mural-header-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: center;
+    padding: 10px 10px 10px 12px;
+    align-items: center;
 
+    .mural-create-control {
+      justify-self: end;
+      min-width: 140px;
+    }
+  }
+  .mural-search-type-container {
+    border-bottom: 3px solid #eee;
+    height: 1.79em;
+
+    .mural-search-type {
+      border: none;
+      background-color: white;
+      border-bottom: 3px solid #eee;
+      padding: 7px 8px;
+      margin: 0px 11px 0px 0px;
+      cursor: pointer;
+    }
+
+    .mural-search-type-selected {
+      border-bottom: 3px solid black;
+    }
+  }
   .mural-picker-selects {
     display: flex;
     align-items: end;
@@ -27,12 +56,6 @@
     .room-select {
       flex-grow: 5;
     }
-
-    .mural-picker-control {
-      flex: 1 0 4rem;
-      min-width:140px;
-      padding-top:15px;
-    }
   }
 
   .mural-picker-select {
@@ -43,7 +66,8 @@
   .header {
     margin: 0.375rem 0;
 
-    &__logo, &__action {
+    &__logo,
+    &__action {
       margin-right: 0.375rem;
     }
 

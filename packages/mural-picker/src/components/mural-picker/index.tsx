@@ -1,4 +1,4 @@
-import { Box, FormControl, SvgIcon } from '@material-ui/core';
+import { Box, FormControl, SvgIcon, TextField } from '@material-ui/core';
 import {
   ThemeOptions as MuiThemeOptions,
   ThemeProvider,
@@ -81,10 +81,10 @@ interface StateTypes {
 
   /** Currently selected room */
   room: Room | null;
-
+  muralType: string;
   /** Currently selected workspace */
   workspace: Workspace | null;
-
+  search: string;
   error: string;
 }
 
@@ -114,10 +114,11 @@ export default class MuralPicker extends React.Component<
     workspaces: [],
     rooms: [],
     murals: [],
-
+    muralType: 'Recent',
     mural: null,
     room: null,
     workspace: null,
+    search: '',
 
     error: '',
   };
@@ -159,9 +160,20 @@ export default class MuralPicker extends React.Component<
         const workspace =
           workspaces.find(w => w.id === lastActiveWorkspaceId) || workspaces[0];
 
-        this.setState({ workspaces, workspace }, this.trackDisplay);
-
         await this.handleWorkspaceSelect(workspace);
+
+        const roomsUnsorted = await getAllRoomsByWorkspace(this.apiClient, {
+          workspaceId: workspace.id,
+        });
+
+        const rooms = roomsUnsorted.sort((a, b) =>
+          b.type.localeCompare(a.type),
+        );
+
+        this.setState(
+          { workspaces, workspace, rooms, room: rooms[0] },
+          this.trackDisplay,
+        );
       }
     } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_WORKSPACES);
@@ -256,11 +268,11 @@ export default class MuralPicker extends React.Component<
 
   handleCreate = async () => {
     if (!this.state.workspace) {
-      return this.setState({ error: MURAL_PICKER_ERRORS.ERR_SELECT_WORKSPACE });
+      return this.setState({ workspace: this.state.workspaces[0] });
     }
 
     if (!this.state.room) {
-      return this.setState({ error: MURAL_PICKER_ERRORS.ERR_SELECT_ROOM });
+      return this.setState({ room: this.state.rooms[0] });
     }
 
     this.setState({
@@ -271,7 +283,7 @@ export default class MuralPicker extends React.Component<
   };
 
   setInitialState = () => {
-    this.setState({ segue: Segue.PICKING });
+    this.setState({ segue: Segue.PICKING, search: '' });
   };
 
   handleFinishCreation = async (mural: Mural) => {
@@ -304,13 +316,23 @@ export default class MuralPicker extends React.Component<
     return room.type === 'private' ? 'PRIVATE ROOMS' : 'OPEN ROOMS';
   };
 
-  renderHeader() {
+  renderPartialHeader() {
     const slots = useSlots(this.props.slots);
     let title;
 
     switch (this.state.segue) {
       case Segue.CREATING:
-        title = 'Create a mural';
+        title = 'Search for templates';
+        slots.Header.Action = (props: any) => (
+          <BackButton onClick={this.setInitialState} {...props}>
+            <SvgIcon>
+              <BackArrow />
+            </SvgIcon>
+          </BackButton>
+        );
+        break;
+      case Segue.SEARCHING:
+        title = 'Search for murals';
         slots.Header.Action = (props: any) => (
           <BackButton onClick={this.setInitialState} {...props}>
             <SvgIcon>
@@ -320,13 +342,30 @@ export default class MuralPicker extends React.Component<
         );
         break;
       case Segue.PICKING:
-        title = 'Choose a mural';
+        title = 'Search for murals';
         slots.Header.Action = () => null;
         break;
     }
 
     return (
-      <slots.Header.Self slots={{ ...slots.Header }}>{title}</slots.Header.Self>
+      <>
+        <slots.Header.Self slots={{ ...slots.Header }}></slots.Header.Self>
+        <TextField
+          className="search-input"
+          value={this.state.search}
+          onChange={event => {
+            console.log(event.target.value);
+            return this.setState({
+              error: '',
+              search: event.target.value,
+              segue: Segue.SEARCHING,
+            });
+          }}
+          variant="outlined"
+          label={title}
+          placeholder={title}
+        />
+      </>
     );
   }
 
@@ -335,27 +374,23 @@ export default class MuralPicker extends React.Component<
     const slots = useSlots(this.props.slots);
     const theme = createTheme(preset);
 
+    const showFilters =
+      !this.state.search &&
+      (this.state.segue === Segue.CREATING || this.state.muralType == 'All');
+    const showTabs =
+      !this.state.search &&
+      (this.state.muralType == 'All' ||
+        this.state.muralType == 'Recent' ||
+        this.state.muralType == 'Starred');
+
     return (
       <ThemeProvider theme={theme}>
         <Box className={`mural-picker-body ${preset}`} data-qa="mural-picker">
-          {this.renderHeader()}
-          <div className={cx('mural-picker-selects')}>
-            <WorkspaceSelect
-              workspace={this.state.workspace}
-              workspaces={this.state.workspaces}
-              onSelect={this.handleWorkspaceSelect}
-              slots={slots.WorkspaceSelect}
-            />
-            <RoomSelect
-              workspace={this.state.workspace}
-              room={this.state.room}
-              rooms={this.state.rooms}
-              onSelect={this.handleRoomSelect}
-              slots={slots.RoomSelect}
-            />
+          <div className="mural-header-row">
+            {this.renderPartialHeader()}
             {!this.props.disableCreate && (
               <FormControl
-                className="mural-picker-control"
+                className="mural-create-control"
                 data-qa="mural-picker-control"
               >
                 <Measure bounds>
@@ -382,7 +417,69 @@ export default class MuralPicker extends React.Component<
               </FormControl>
             )}
           </div>
+          {showTabs && (
+            <div className="mural-search-type-container">
+              <button
+                onClick={() =>
+                  this.setState({
+                    muralType: 'Recent',
+                    murals: this.state.murals,
+                  })
+                }
+                className={cx({
+                  'mural-search-type-selected':
+                    this.state.muralType === 'Recent',
+                  'mural-search-type': true,
+                })}
+              >
+                Recent
+              </button>
+              <button
+                onClick={() =>
+                  this.setState({
+                    muralType: 'Starred',
+                    murals: this.state.murals,
+                  })
+                }
+                className={cx({
+                  'mural-search-type-selected':
+                    this.state.muralType === 'Starred',
+                  'mural-search-type': true,
+                })}
+              >
+                Starred
+              </button>
+              <button
+                onClick={() =>
+                  this.setState({ muralType: 'All', murals: this.state.murals })
+                }
+                className={cx({
+                  'mural-search-type-selected': this.state.muralType === 'All',
+                  'mural-search-type': true,
+                })}
+              >
+                All
+              </button>
+            </div>
+          )}
 
+          {showFilters && (
+            <div className={cx('mural-picker-selects')}>
+              <WorkspaceSelect
+                workspace={this.state.workspace}
+                workspaces={this.state.workspaces}
+                onSelect={this.handleWorkspaceSelect}
+                slots={slots.WorkspaceSelect}
+              />
+              <RoomSelect
+                workspace={this.state.workspace}
+                room={this.state.room}
+                rooms={this.state.rooms}
+                onSelect={this.handleRoomSelect}
+                slots={slots.RoomSelect}
+              />
+            </div>
+          )}
           {this.state.error && <MuralPickerError error={this.state.error} />}
           {this.state.segue === Segue.LOADING && <Loading />}
           {this.state.segue === Segue.PICKING && this.state.workspace && (
@@ -397,6 +494,22 @@ export default class MuralPicker extends React.Component<
             />
           )}
 
+          {this.state.segue === Segue.SEARCHING &&
+            this.state.workspace &&
+            this.state.search && (
+              <>
+                <div>{`${this.state.murals.length} results for "${this.state.search}"`}</div>
+                <CardList
+                  murals={this.state.murals}
+                  cardSize={cardSize}
+                  onSelect={this.handleMuralSelect}
+                  onCreate={this.handleCreate}
+                  onError={this.handleError}
+                  selectedMural={this.state.mural}
+                  workspace={this.state.workspace}
+                />
+              </>
+            )}
           {this.state.segue === Segue.CREATING &&
             this.state.room &&
             this.state.workspace && (
