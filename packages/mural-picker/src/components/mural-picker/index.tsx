@@ -367,7 +367,7 @@ export default class MuralPicker extends React.Component<
                     return (
                       <>
                         <MrlShadowButton
-                          text="Create new mural"
+                          text="Create new muralll"
                           kind="primary"
                           ref={measureRef}
                           onClick={this.handleCreate}

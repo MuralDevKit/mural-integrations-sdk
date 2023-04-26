@@ -2,6 +2,10 @@
   "name": "runtime",
   "description": "Runtime for React 16.13.1",
   "dependencies": {
+    "@muraldevkit/ds-component-button": "^1.1.0",
+    "@muraldevkit/ds-component-button-react": "^1.1.0",
+    "@muraldevkit/ds-component-svg": "^1.1.0",
+    "@muraldevkit/ds-component-svg-react": "^1.1.0",
     "@material-ui/core": "4.11.4",
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.58",

@@ -8,10 +8,10 @@ import App from './app-basic';
 import reportWebVitals from './reportWebVitals';
 
 // this does not work
-// import { defineDSComponents } from '@muraldevkit/mural-integrations-mural-picker';
+import { defineDSComponents } from '@muraldevkit/mural-integrations-mural-picker';
 
 // local import works
-import { defineDSComponents } from './design-system';
+// import { defineDSComponents } from './design-system';
 defineDSComponents();
 ReactDOM.render(
   <React.StrictMode>

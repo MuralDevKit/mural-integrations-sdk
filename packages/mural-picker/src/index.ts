@@ -1,4 +1,4 @@
-import { defineDSComponents } from '../src/common/design-system';
+import { defineDSComponents } from './common/design-system';
 import MuralCard from './components/card-list-item/generic';
 import MuralPicker from './components/mural-picker';
 import MuralPickerForm from './components/mural-picker-form';
