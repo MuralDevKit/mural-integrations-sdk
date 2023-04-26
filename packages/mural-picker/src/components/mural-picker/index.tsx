@@ -373,7 +373,7 @@ export default class MuralPicker extends React.Component<
                           onClick={this.handleCreate}
                           icon-pos="after"
                           state={
-                            'disabled' /*!this.state.room ? 'disabled' : 'default'*/
+                            !this.state.room ? 'disabled' : 'default'
                           }
                         >
                           {sz.l && <span>New murals here</span>}

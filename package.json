@@ -44,6 +44,6 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "runtime": "file:runtimes/current"
+    "runtime": "file:runtimes/16.13.1"
   }
 }
