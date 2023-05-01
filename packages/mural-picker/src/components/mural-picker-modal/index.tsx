@@ -5,14 +5,10 @@ import {
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
-import MuralPicker from '../mural-picker';
-
+import MuralPicker, { PropTypes } from '../mural-picker';
 import './styles.scss';
 
-const MuralPickerModal: React.FC<MuralPicker['props']> = ({
-  onSelect,
-  ...props
-}) => {
+const MuralPickerModal: React.FC<PropTypes> = ({ onSelect, ...props }) => {
   const [isLaunchButtonDisabled, setIsLaunchButtonDisabled] =
     React.useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
