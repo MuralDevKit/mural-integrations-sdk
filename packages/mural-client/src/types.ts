@@ -57,6 +57,8 @@ export type Mural = {
   _canvasLink: string;
 };
 
+export type MuralSort = 'lastCreated' | 'lastModified' | 'oldest';
+
 export type MuralContentSession = {
   token: string;
   workspaceId: string;
