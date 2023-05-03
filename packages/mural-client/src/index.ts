@@ -264,6 +264,16 @@ export interface ApiClient {
     }
   >;
   getCurrentUser: ResourceEndpoint<User>;
+  getCrossWorkspaceRecentMurals: ResourceEndpoint<
+    Mural[],
+    void,
+    Paginated & Sorted
+  >;
+  getCrossWorkspaceStarredMurals: ResourceEndpoint<
+    Mural[],
+    void,
+    Paginated & Sorted
+  >;
   getMural: ResourceEndpoint<Mural, { id: string }, Integration>;
   getMuralWidgets: ResourceEndpoint<
     Widget[],
@@ -297,6 +307,16 @@ export interface ApiClient {
     Template[],
     { workspaceId: string },
     Paginated & Sorted & { category: string[]; withoutDefault: boolean }
+  >;
+  searchCrossWorkspaceTemplates: ResourceEndpoint<
+    Template[],
+    { q: string },
+    Paginated & Sorted
+  >;
+  searchCrossWorkspaceMurals: ResourceEndpoint<
+    Mural[],
+    { q: string },
+    Paginated & Sorted
   >;
   searchMuralsByWorkspace: ResourceEndpoint<
     Mural[],
@@ -528,6 +548,30 @@ const buildApiClient = (
 
       return await response.json();
     },
+    getCrossWorkspaceStarredMurals: async options => {
+      const params = optionsParams(options);
+
+      const response = await fetchFn(
+        api(`murals/starred-across-workspaces?${params}`),
+        {
+          method: 'GET',
+        },
+      );
+
+      return await response.json();
+    },
+    getCrossWorkspaceRecentMurals: async options => {
+      const params = optionsParams(options);
+
+      const response = await fetchFn(
+        api(`murals/recently-opened-across-workspaces?${params}`),
+        {
+          method: 'GET',
+        },
+      );
+
+      return await response.json();
+    },
     // https://developers.mural.co/public/reference/getroommurals
     getMuralsByRoom: async ({ roomId }, options) => {
       const params = optionsParams(options as any);
@@ -583,6 +627,13 @@ const buildApiClient = (
       });
       return await response.json();
     },
+    searchCrossWorkspaceTemplates: async ({ q }, options) => {
+      const params = optionsParams(options);
+      const response = await fetchFn(api(`search/template?q=${q}${params}`), {
+        method: 'GET',
+      });
+      return await response.json();
+    },
     // https://developers.mural.co/public/reference/gettemplatesbyworkspace
     getTemplatesByWorkspace: async ({ workspaceId }, options) => {
       const params = optionsParams(options);
@@ -593,6 +644,13 @@ const buildApiClient = (
         },
       );
 
+      return await response.json();
+    },
+    searchCrossWorkspaceMurals: async ({ q }, options) => {
+      const params = optionsParams(options);
+      const response = await fetchFn(api(`search/mural?q=${q}${params}`), {
+        method: 'GET',
+      });
       return await response.json();
     },
     // https://developers.mural.co/public/reference/searchmurals
