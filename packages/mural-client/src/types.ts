@@ -26,28 +26,28 @@ export type Mural = {
   /** @deprecated
    * This field will require the new DR content API in the future
    */
-  createdBy: {
+  createdBy?: {
     firstName: string;
     lastName: string;
     email: string;
     id: string;
   };
   createdOn: number;
-  favorite: boolean;
+  favorite?: boolean;
   title: string;
-  thumbnailUrl: string;
+  thumbnailUrl?: string;
   roomId: number;
   /** @deprecated
    * This field will require the new DR content API in the future
    */
-  updatedBy: {
+  updatedBy?: {
     firstName: string;
     lastName: string;
     email: string;
     id: string;
   };
   updatedOn: number;
-  visitorsSettings: {
+  visitorsSettings?: {
     link: string;
     visitors: string;
     workspaceMembers: string;
