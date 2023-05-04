@@ -1,8 +1,12 @@
 import { ApiClient } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
-import RpcClient from '../../lib/rpc';
-import { muralSessionActivationUrl } from '../../lib/session-activation';
+import RpcClient, { RpcMessage } from '../../lib/rpc';
+import {
+  createMuralSession,
+  muralSessionActivationUrl,
+  muralSessionActivationUrlRpc,
+} from '../../lib/session-activation';
 import { EventHandler } from '../../types';
 import './styles.scss';
 
@@ -46,14 +50,18 @@ export interface PropTypes extends CanvasEvents {
  * This component ensures the displayed MURAL will be allowed to
  * be iframed within the current browsing context.
  *
- * If the `authUrl` parameter is supplied (see the SessionActivation
- * component), then it will use the Canvas session activation flow
- * to ensure the MURAL canvas will be properly authenticated.
+ * If the `rpcClient` parameter is supplied, then it will use the RPC-based
+ * Canvas session activation flow to ensure the Mural canvas is properly
+ * authenticated.
+ *
+ * Alternatively, if the `authUrl` parameter is supplied (see the
+ * SessionActivation component), then it will use the redirect-based Canvas
+ * session activation flow.
  *
  * @param canvasLink this should always match the MURAL `_canvasLink`
  * property. Using a raw MURAL url will not properly load the mural.
  *
- * @experimental A RpcClient can also be wired to issue command to the
+ * @experimental The RpcClient can also be wired to issue command to the
  * MURAL canvas programatically.
  */
 export class CanvasHost extends React.Component<PropTypes> {
@@ -72,6 +80,30 @@ export class CanvasHost extends React.Component<PropTypes> {
     }
   };
 
+  handleRpcMessage = async (message: RpcMessage) => {
+    const { apiClient, rpcClient } = this.props;
+
+    if (!rpcClient) {
+      throw new Error('Broken RPC connection: rpcClient is missing');
+    }
+
+    // Handle only session activation request
+    if (message.method !== 'session_activation_request') return;
+
+    const code = message.args?.at(0);
+    if (!code) {
+      return rpcClient.rpcCallback(message, {
+        error: "'code' not found in args",
+      });
+    }
+
+    // Create a Mural session from the client app claims
+    await createMuralSession(apiClient, code);
+
+    // Notify that the session is ready to be consumed
+    await rpcClient.rpcCallback(message);
+  };
+
   componentDidMount() {
     const { rpcClient } = this.props;
 
@@ -80,6 +112,9 @@ export class CanvasHost extends React.Component<PropTypes> {
         source: window,
         target: this.iframeRef?.current?.contentWindow as any,
       });
+
+      // Register RPC listener for canvas session activation flow
+      rpcClient.addListener('rpc_message', this.handleRpcMessage);
     }
 
     window.addEventListener('message', this.handleMessage);
@@ -95,6 +130,7 @@ export class CanvasHost extends React.Component<PropTypes> {
     const { rpcClient } = this.props;
 
     if (rpcClient) {
+      rpcClient.removeListener('rpc_message', this.handleRpcMessage);
       rpcClient.dispose();
     }
 
@@ -122,8 +158,14 @@ export class CanvasHost extends React.Component<PropTypes> {
     canvasUrl.searchParams.set('utm_content', apiClient.config.appId);
 
     // Convert the url to the session activation link if supported
-    if (authUrl && apiClient.authenticated()) {
-      canvasUrl = muralSessionActivationUrl(apiClient, authUrl, canvasUrl);
+    if (apiClient.authenticated()) {
+      if (authUrl) {
+        // Redirect flow
+        canvasUrl = muralSessionActivationUrl(apiClient, authUrl, canvasUrl);
+      } else if (this.props.rpcClient) {
+        // RPC flow
+        canvasUrl = muralSessionActivationUrlRpc(apiClient, canvasUrl);
+      }
     }
 
     return (
