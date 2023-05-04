@@ -1,6 +1,6 @@
 import {
   Canvas,
-  SessionActivation,
+  RpcClient,
 } from '@muraldevkit/mural-integrations-mural-canvas';
 import buildApiClient, {
   authorizeHandler,
@@ -99,6 +99,13 @@ type AppState = {
 };
 
 class App extends React.Component<{}, AppState> {
+  // Initialize RpcClient to enable postMessage-based session activation flow.
+  // The RpcClient also allows dispatching automation mesages to the Mural core
+  // app.  (see `src/app-automation.tsx`).
+  private rpcClient = new RpcClient({
+    origin: apiClient.url('').origin,
+  });
+
   state: AppState = {
     segue: Segue.LOADING,
     canvasLink: null,
@@ -110,7 +117,7 @@ class App extends React.Component<{}, AppState> {
 
   handleMural = (mural: Mural) => {
     this.setState({
-      //segue: Segue.CANVAS,
+      segue: Segue.CANVAS,
       canvasLink: mural._canvasLink,
     });
   };
@@ -188,7 +195,8 @@ class App extends React.Component<{}, AppState> {
           <Canvas
             apiClient={apiClient}
             onMessage={this.handleMessage}
-            canvasLink={this.state.canvasLink}
+            canvasLink={this.state.canvasLink ?? ''}
+            rpcClient={this.rpcClient}
           />
         );
       }
@@ -199,15 +207,6 @@ class App extends React.Component<{}, AppState> {
 const AppRoute = () => {
   return (
     <Routes>
-      {/*
-       * This route is very important for the Canvas session activation flow.
-       * If you can't use this component, there is a `muralSessionClaimUrl`
-       * helper that will create the `claimUrl` to be redirected to.
-       */}
-      <Route
-        path="/session"
-        element={<SessionActivation apiClient={apiClient} />}
-      />
       <Route path="*" element={<App />} />
     </Routes>
   );
