@@ -2,6 +2,7 @@ import { authenticated, getFetchConfig, FetchError } from './fetch';
 import {
   Mural,
   MuralContentSession,
+  MuralSort,
   Room,
   StickyNote,
   Tag,
@@ -81,15 +82,15 @@ export type Envelope<TResource> = {
 };
 
 type Sorted<TResource = null> = {
-  sortBy: keyof (TResource extends (infer TInner)[] ? TInner : TResource);
+  sortBy: TResource extends Mural[] ? MuralSort : never;
 };
 
-type Paginated<TResource = null> = {
+type Paginated<_TResource = null> = {
   paginate: {
     limit?: number;
     next?: string;
   };
-} & Sorted<TResource>;
+};
 
 type Integration<_TResource = null> = { integration: boolean };
 
@@ -110,8 +111,7 @@ type Primitive = number | string | boolean | bigint;
 type TResolvedOptions<TResource, TOptions> = Partial<
   (TOptions extends Sorted ? Sorted<TResource> : {}) &
     (TOptions extends Paginated ? Paginated<TResource> : {}) &
-    (TOptions extends Integration ? Integration<TResource> : {}) &
-    TOptions
+    (TOptions extends Integration ? Integration<TResource> : {})
 >;
 
 export type ResourceEndpoint<
@@ -284,29 +284,29 @@ export interface ApiClient {
   getDefaultTemplates: ResourceEndpoint<
     Template[],
     void,
-    Paginated & Sorted & { category: string[] }
+    Paginated & { category: string[] }
   >;
   getRoomsByWorkspace: ResourceEndpoint<
     Room[],
     { workspaceId: string },
-    Paginated & Sorted
+    Paginated
   >;
   getWorkspace: ResourceEndpoint<Workspace, { id: string }>;
-  getWorkspaces: ResourceEndpoint<Workspace[], void, Paginated & Sorted>;
+  getWorkspaces: ResourceEndpoint<Workspace[], void, Paginated>;
   getTemplatesByWorkspace: ResourceEndpoint<
     Template[],
     { workspaceId: string },
-    Paginated & Sorted & { category: string[]; withoutDefault: boolean }
+    Paginated & { category: string[]; withoutDefault: boolean }
   >;
   searchMuralsByWorkspace: ResourceEndpoint<
     Mural[],
     { workspaceId: string; title: string },
-    Paginated & Sorted & Integration
+    Paginated & Integration
   >;
   searchRoomsByWorkspace: ResourceEndpoint<
     Room[],
     { workspaceId: string; title: string },
-    Paginated & Sorted
+    Paginated
   >;
 
   /**

@@ -195,7 +195,7 @@ export default class MuralPicker extends React.Component<
 
       const [uponRooms, uponMurals] = await Promise.all([
         getAllRoomsByWorkspace(this.apiClient, q),
-        this.apiClient.getMuralsByWorkspace(q),
+        this.apiClient.getMuralsByWorkspace(q, { sortBy: 'lastCreated' }),
       ]);
 
       const rooms = uponRooms.sort((a, b) => b.type.localeCompare(a.type));
