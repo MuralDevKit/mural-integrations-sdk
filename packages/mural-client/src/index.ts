@@ -52,7 +52,7 @@ export type ApiQueryFor<T extends keyof ApiClient> = ApiClient[T] extends (
  * Error thrown when a request is aborted after calling `ApiClient.abort()`.
  */
 export class AbortError extends Error {
-  constructor(message: string, public cause?: unknown) {
+  constructor(message: string, public cause?: Error | undefined) {
     super(message);
     this.name = this.constructor.name;
   }
@@ -64,7 +64,7 @@ const DEFAULT_CONFIG = {
   secure: true,
 };
 
-export const getApiError = async (error: Error): Promise<ApiError | null> => {
+export const getApiError = async (error: unknown): Promise<ApiError | null> => {
   if (!(error instanceof FetchError) || !error.json) return null;
 
   const errorPayload = error.json as { code: string; message: string };
