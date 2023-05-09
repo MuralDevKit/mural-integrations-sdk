@@ -8,7 +8,7 @@ export interface RpcContext {
   facilitators: any[];
 }
 
-interface RpcMessage {
+export interface RpcMessage {
   type: string;
   rpcid: string;
   method: string;
@@ -21,6 +21,10 @@ interface RpcCallback {
   error?: string;
   context?: RpcContext;
 }
+
+const isRpcMessage = (
+  message: RpcMessage | RpcCallback,
+): message is RpcMessage => message.type === 'mural.rpc_message';
 
 class Queue<T> {
   constructor() {
@@ -144,8 +148,16 @@ export default class RpcClient extends EventEmitter {
     this.rpcContext = to;
   };
 
-  recv = (evt: MessageEvent<RpcCallback>) => {
+  recv = (evt: MessageEvent<RpcCallback | RpcMessage>) => {
     const msg = evt.data;
+
+    // Handle incoming RPC message. Client code may acknowledge the message by
+    // calling `rpcCallback(msg)`.
+    if (isRpcMessage(msg)) {
+      this.emit('rpc_message', msg);
+      return;
+    }
+
     if (msg.type != 'mural.rpc_callback') return;
 
     // There is a special case for the handshake call sent
@@ -180,6 +192,25 @@ export default class RpcClient extends EventEmitter {
     // if there are any
     this.dispatch();
   };
+
+  rpcCallback(
+    message: RpcMessage,
+    reply?: { error?: string; context?: RpcContext },
+  ) {
+    if (!this.config) throw new Error('RpcClient not initialized');
+
+    const error = reply?.error;
+    const context = reply?.context;
+
+    const callback: RpcCallback = {
+      type: 'mural.rpc_callback',
+      rpcid: message.rpcid,
+      ...(error ? { error } : undefined),
+      ...(context ? { context } : undefined),
+    };
+
+    this.config.target.postMessage(callback, this.config.origin);
+  }
 
   get context() {
     return this.rpcContext;

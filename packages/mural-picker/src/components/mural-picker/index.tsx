@@ -358,9 +358,12 @@ const MuralPicker = ({
           if (defaultWorkspace) {
             // this call has known performance issues
             const allMuralsResult =
-              await apiClientRef.current.getMuralsByWorkspace({
-                workspaceId: defaultWorkspace.id,
-              });
+              await apiClientRef.current.getMuralsByWorkspace(
+                {
+                  workspaceId: defaultWorkspace.id,
+                },
+                { sortBy: 'lastCreated' },
+              );
             setRoom(null);
             setAllMurals(allMuralsResult?.value);
             setMurals(allMuralsResult?.value);
@@ -383,6 +386,7 @@ const MuralPicker = ({
           {
             workspaceId: workspace?.id,
           },
+          { sortBy: 'lastCreated' },
         );
         setRoom(null);
         setMurals(allMuralsResult?.value);
