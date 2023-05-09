@@ -1,5 +1,5 @@
 import { EventHandler } from '@muraldevkit/mural-integrations-common';
-import { Mural, Workspace } from '@muraldevkit/mural-integrations-mural-client';
+import { Mural } from '@muraldevkit/mural-integrations-mural-client';
 import humanize from 'humanize-duration';
 import * as React from 'react';
 import { CardSize } from '../card-list-item';
@@ -38,7 +38,6 @@ const dateMarkers = (mural: Mural) => {
 interface PropTypes {
   murals: Mural[];
   cardSize: CardSize;
-  workspace: Workspace;
 
   onSelect: EventHandler<[mural: Mural]>;
   onCreate: EventHandler;
@@ -47,43 +46,15 @@ interface PropTypes {
   selectedMural?: Mural | null;
 }
 export default class MuralCardList extends React.Component<PropTypes> {
-  handleSelectFor =
-    (murals: Mural[], section: 'favorites' | 'murals') => (idx: number) => {
-      this.setState({
-        selected: {
-          favorites: -1,
-          murals: -1,
-          [section]: idx,
-        },
-      });
-
-      this.props.onSelect(murals[idx]);
-    };
+  handleSelectFor = (murals: Mural[]) => (idx: number) => {
+    this.props.onSelect(murals[idx]);
+  };
 
   handleAction = (actionName: string) => {
     switch (actionName) {
       case 'create':
         return this.props.onCreate();
     }
-  };
-
-  renderFavoriteMurals = () => {
-    const favorites = this.props.murals.filter(mural => mural.favorite);
-    if (favorites.length === 0) return null;
-
-    const selected = favorites.findIndex(
-      m => m.favorite && m.id === this.props.selectedMural?.id,
-    );
-
-    return (
-      <CardListSection
-        title="Your favorite murals"
-        items={favorites.map(muralCardItemSource)}
-        cardSize={this.props.cardSize}
-        onSelect={this.handleSelectFor(favorites, 'favorites')}
-        selected={selected}
-      />
-    );
   };
 
   renderMurals = (murals: Mural[]) => {
@@ -95,7 +66,7 @@ export default class MuralCardList extends React.Component<PropTypes> {
         <CardListSection
           items={murals.map(muralCardItemSource)}
           cardSize={this.props.cardSize}
-          onSelect={this.handleSelectFor(murals, 'murals')}
+          onSelect={this.handleSelectFor(murals)}
           onAction={this.handleAction}
           selected={selected}
         />

@@ -19,12 +19,12 @@ import { ReactSlot } from '../../common/react';
 import { PrimaryButton } from '../common';
 import RoomSelect from '../room-select';
 import createTheme, { Preset } from '../theme';
-import WorkspaceSelect from '../workspace-select';
+import WorkspaceSelectSlots from '../workspace-select-slots';
 import './styles.scss';
 
 interface Slots {
-  WorkspaceSelect: WorkspaceSelect['props']['slots'] & {
-    Self: ReactSlot<WorkspaceSelect>;
+  WorkspaceSelectSlots: WorkspaceSelectSlots['props']['slots'] & {
+    Self: ReactSlot<WorkspaceSelectSlots>;
   };
   RoomSelect: RoomSelect['props']['slots'] & {
     Self: ReactSlot<RoomSelect>;
@@ -70,8 +70,8 @@ const useThemeOptions = defaultBuilder<ThemeOptions>({
 });
 
 const useSlots = defaultBuilder<Slots>({
-  WorkspaceSelect: {
-    Self: WorkspaceSelect,
+  WorkspaceSelectSlots: {
+    Self: WorkspaceSelectSlots,
   },
   RoomSelect: {
     Self: RoomSelect,
@@ -154,7 +154,7 @@ export default class RoomPicker extends React.Component<PropTypes> {
     }
   };
 
-  handleWorkspaceSelect = async (workspace: Workspace | null) => {
+  handleWorkspaceSelectSlots = async (workspace: Workspace | null) => {
     this.setState({ workspace, error: '' });
     await this.loadRoomsByWorkspace(workspace);
   };
@@ -194,11 +194,11 @@ export default class RoomPicker extends React.Component<PropTypes> {
           data-qa="room-picker"
         >
           <div className="select-row">
-            <slots.WorkspaceSelect.Self
+            <slots.WorkspaceSelectSlots.Self
               workspace={this.state.workspace}
               workspaces={this.state.workspaces}
-              onSelect={this.handleWorkspaceSelect}
-              slots={slots.WorkspaceSelect}
+              onSelect={this.handleWorkspaceSelectSlots}
+              slots={slots.WorkspaceSelectSlots}
             />
 
             <slots.RoomSelect.Self
