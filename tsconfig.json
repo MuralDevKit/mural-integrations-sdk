@@ -6,7 +6,7 @@
     "inlineSources": true,
     "jsx": "react",
     "lib": [
-      "es6", "dom", "es2015.promise", "es2016.array.include"
+      "es2022", "dom", "es2015.promise", "es2016.array.include"
     ],
     "module": "es2015",
     "moduleResolution": "node",
