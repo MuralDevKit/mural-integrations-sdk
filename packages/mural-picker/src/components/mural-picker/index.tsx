@@ -3,6 +3,9 @@ import {
   ThemeOptions as MuiThemeOptions,
   ThemeProvider,
 } from '@material-ui/core/styles';
+import { MrlShadowButton } from '@muraldevkit/ds-component-button-react';
+import { MrlSvg } from '@muraldevkit/ds-component-svg-react';
+import { plus } from '@muraldevkit/ds-icons';
 import {
   DeepPartial,
   defaultBuilder,
@@ -24,7 +27,7 @@ import { ReactSlot } from '../../common/react';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import CardList from '../card-list';
 import { CardSize } from '../card-list-item';
-import { BackButton, PrimaryButton } from '../common';
+import { BackButton } from '../common';
 import MuralPickerError from '../error';
 import Header from '../header';
 import Loading from '../loading';
@@ -32,14 +35,12 @@ import MuralCreate from '../mural-create';
 import RoomSelect from '../room-select';
 import createTheme, { Preset } from '../theme';
 import WorkspaceSelect from '../workspace-select';
-
-import '@muraldevkit/mural-integrations-common/styles/common.scss';
 import './styles.scss';
 
+import '@muraldevkit/mural-integrations-common/styles/common.scss';
 // @TECHDEBT — Once we have the @tactivos/ds-icons library
 // We can remove this atrocity and `import { plus } from '@tactivos/ds-icons'`
 import { ReactComponent as BackArrow } from '@muraldevkit/mural-integrations-common/assets/icons/arrow-back.svg';
-import { ReactComponent as Plus } from '@muraldevkit/mural-integrations-common/assets/icons/plus.svg';
 import { useDebounce } from '../../common/hooks/useDebounce';
 
 export type ThemeOptions = {
@@ -646,17 +647,17 @@ const MuralPicker = ({
               className="mural-create-control"
               data-qa="mural-picker-control"
             >
-              <PrimaryButton
-                color="primary"
-                disabled={!(defaultRooms && defaultRooms[0])}
+              <MrlShadowButton
+                text="Create new muralll"
+                kind="ghost"
                 onClick={handleClickCreate}
-                title="Create new mural"
+                icon-pos="before"
+                state={
+                  !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
+                }
               >
-                <SvgIcon>
-                  <Plus />
-                </SvgIcon>
-                <span>New mural</span>
-              </PrimaryButton>
+                <MrlSvg slot="icon" svg={plus} />
+              </MrlShadowButton>
             </FormControl>
           )}
         </div>
