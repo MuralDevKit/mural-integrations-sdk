@@ -1,4 +1,9 @@
+$mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
+@use '../styles.scss' as *;
 @import '~@muraldevkit/ds-foundation/src/styles/index';
+@import '~@muraldevkit/ds-foundation/dist/foundation.min.css';
+@import '@muraldevkit/ds-foundation/dist/fonts.min.css';
+
 .mural-picker-body {
   margin: 2em;
   outline: 0;
