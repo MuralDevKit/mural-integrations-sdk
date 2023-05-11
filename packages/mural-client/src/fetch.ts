@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { memoize } from 'lodash';
 import * as qs from 'qs';
 import {
   generateState,
@@ -47,61 +48,70 @@ let fetchConfig: AuthenticatedFetchConfig;
 
 export const authenticated = () => {
   const session = fetchConfig.sessionStore.get();
-  return !!(session && !isTokenExpired(session.refreshToken));
+  return !!(session && !isTokenExpiredOrWillSoon(session.refreshToken));
 };
 
 const authenticatedFetch = async (
   input: RequestInfo,
   init: RequestInit = {},
 ): Promise<Response> => {
-  // setup all the handlers
-  await verifyTokensExpiration();
-
+  const session = await getSession();
   const initWithAuth = {
     ...init,
-    headers: withAuthenticationToken(init.headers || {}),
+    headers: {
+      ...init.headers,
+      ...(session ? { Authorization: `Bearer ${session?.accessToken}` } : {}),
+    },
   };
 
   try {
     const response = await fetch(input, initWithAuth);
     return await checkStatus(response);
   } catch (err: any) {
-    const errorHandler = catchAuthenticationError(input, initWithAuth);
+    const errorHandler = catchAuthenticationError();
     return errorHandler(err);
   }
 };
 
-function withAuthenticationToken(headers: HeadersInit) {
+const getSession = (): Promise<Session | null> => {
   const session = fetchConfig.sessionStore.get();
-  const accessToken = session && session.accessToken;
 
-  if (!accessToken) return headers;
-  return {
-    ...headers,
-    Authorization: `Bearer ${accessToken}`,
-  };
-}
+  if (!session) return Promise.resolve(null);
 
-async function verifyTokensExpiration() {
-  const session = fetchConfig.sessionStore.get();
-  if (session) {
-    if (isTokenExpired(session.refreshToken)) {
-      fetchConfig.sessionStore.delete();
-    } else if (isTokenExpired(session.accessToken)) {
-      await fetchConfig.refreshTokenFn({ store: true });
-    }
+  if (isTokenExpiredOrWillSoon(session.refreshToken)) {
+    fetchConfig.sessionStore.delete();
+    return Promise.resolve(null);
   }
-}
 
-function isTokenExpired(token: string) {
+  return handleTokenRefresh(session);
+};
+
+const handleTokenRefresh = memoize(
+  (session: Session) => {
+    if (isTokenExpiredOrWillSoon(session.accessToken)) {
+      return fetchConfig.refreshTokenFn({ store: true });
+    }
+    return Promise.resolve(session);
+  },
+  (session: Session) => session.accessToken,
+);
+
+const MINIMUM_TIME_FOR_REQUEST = 5000; // In milliseconds
+
+/* Decode the given token to look at expiration
+ * - Check if the token is expired
+ * - Make sure the token is valid long enough to issue a request */
+const isTokenExpiredOrWillSoon = (token: string) => {
   const result = jwt.decode(token) as { [key: string]: any };
   if (result && result.exp) {
-    if (Date.now() < result.exp * 1000) {
-      return false;
+    const expiration = result.exp * 1000;
+    const timeUntilExpiration = expiration - Date.now();
+    if (timeUntilExpiration < MINIMUM_TIME_FOR_REQUEST) {
+      return true;
     }
   }
-  return true;
-}
+  return false;
+};
 
 export class FetchError extends Error {
   constructor(message: string, response: Response) {
@@ -135,23 +145,10 @@ async function checkStatus(response: Response) {
   throw await FetchError.fromResponse(response);
 }
 
-function catchAuthenticationError(input: RequestInfo, init: RequestInit = {}) {
+function catchAuthenticationError() {
   return async (error: FetchError | Error): Promise<Response> => {
     if (!(error instanceof FetchError)) {
       throw error;
-    }
-
-    const session = fetchConfig.sessionStore.get();
-
-    if (
-      error.response.status === 401 &&
-      error.text === 'Need to Refresh' &&
-      session &&
-      session.refreshToken
-    ) {
-      await fetchConfig.refreshTokenFn({ store: true });
-      // For api retry we should use the newly refreshed token and not the original one
-      return authenticatedFetch(input, init);
     }
 
     // In the case that we sent a authenticated request to the back-end
@@ -227,40 +224,38 @@ export interface AuthorizeHandlerOptions {
  *
  * @returns Authorization URL
  */
-export const authorizeHandler =
-  (config: TokenHandlerConfig) =>
-  async (
-    redirectUri?: string,
-    opts: AuthorizeHandlerOptions = { storeState: false },
-  ): Promise<string> => {
-    const stateToUse = opts.state || generateState();
+export const authorizeHandler = (config: TokenHandlerConfig) => async (
+  redirectUri?: string,
+  opts: AuthorizeHandlerOptions = { storeState: false },
+): Promise<string> => {
+  const stateToUse = opts.state || generateState();
 
-    const params = qs.stringify(
-      {
-        auto: opts.authorizeParams?.auto
-          ? encodeAutoParam(opts.authorizeParams.auto)
-          : undefined,
-        reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
-        redirectUri,
-        signup: opts.authorizeParams?.signup || undefined,
-        state: stateToUse,
-        ...opts.authorizeParams?.forward,
-      },
-      { encode: true },
-    );
+  const params = qs.stringify(
+    {
+      auto: opts.authorizeParams?.auto
+        ? encodeAutoParam(opts.authorizeParams.auto)
+        : undefined,
+      reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
+      redirectUri,
+      signup: opts.authorizeParams?.signup || undefined,
+      state: stateToUse,
+      ...opts.authorizeParams?.forward,
+    },
+    { encode: true },
+  );
 
-    const url = `${config.authorizeUri}?${params}`;
+  const url = `${config.authorizeUri}?${params}`;
 
-    const authorizeUrl = await fetch(url, { method: 'GET' })
-      .then(checkStatus)
-      .then(res => res.text());
+  const authorizeUrl = await fetch(url, { method: 'GET' })
+    .then(checkStatus)
+    .then(res => res.text());
 
-    if (opts.storeState) {
-      storeState(stateToUse);
-    }
+  if (opts.storeState) {
+    storeState(stateToUse);
+  }
 
-    return authorizeUrl;
-  };
+  return authorizeUrl;
+};
 
 /**
  * Exchange the `authorization_code` via the configured Auth service.
@@ -276,27 +271,25 @@ export const authorizeHandler =
  *
  * @returns The token pair issued from the MURAL OAuth service
  */
-export const requestTokenHandler =
-  (config: TokenHandlerConfig) =>
-  async (
-    code: string,
-    state: string,
-    opts = { store: false },
-  ): Promise<Session> => {
-    // validate that the state hasn't been tampered
-    if (!validateState(state)) throw new Error('INVALID_STATE');
+export const requestTokenHandler = (config: TokenHandlerConfig) => async (
+  code: string,
+  state: string,
+  opts = { store: false },
+): Promise<Session> => {
+  // validate that the state hasn't been tampered
+  if (!validateState(state)) throw new Error('INVALID_STATE');
 
-    const url = `${config.requestTokenUri}?code=${code}`;
-    const session = await fetch(url, { method: 'GET' })
-      .then(checkStatus)
-      .then(res => res.json());
+  const url = `${config.requestTokenUri}?code=${code}`;
+  const session = await fetch(url, { method: 'GET' })
+    .then(checkStatus)
+    .then(res => res.json());
 
-    if (opts.store) {
-      fetchConfig.sessionStore.set(session);
-    }
+  if (opts.store) {
+    fetchConfig.sessionStore.set(session);
+  }
 
-    return session;
-  };
+  return session;
+};
 
 /**
  * Exchange the MURAL `refreshToken` via the configured Auth service.
@@ -306,41 +299,41 @@ export const requestTokenHandler =
  *
  * @returns The token pair issued from the MURAL OAuth service
  */
-export const refreshTokenHandler =
-  (config: TokenHandlerConfig) =>
-  async (opts = { store: false }): Promise<Session> => {
-    const staleSession = fetchConfig.sessionStore.get();
-    const options = {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-      body: JSON.stringify({
-        refreshToken: staleSession && staleSession.refreshToken,
-      }),
-    };
-
-    try {
-      const freshSession: Session = await fetch(config.refreshTokenUri, options)
-        .then(checkStatus)
-        .then(res => res.json());
-
-      if (opts.store) {
-        fetchConfig.sessionStore.set(freshSession);
-      }
-
-      return freshSession;
-    } catch (e) {
-      if (
-        e instanceof FetchError &&
-        e.response.status >= 400 &&
-        e.response.status < 500
-      )
-        throw InvalidSessionError.fromError(e);
-      throw e;
-    }
+export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
+  opts = { store: false },
+): Promise<Session> => {
+  const staleSession = fetchConfig.sessionStore.get();
+  const options = {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    body: JSON.stringify({
+      refreshToken: staleSession && staleSession.refreshToken,
+    }),
   };
+
+  try {
+    const freshSession: Session = await fetch(config.refreshTokenUri, options)
+      .then(checkStatus)
+      .then(res => res.json());
+
+    if (opts.store) {
+      fetchConfig.sessionStore.set(freshSession);
+    }
+
+    return freshSession;
+  } catch (e) {
+    if (
+      e instanceof FetchError &&
+      e.response.status >= 400 &&
+      e.response.status < 500
+    )
+      throw InvalidSessionError.fromError(e);
+    throw e;
+  }
+};
 
 // This is a shortcut as this file as multiple dependencies
 // we'll ensure we require the call to `setup` or anyways
