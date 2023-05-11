@@ -9,6 +9,8 @@ import {
   validateState,
 } from './session';
 
+const MINIMUM_TIME_FOR_REQUEST = 5000; // In milliseconds
+
 export type TokenHandlerConfig = {
   authorizeUri: string;
   requestTokenUri: string;
@@ -60,7 +62,7 @@ const authenticatedFetch = async (
     ...init,
     headers: {
       ...init.headers,
-      ...(session ? { Authorization: `Bearer ${session?.accessToken}` } : {}),
+      ...(session ? { Authorization: `Bearer ${session.accessToken}` } : {}),
     },
   };
 
@@ -73,14 +75,14 @@ const authenticatedFetch = async (
   }
 };
 
-const getSession = (): Promise<Session | null> => {
+const getSession = async (): Promise<Session | null> => {
   const session = fetchConfig.sessionStore.get();
 
-  if (!session) return Promise.resolve(null);
+  if (!session) return null;
 
   if (isTokenExpiredOrWillSoon(session.refreshToken)) {
     fetchConfig.sessionStore.delete();
-    return Promise.resolve(null);
+    return null;
   }
 
   return handleTokenRefresh(session);
@@ -96,21 +98,16 @@ const handleTokenRefresh = memoize(
   (session: Session) => session.accessToken,
 );
 
-const MINIMUM_TIME_FOR_REQUEST = 5000; // In milliseconds
-
 /* Decode the given token to look at expiration
  * - Check if the token is expired
  * - Make sure the token is valid long enough to issue a request */
 const isTokenExpiredOrWillSoon = (token: string) => {
   const result = jwt.decode(token) as { [key: string]: any };
-  if (result && result.exp) {
-    const expiration = result.exp * 1000;
-    const timeUntilExpiration = expiration - Date.now();
-    if (timeUntilExpiration < MINIMUM_TIME_FOR_REQUEST) {
-      return true;
-    }
-  }
-  return false;
+  if (!result || !result.exp) return false;
+
+  const expiration = result.exp * 1000;
+  const timeUntilExpiration = expiration - Date.now();
+  return timeUntilExpiration < MINIMUM_TIME_FOR_REQUEST;
 };
 
 export class FetchError extends Error {
