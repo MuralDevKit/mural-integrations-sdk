@@ -17,7 +17,7 @@ import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getAllWorkspaces } from '../../common/get-all';
 import { ReactSlot } from '../../common/react';
 import { PrimaryButton } from '../common';
-import RoomSelect from '../room-select';
+import RoomSelect from '../room-select-slots';
 import createTheme, { Preset } from '../theme';
 import WorkspaceSelectSlots from '../workspace-select-slots';
 import './styles.scss';

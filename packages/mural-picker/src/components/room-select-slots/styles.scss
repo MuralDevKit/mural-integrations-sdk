@@ -1,0 +1,13 @@
+.room-select {
+  font-weight: 400;
+  flex: 1 1 140px;
+
+  .select-label {
+    padding: 0.6em;
+  }
+
+  .MuiInput-underline,
+  .MuiInput-underline:after {
+    border-color: #e02935;
+  }
+}

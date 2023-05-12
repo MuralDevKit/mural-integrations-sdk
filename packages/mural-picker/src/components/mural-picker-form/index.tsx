@@ -20,7 +20,7 @@ import MuralPickerError from '../error';
 import Header from '../header';
 import Loading from '../loading';
 import MuralSelect from '../mural-select';
-import RoomSelect from '../room-select';
+import RoomSelect from '../room-select-slots';
 import WorkspaceSelectSlots from '../workspace-select-slots';
 
 import './styles.scss';

@@ -1,4 +1,6 @@
-import { Box, CircularProgress, TextField } from '@material-ui/core';
+import { Box } from '@material-ui/core';
+import { MrlButton } from '@muraldevkit/ds-component-button-react';
+import { MrlTextInput } from '@muraldevkit/ds-component-form-elements-react';
 import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import {
   ApiClient,
@@ -12,9 +14,7 @@ import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import { CardSize } from '../card-list-item';
-// import { ActionItemSource } from '../card-list-item/action';
 import { CardListSection } from '../card-list/card-list-section';
-import { PrimaryButton } from '../common';
 import { ErrorHandler } from '../types';
 
 import './styles.scss';
@@ -150,34 +150,22 @@ export default class MuralCreate extends React.Component<
       <>
         {this.props.templates && this.renderTemplateCardItems()}
         <Box className={cx('new-mural-buttons-container')}>
-          <TextField
-            className="new-mural-create__title"
+          <MrlTextInput
             value={this.state.title}
-            onChange={event =>
-              this.setState({
-                title: event.target.value,
-              })
-            }
-            variant="outlined"
-            label="Mural title"
-            placeholder="Untitled mural"
+            placeholder={'Untitled Mural'}
+            attrs={{
+              onInput: (event: React.ChangeEvent<HTMLInputElement>) =>
+                this.setState({ title: event.target.value }),
+            }}
+            inputId={'search-input'}
           />
 
-          <PrimaryButton
-            className="new-mural-create__submit"
+          <MrlButton
+            text="Create mural"
+            kind="primary"
             onClick={this.createMural}
-            variant="contained"
             disabled={this.state.btnLoading}
-          >
-            Create Mural
-            {this.state.btnLoading && (
-              <CircularProgress
-                style={{ marginLeft: 10 }}
-                size={18}
-                color="inherit"
-              />
-            )}
-          </PrimaryButton>
+          ></MrlButton>
         </Box>
       </>
     );

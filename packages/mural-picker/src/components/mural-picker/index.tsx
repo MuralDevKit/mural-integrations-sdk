@@ -1,11 +1,16 @@
-import { Box, FormControl, SvgIcon, TextField } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import {
   ThemeOptions as MuiThemeOptions,
   ThemeProvider,
 } from '@material-ui/core/styles';
 import { MrlShadowButton } from '@muraldevkit/ds-component-button-react';
+import { MrlTextInput } from '@muraldevkit/ds-component-form-elements-react';
 import { MrlSvg } from '@muraldevkit/ds-component-svg-react';
-import { plus } from '@muraldevkit/ds-icons';
+import {
+  plusAlt,
+  arrowBack,
+  search as searchIcon,
+} from '@muraldevkit/ds-icons';
 import {
   DeepPartial,
   defaultBuilder,
@@ -23,13 +28,10 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getAllRoomsByWorkspace, getAllWorkspaces } from '../../common/get-all';
-import { ReactSlot } from '../../common/react';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import CardList from '../card-list';
 import { CardSize } from '../card-list-item';
-import { BackButton } from '../common';
 import MuralPickerError from '../error';
-import Header from '../header';
 import Loading from '../loading';
 import MuralCreate from '../mural-create';
 import RoomSelect from '../room-select';
@@ -38,25 +40,12 @@ import WorkspaceSelect from '../workspace-select';
 import './styles.scss';
 
 import '@muraldevkit/mural-integrations-common/styles/common.scss';
-// @TECHDEBT — Once we have the @tactivos/ds-icons library
-// We can remove this atrocity and `import { plus } from '@tactivos/ds-icons'`
-import { ReactComponent as BackArrow } from '@muraldevkit/mural-integrations-common/assets/icons/arrow-back.svg';
 import { useDebounce } from '../../common/hooks/useDebounce';
 
 export type ThemeOptions = {
   preset: Preset;
   cardSize: CardSize;
   overrides?: MuiThemeOptions;
-};
-
-export type Slots = {
-  AddButton?: ReactSlot;
-
-  Header: Header['props']['slots'] & {
-    Self: ReactSlot<Header>;
-  };
-
-  RoomSelect?: RoomSelect['props']['slots'];
 };
 
 export interface PropTypes {
@@ -67,12 +56,11 @@ export interface PropTypes {
   >;
 
   theme?: DeepPartial<ThemeOptions>;
-  slots?: DeepPartial<Slots>;
   disableCreate?: boolean;
 }
 
 // eslint-disable-next-line no-shadow
-enum ViewType {
+export enum ViewType {
   CREATE = 'Create',
   RECENT = 'Recent',
   STARRED = 'Starred',
@@ -105,10 +93,6 @@ const useThemeOptions = defaultBuilder<ThemeOptions>({
   cardSize: 'normal',
 });
 
-const useSlots = defaultBuilder<Slots>({
-  Header: { Self: Header },
-});
-
 const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
 const DEFAULT_BLANK_TEMPLATE_ID =
   'gh&rishIOpNm-thON^43D-O&(8&hHjPle$-(kplP&Nm-ujlK8*0^';
@@ -127,7 +111,6 @@ const BLANK_TEMPLATE: Template = {
 
 const MuralPicker = ({
   apiClient,
-  slots,
   onSelect,
   disableCreate = false,
   theme,
@@ -213,8 +196,9 @@ const MuralPicker = ({
   useEffect(() => {
     const fetchRoomData = async () => {
       // don't need to re fetch on defaults
-      if (defaultRooms?.length && workspace === defaultWorkspace) {
+      if (defaultRooms?.length && workspace?.id === defaultWorkspace?.id) {
         setRooms(defaultRooms || []);
+        isCreateView ? setRoom(defaultRooms[0]) : setRoom(null);
         setIsLoading(false);
       } else if (workspace) {
         try {
@@ -228,7 +212,7 @@ const MuralPicker = ({
           const sortedRooms = uponRooms.sort((a, b) =>
             a.name.localeCompare(b.name),
           );
-          if (workspace === defaultWorkspace) {
+          if (workspace.id === defaultWorkspace?.id) {
             setDefaultRooms(sortedRooms);
             setIsLoading(false);
           }
@@ -412,18 +396,17 @@ const MuralPicker = ({
   };
 
   const handleRoomSelect = async (selectedRoom: Room | null) => {
-    if (!selectedRoom) {
-      return handleWorkspaceSelect(workspace);
-    }
     // Abort in-flight requests
     apiClientRef.current.abort();
+    setIsLoading(true);
 
     try {
       // nothing loads for create view changes
       setRoom(selectedRoom);
       if (viewType === ViewType.ALL) {
-        setIsLoading(true);
-        if (selectedRoom) {
+        if (!selectedRoom) {
+          updateAllView();
+        } else {
           const q = {
             roomId: selectedRoom.id,
           };
@@ -452,7 +435,22 @@ const MuralPicker = ({
   const handleViewCreate = async (fromSearch?: boolean) => {
     setSearch('');
     setViewType(ViewType.CREATE);
+    setRoom(defaultRooms![0]);
     try {
+      if (defaultTemplates.length > 0) {
+        setTemplates(defaultTemplates);
+      } else {
+        // get first time defaults
+        setIsLoading(true);
+        const templatesResult = await templateSearch();
+        // ensuring only 1 blank template
+        const defaultTemps = [
+          ...new Set([...[BLANK_TEMPLATE], ...(templatesResult?.value || [])]),
+        ];
+        setDefaultTemplates(defaultTemps);
+        setTemplates(defaultTemps);
+        setIsLoading(false);
+      }
       if (fromSearch) {
         // use existing rooms
         const templatesResult = await templateSearch();
@@ -460,28 +458,10 @@ const MuralPicker = ({
         setTemplates([
           ...new Set([...[BLANK_TEMPLATE], ...(templatesResult?.value || [])]),
         ]);
-      } else {
-        // set defaults
-        setRoom(defaultRooms ? defaultRooms[0] : null);
+        setIsLoading(false);
+      } else if (workspace?.id !== defaultWorkspace?.id) {
         setWorkspace(defaultWorkspace);
-        if (defaultTemplates.length > 0) {
-          setTemplates(defaultTemplates);
-        } else {
-          // get first time defaults
-          setIsLoading(true);
-          const templatesResult = await templateSearch();
-          // ensuring only 1 blank template
-          const defaultTemps = [
-            ...new Set([
-              ...[BLANK_TEMPLATE],
-              ...(templatesResult?.value || []),
-            ]),
-          ];
-          setDefaultTemplates(defaultTemps);
-          setTemplates(defaultTemps);
-        }
       }
-      setIsLoading(false);
     } catch (e: any) {
       setIsLoading(false);
       onError(
@@ -563,46 +543,38 @@ const MuralPicker = ({
   };
 
   const renderPartialHeader = () => {
-    // should not be a slot because we want uniform interactions?
-    // render slot for empty space on other side (ppl pass logout)
     // render search + back button
-    const currentSlots = useSlots(slots);
     const isCreateView = viewType === ViewType.CREATE;
     const title = isCreateView ? 'Search for templates' : 'Search for murals';
-    if (isCreateView || search) {
-      currentSlots.Header.Action = (props: any) => (
-        <BackButton
-          onClick={() => {
-            setTemplates([]);
-            setSearch('');
-            setError('');
-            isCreateView && search
-              ? handleViewCreate()
-              : handleSwitchTabs(isCreateView ? ViewType.RECENT : viewType);
-          }}
-          {...props}
-        >
-          <SvgIcon>
-            <BackArrow />
-          </SvgIcon>
-        </BackButton>
-      );
-    } else {
-      currentSlots.Header.Action = () => null;
-    }
-
+    const showCreate = isCreateView || search;
     return (
       <>
-        <currentSlots.Header.Self
-          slots={{ ...currentSlots.Header }}
-        ></currentSlots.Header.Self>
-        <TextField
-          className="search-input"
+        {showCreate ? (
+          <MrlShadowButton
+            text=""
+            kind="ghost"
+            onClick={() => {
+              setTemplates([]);
+              setSearch('');
+              setError('');
+              isCreateView && search
+                ? handleViewCreate()
+                : handleSwitchTabs(isCreateView ? ViewType.RECENT : viewType);
+            }}
+          >
+            <MrlSvg slot="icon" svg={arrowBack} />
+          </MrlShadowButton>
+        ) : (
+          <div></div>
+        )}
+        <MrlTextInput
+          persistIcon={{
+            icon: searchIcon,
+          }}
           value={search}
-          onChange={handleSearchChange}
-          variant="outlined"
-          label={title}
           placeholder={title}
+          attrs={{ onInput: handleSearchChange }}
+          inputId={'search-input'}
         />
       </>
     );
@@ -622,7 +594,6 @@ const MuralPicker = ({
   };
 
   const { preset, cardSize } = useThemeOptions(theme);
-  const currentSlots = useSlots(slots);
   const createdTheme = createTheme(preset);
   const isSearching = search;
   const isCreateView = viewType === ViewType.CREATE;
@@ -632,7 +603,7 @@ const MuralPicker = ({
   // do not show filters on tabs (except all), do not show on tab search views
   const showFilters =
     !isRecentView && !isStarredView && !(isAllView && isSearching);
-  !(isRecentView && isSearching) && !(isStarredView && isSearching);
+  !(isRecentView && isSearching) && !(isStarredView && isSearching) && rooms;
   const showTabs = !isSearching && !isCreateView;
   const showCreateBtn = !isCreateView && !disableCreate;
   const displayCreateView =
@@ -643,22 +614,17 @@ const MuralPicker = ({
         <div className="mural-header-row">
           {renderPartialHeader()}
           {showCreateBtn && (
-            <FormControl
-              className="mural-create-control"
-              data-qa="mural-picker-control"
+            <MrlShadowButton
+              text="New mural"
+              kind="ghost"
+              onClick={handleClickCreate}
+              icon-pos="before"
+              state={
+                !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
+              }
             >
-              <MrlShadowButton
-                text="Create new muralll"
-                kind="ghost"
-                onClick={handleClickCreate}
-                icon-pos="before"
-                state={
-                  !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
-                }
-              >
-                <MrlSvg slot="icon" svg={plus} />
-              </MrlShadowButton>
-            </FormControl>
+              <MrlSvg slot="icon" svg={plusAlt} />
+            </MrlShadowButton>
           )}
         </div>
         {showTabs && (
@@ -672,7 +638,7 @@ const MuralPicker = ({
         {showFilters && (
           <div className={cx('mural-picker-selects')}>
             <WorkspaceSelect
-              workspace={workspace}
+              workspace={workspace!}
               workspaces={workspaces}
               onSelect={handleWorkspaceSelect}
             />
@@ -680,8 +646,8 @@ const MuralPicker = ({
               workspace={workspace}
               room={room}
               rooms={rooms}
+              viewType={viewType}
               onSelect={handleRoomSelect}
-              slots={currentSlots.RoomSelect}
             />
           </div>
         )}

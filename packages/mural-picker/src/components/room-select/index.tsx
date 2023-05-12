@@ -1,138 +1,103 @@
-import { FormControl, InputLabel, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
-  DeepPartial,
-  defaultBuilder,
-  EventHandler,
-} from '@muraldevkit/mural-integrations-common';
+  MrlSelect,
+  MrlSelectItem,
+  MrlSelectMenu,
+} from '@muraldevkit/ds-component-form-elements-react';
+import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import { Room, Workspace } from '@muraldevkit/mural-integrations-mural-client';
-import debounce from 'lodash/debounce';
 import * as React from 'react';
-import Measure from 'react-measure';
-import { DELAYS } from '../../common/delays';
-import { ReactSlot } from '../../common/react';
-import { threshold } from '../common';
 
+import { ViewType } from '../mural-picker';
 import './styles.scss';
-
-interface Slots {
-  LabelText: ReactSlot;
-}
 
 interface PropTypes {
   workspace: Workspace | null;
   room: Room | null;
   rooms: Room[];
+  viewType: ViewType;
 
   onSelect: EventHandler<[room: Room | null]>;
-
-  onSearchQuery?: EventHandler<
-    [query: { workspaceId: string; title: string } | false]
-  >;
-  ListboxProps?: object | undefined;
   disabled?: boolean;
-
-  slots?: DeepPartial<Slots>;
 }
 
+interface DefaultRoom {
+  id: string;
+  name: string;
+}
 interface StateTypes {
-  isSearchingRooms: boolean;
+  isCreateView: boolean;
+  currentRoom: Room | DefaultRoom;
+  currentRooms: Room[];
 }
 
-const useSlots = defaultBuilder<Slots>({
-  LabelText: () => <span>Room</span>,
-});
+const INITIAL_STATE: StateTypes = {
+  isCreateView: false,
+  currentRoom: { id: 'null', name: 'All rooms' },
+  currentRooms: [],
+};
 
 export default class RoomSelect extends React.Component<PropTypes, StateTypes> {
-  state = {
-    isSearchingRooms: false,
-  };
-
-  handleSelect = async (_: React.ChangeEvent<{}>, room: Room | null) => {
-    this.props.onSelect(room);
-  };
-
-  handleInputChange = async (event: React.ChangeEvent<{}>, input: string) => {
-    if (!this.props.onSearchQuery) return;
-    if (!this.props.workspace) return;
-    if (event?.type !== 'change') return;
-
-    try {
-      this.setState({ isSearchingRooms: true });
-      await this.props.onSearchQuery({
-        workspaceId: this.props.workspace.id,
-        title: input,
-      });
-    } finally {
-      this.setState({ isSearchingRooms: false });
+  state: StateTypes = INITIAL_STATE;
+  handleSelect = (newValue: any) => {
+    if (newValue == 'room-default') {
+      this.props.onSelect(null);
     }
+    const newRoom = this.state.currentRooms?.find(
+      // eslint-disable-next-line no-shadow
+      room => `room-${room.id.toString()}` == newValue,
+    );
+    console.log(newRoom, 'the new selection');
+    if (newRoom) this.props.onSelect(newRoom);
   };
 
-  handleInputClose = () => {
-    if (!this.props.onSearchQuery) return;
-
-    this.props.onSearchQuery(false);
-  };
-
+  // TODO: cleanup file when select components are working
   render() {
-    const slots = useSlots(this.props.slots);
-
+    const defaultRoom = { id: 'default', name: 'All rooms' };
+    const currentRoom = this.props.room ? this.props.room : defaultRoom;
+    const currentRooms = this.props.rooms;
+    const isCreateView = this.props.viewType === ViewType.CREATE;
     return (
-      <Measure bounds>
-        {({ measureRef, contentRect }) => {
-          const sz = threshold(contentRect.bounds?.width, {
-            m: 140,
-          });
-
-          return (
-            <FormControl
-              ref={measureRef}
-              className="room-select"
-              data-qa="room-select"
-            >
-              {sz.m && (
-                <div className="select-label">
-                  <InputLabel shrink>
-                    <slots.LabelText />
-                  </InputLabel>
-                </div>
-              )}
-              <Autocomplete
-                id="room-select"
-                options={this.props.rooms}
-                ListboxProps={this.props.ListboxProps}
-                getOptionLabel={option => {
-                  return option?.name || 'All Rooms';
-                }}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    placeholder="All Rooms"
-                    variant="outlined"
-                    inputProps={{
-                      ...params.inputProps,
-                      'data-qa': 'input-room-select',
-                    }}
-                  />
-                )}
-                value={this.props.room}
-                disabled={!this.props.workspace}
-                onChange={this.handleSelect}
-                onInputChange={debounce(
-                  this.handleInputChange,
-                  DELAYS.DEBOUNCE_SEARCH,
-                )}
-                onClose={this.handleInputClose}
-                getOptionSelected={(option: Room, value: Room) =>
-                  option.id === value.id
-                }
-                loading={this.state.isSearchingRooms}
-                noOptionsText={'No results'}
-              />
-            </FormControl>
-          );
+      <MrlSelect
+        attrs={{
+          'data-qa': 'room-select',
         }}
-      </Measure>
+        hookChange={this.handleSelect}
+        kind="inline"
+        state={currentRooms ? 'default' : 'disabled'}
+        labelId="room-select"
+      >
+        <MrlSelectMenu selected={'room-' + currentRoom.id} slot="menu">
+          {!isCreateView && (
+            <MrlSelectItem
+              key={'room-' + defaultRoom.id}
+              id={'room-' + defaultRoom.id}
+              isFocused={currentRoom.id === 'room-' + defaultRoom.id}
+              state={
+                currentRoom.id == 'room-' + defaultRoom.id
+                  ? 'selected'
+                  : 'default'
+              }
+              value={'room-' + defaultRoom.id}
+            >
+              {defaultRoom.name}
+            </MrlSelectItem>
+          )}
+          {currentRooms?.map(room => {
+            const roomId = 'room-' + room.id;
+            return (
+              <MrlSelectItem
+                key={roomId}
+                id={roomId}
+                isFocused={currentRoom.id === room.id}
+                state={currentRoom.id == room.id ? 'selected' : 'default'}
+                value={roomId}
+              >
+                {room.name}
+              </MrlSelectItem>
+            );
+          })}
+        </MrlSelectMenu>
+      </MrlSelect>
     );
   }
 }

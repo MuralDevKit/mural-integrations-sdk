@@ -1,4 +1,5 @@
 import { defineCustomElements as defineMrlButton } from '@muraldevkit/ds-component-button/loader';
+import { defineCustomElements as defineMrlFormElements } from '@muraldevkit/ds-component-form-elements/loader';
 import { defineCustomElements as defineMrlSvg } from '@muraldevkit/ds-component-svg/loader';
 
 /**
@@ -14,5 +15,6 @@ export const defineDSComponents = async (
 ): Promise<void> => {
   // add ds components here
   defineMrlButton(undefined, options);
+  defineMrlFormElements(undefined, options);
   defineMrlSvg(undefined, options);
 };
