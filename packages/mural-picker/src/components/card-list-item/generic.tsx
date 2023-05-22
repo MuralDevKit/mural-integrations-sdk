@@ -37,14 +37,14 @@ export default (props: PropTypes) => {
         </span>
         <span className="card-info">
           {/* TECHDEBT fetch avatar info from the API? */}
-          {source.initials && (
+          {/* {source.initials && (
             <span
               className="card-avatar card-avatar--initials"
               data-qa="card-avatar"
             >
               {source.initials}
             </span>
-          )}
+          )} */}
           <span className="card-details" data-qa="card-details">
             {source.details || ''}
           </span>

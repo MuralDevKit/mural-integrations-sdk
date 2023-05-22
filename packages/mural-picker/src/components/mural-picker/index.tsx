@@ -549,33 +549,37 @@ const MuralPicker = ({
     const showCreate = isCreateView || search;
     return (
       <>
-        {showCreate ? (
-          <MrlShadowButton
-            text=""
-            kind="ghost"
-            onClick={() => {
-              setTemplates([]);
-              setSearch('');
-              setError('');
-              isCreateView && search
-                ? handleViewCreate()
-                : handleSwitchTabs(isCreateView ? ViewType.RECENT : viewType);
+        <div className="start">
+          {showCreate ? (
+            <MrlShadowButton
+              text=""
+              kind="ghost"
+              onClick={() => {
+                setTemplates([]);
+                setSearch('');
+                setError('');
+                isCreateView && search
+                  ? handleViewCreate()
+                  : handleSwitchTabs(isCreateView ? ViewType.RECENT : viewType);
+              }}
+            >
+              <MrlSvg slot="icon" svg={arrowBack} />
+            </MrlShadowButton>
+          ) : (
+            <div></div>
+          )}
+        </div>
+        <div className="middle">
+          <MrlTextInput
+            persistIcon={{
+              icon: searchIcon,
             }}
-          >
-            <MrlSvg slot="icon" svg={arrowBack} />
-          </MrlShadowButton>
-        ) : (
-          <div></div>
-        )}
-        <MrlTextInput
-          persistIcon={{
-            icon: searchIcon,
-          }}
-          value={search}
-          placeholder={title}
-          attrs={{ onInput: handleSearchChange }}
-          inputId={'search-input'}
-        />
+            value={search}
+            placeholder={title}
+            attrs={{ onInput: handleSearchChange }}
+            inputId={'search-input'}
+          />
+        </div>
       </>
     );
   };
@@ -613,19 +617,22 @@ const MuralPicker = ({
       <Box className={`mural-picker-body ${preset}`} data-qa="mural-picker">
         <div className="mural-header-row">
           {renderPartialHeader()}
-          {showCreateBtn && (
-            <MrlShadowButton
-              text="New mural"
-              kind="ghost"
-              onClick={handleClickCreate}
-              icon-pos="before"
-              state={
-                !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
-              }
-            >
-              <MrlSvg slot="icon" svg={plusAlt} />
-            </MrlShadowButton>
-          )}
+          <div className="end">
+            {showCreateBtn && (
+              <MrlShadowButton
+                text="New mural"
+                kind="ghost"
+                className="create-btn"
+                onClick={handleClickCreate}
+                icon-pos="before"
+                state={
+                  !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
+                }
+              >
+                <MrlSvg slot="icon" svg={plusAlt} />
+              </MrlShadowButton>
+            )}
+          </div>
         </div>
         {showTabs && (
           <div className="mural-search-type-container">
@@ -653,7 +660,7 @@ const MuralPicker = ({
         )}
 
         {search && (
-          <div>{`${
+          <div className="search-results-text">{`${
             isCreateView ? templates.length : murals.length
           } results for "${search}"`}</div>
         )}

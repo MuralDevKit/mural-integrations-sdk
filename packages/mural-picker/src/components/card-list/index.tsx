@@ -27,12 +27,11 @@ const dateMarkers = (mural: Mural) => {
     round: true,
     units: ['d', 'h'],
   });
-  const created = humanize(now - mural.createdOn, {
-    round: true,
-    units: ['d'],
-  });
 
-  return [`Created ${created} ago`, `Modified ${updated} ago`].join('\n');
+  const firstName = mural.createdBy?.firstName;
+  const lastName = mural.createdBy?.lastName;
+
+  return [`${firstName || ''} ${lastName || ''}`, `${updated} ago`].join('\n');
 };
 
 interface PropTypes {

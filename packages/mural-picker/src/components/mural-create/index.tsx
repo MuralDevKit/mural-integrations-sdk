@@ -1,4 +1,3 @@
-import { Box } from '@material-ui/core';
 import { MrlButton } from '@muraldevkit/ds-component-button-react';
 import { MrlTextInput } from '@muraldevkit/ds-component-form-elements-react';
 import { EventHandler } from '@muraldevkit/mural-integrations-common';
@@ -149,10 +148,11 @@ export default class MuralCreate extends React.Component<
     return (
       <>
         {this.props.templates && this.renderTemplateCardItems()}
-        <Box className={cx('new-mural-buttons-container')}>
+        <div className={cx('new-mural-buttons-container')}>
           <MrlTextInput
             value={this.state.title}
             placeholder={'Untitled Mural'}
+            className="create-input"
             attrs={{
               onInput: (event: React.ChangeEvent<HTMLInputElement>) =>
                 this.setState({ title: event.target.value }),
@@ -166,7 +166,7 @@ export default class MuralCreate extends React.Component<
             onClick={this.createMural}
             disabled={this.state.btnLoading}
           ></MrlButton>
-        </Box>
+        </div>
       </>
     );
   }

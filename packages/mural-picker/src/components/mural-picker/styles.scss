@@ -1,8 +1,7 @@
 $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
-@use '../styles.scss' as *;
+@use '~@muraldevkit/ds-foundation/dist/foundation.min.css';
+@use '~@muraldevkit/ds-foundation/dist/fonts.min.css';
 @import '~@muraldevkit/ds-foundation/src/styles/index';
-@import '~@muraldevkit/ds-foundation/dist/foundation.min.css';
-@import '@muraldevkit/ds-foundation/dist/fonts.min.css';
 
 .mural-picker-body {
   margin: 2em;
@@ -16,9 +15,11 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   &.dark {
     color: white;
   }
+
   .mural-header-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 20px;
     justify-content: center;
     padding: 10px 10px 10px 12px;
     align-items: center;
@@ -27,23 +28,58 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
       justify-self: end;
       min-width: 140px;
     }
+
+    .start {
+      display: flex;
+    }
+    .middle {
+      grid-column-start: 2;
+      grid-column-end: 4;
+      display: flex;
+      > * {
+        flex: 1;
+      }
+    }
+    .end {
+      display: flex;
+      justify-content: flex-end;
+    }
   }
+
   .mural-search-type-container {
     border-bottom: 3px solid #eee;
     height: 1.79em;
-
+    .create-btn {
+      width: 200px;
+    }
     .mural-search-type {
       border: none;
       background-color: white;
       border-bottom: 3px solid #eee;
-      padding: 7px 8px;
-      margin: 0px 11px 0px 0px;
       cursor: pointer;
+      font-weight: var(--mrl-font-weight-03);
+      line-height: calc((26 / var(--mrl-baseline)) * 1rem);
+      margin-right: calc((16 / var(--mrl-baseline)) * 1rem);
+      padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
+      font-size: var(--mrl-font-size-03);
+      &:hover {
+        border-bottom: 3px solid var(--mrl-color-line-hover);
+        padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
+      }
     }
 
     .mural-search-type-selected {
-      border-bottom: 3px solid black;
+      font-weight: var(--mrl-font-weight-03);
+      padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
+      border-bottom: 3px solid rgb(var(--mrl-blue-70));
+      color: rgb(var(--mrl-blue-70));
+      &:hover {
+        border-bottom: 3px solid rgb(var(--mrl-blue-70));
+      }
     }
+  }
+  .search-results-text {
+    padding: 0px 10px;
   }
   .mural-picker-selects {
     display: flex;
