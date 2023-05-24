@@ -619,18 +619,33 @@ const MuralPicker = ({
           {renderPartialHeader()}
           <div className="end">
             {showCreateBtn && (
-              <MrlShadowButton
-                text="New mural"
-                kind="ghost"
-                className="create-btn"
-                onClick={handleClickCreate}
-                icon-pos="before"
-                state={
-                  !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
-                }
-              >
-                <MrlSvg slot="icon" svg={plusAlt} />
-              </MrlShadowButton>
+              <>
+                <MrlShadowButton
+                  text="New mural"
+                  kind="ghost"
+                  className="create-btn"
+                  onClick={handleClickCreate}
+                  icon-pos="before"
+                  state={
+                    !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
+                  }
+                >
+                  <MrlSvg slot="icon" svg={plusAlt} />
+                </MrlShadowButton>
+                <MrlShadowButton
+                  text=""
+                  kind="ghost"
+                  aria-label="New Mural"
+                  className="mini-create-btn"
+                  onClick={handleClickCreate}
+                  icon-pos="before"
+                  state={
+                    !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
+                  }
+                >
+                  <MrlSvg slot="icon" svg={plusAlt} />
+                </MrlShadowButton>
+              </>
             )}
           </div>
         </div>

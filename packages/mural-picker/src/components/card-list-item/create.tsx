@@ -1,4 +1,4 @@
-import { Card, CardActionArea, Grid, CardContent } from '@material-ui/core';
+import { Card, CardActionArea, CardContent } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import classnames from 'classnames';
 import * as React from 'react';
@@ -7,21 +7,19 @@ import './styles.scss';
 
 export default function CreateCardItem(props: PropTypes) {
   return (
-    <Grid item component="li">
-      <Card
-        variant="outlined"
-        className={classnames('card-list-item', `${props.cardSize}-card`, {
-          'selected-card': props.isSelected,
-        })}
-        id="create-a-mural"
-      >
-        <CardActionArea onClick={props.onClick}>
-          <CardContent className="mural-info">
-            <AddCircleIcon />
-            <h4 data-qa="create-new-mural">Create new mural</h4>
-          </CardContent>
-        </CardActionArea>
-      </Card>
-    </Grid>
+    <Card
+      variant="outlined"
+      className={classnames('card-list-item', `${props.cardSize}-card`, {
+        'selected-card': props.isSelected,
+      })}
+      id="create-a-mural"
+    >
+      <CardActionArea onClick={props.onClick}>
+        <CardContent className="mural-info">
+          <AddCircleIcon />
+          <h4 data-qa="create-new-mural">Create new mural</h4>
+        </CardContent>
+      </CardActionArea>
+    </Card>
   );
 }

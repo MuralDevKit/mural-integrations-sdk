@@ -1,4 +1,3 @@
-import { Grid } from '@material-ui/core';
 import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import * as React from 'react';
 import { CardSize } from '../card-list-item';
@@ -56,10 +55,10 @@ export class CardListSection extends React.Component<PropTypes> {
     return (
       <>
         {this.renderTitle()}
-        <Grid container className="mural-grid" direction="row" component="ul">
+        <div className="mural-grid">
           {startActions?.map(this.renderActionItem)}
           {this.props.items.map((item, i) => (
-            <Grid item component="li">
+            <div className="mural-grid-item">
               <CardItem
                 key={i}
                 source={item}
@@ -67,10 +66,11 @@ export class CardListSection extends React.Component<PropTypes> {
                 cardSize={this.props.cardSize || 'normal'}
                 onClick={this.handleSelectFor(i)}
               />
-            </Grid>
+            </div>
           ))}
+          <div className="mural-grid-item-last"></div>
           {endActions?.map(this.renderActionItem)}
-        </Grid>
+        </div>
       </>
     );
   }

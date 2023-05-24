@@ -32,10 +32,10 @@ export default (props: PropTypes) => {
           className="card-thumbnail"
           title={`${source.title} thumbnail preview`}
         />
-        <span className="card-title" data-qa="card-title">
-          {source.title}
-        </span>
-        <span className="card-info">
+        <div className="card-info">
+          <span className="card-title" data-qa="card-title">
+            {source.title}
+          </span>
           {/* TECHDEBT fetch avatar info from the API? */}
           {/* {source.initials && (
             <span
@@ -48,7 +48,7 @@ export default (props: PropTypes) => {
           <span className="card-details" data-qa="card-details">
             {source.details || ''}
           </span>
-        </span>
+        </div>
       </CardActionArea>
     </Card>
   );

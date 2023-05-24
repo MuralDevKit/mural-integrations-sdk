@@ -4,7 +4,7 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
 @import '~@muraldevkit/ds-foundation/src/styles/index';
 
 .mural-picker-body {
-  margin: 2em;
+  margin: 1.5em;
   outline: 0;
   display: flex;
   flex-direction: column;
@@ -21,7 +21,7 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
     grid-template-columns: repeat(4, 1fr);
     column-gap: 20px;
     justify-content: center;
-    padding: 10px 10px 10px 12px;
+    padding: 10px 10px 10px 10px;
     align-items: center;
 
     .mural-create-control {
@@ -43,22 +43,23 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
     .end {
       display: flex;
       justify-content: flex-end;
+      .mini-create-btn {
+        display: none;
+      }
     }
   }
 
   .mural-search-type-container {
     border-bottom: 3px solid #eee;
     height: 1.79em;
-    .create-btn {
-      width: 200px;
-    }
     .mural-search-type {
+      font-family: 'Proxima Nova';
       border: none;
       background-color: white;
       border-bottom: 3px solid #eee;
       cursor: pointer;
-      font-weight: var(--mrl-font-weight-03);
-      line-height: calc((26 / var(--mrl-baseline)) * 1rem);
+      font-weight: var(--mrl-font-weight-02);
+      line-height: calc((26 / var(--mrl-baseline)) * 0.98rem);
       margin-right: calc((16 / var(--mrl-baseline)) * 1rem);
       padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
       font-size: var(--mrl-font-size-03);
@@ -69,7 +70,7 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
     }
 
     .mural-search-type-selected {
-      font-weight: var(--mrl-font-weight-03);
+      font-weight: var(--mrl-font-weight-02);
       padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
       border-bottom: 3px solid rgb(var(--mrl-blue-70));
       color: rgb(var(--mrl-blue-70));
@@ -130,5 +131,136 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   .card-list-spinner {
     padding-top: 2em;
     text-align: center;
+  }
+
+  .mural-grid {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .MuiInput-underline:after,
+  .MuiInput-underline:before {
+    border-bottom: none;
+  }
+  .MuiInput-underline:hover:not(.Mui-disabled):before {
+    border-bottom: none;
+  }
+  .MuiInput-input {
+    font-size: var(--mrl-font-size-03);
+  }
+
+  @media (max-width: 800px) {
+    .mural-grid {
+      .card-list-item {
+        width: 172px;
+      }
+    }
+  }
+  @media (min-width: 601px) {
+    .mural-grid {
+      justify-content: flex-start;
+      .mural-grid-item {
+        padding: 0px 2px;
+      }
+    }
+  }
+  @media (max-width: 600px) {
+    .middle {
+      grid-column-start: 1 !important;
+    }
+    .end {
+      .mini-create-btn {
+        display: none;
+      }
+    }
+    .mural-selector-grid {
+      width: 100%;
+      .murals-container {
+        width: 100%;
+        .mural-grid {
+          flex-wrap: nowrap;
+          flex: 1;
+          flex-direction: column;
+          .card-list-item {
+            height: 84px;
+            display: flex;
+            justify-content: flex-start;
+            margin: 8px 0;
+            width: 100%;
+            .card-info {
+              height: auto;
+              align-self: flex-start;
+              max-width: 60%;
+              margin-top: 10px;
+            }
+            .card-action-area {
+              justify-content: flex-start;
+              padding: 0.5rem !important;
+              display: flex;
+              .card-thumbnail {
+                height: 100%;
+                min-width: 115px;
+                max-width: 115px;
+                margin-right: 10px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 370px) {
+    .middle {
+      grid-column-start: 1 !important;
+    }
+    .end {
+      display: flex;
+      justify-content: flex-end;
+      .create-btn {
+        display: none;
+      }
+      .mini-create-btn {
+        display: flex !important;
+      }
+    }
+    .mural-selector-grid {
+      width: 100%;
+      .murals-container {
+        width: 100%;
+        .mural-grid {
+          flex-wrap: nowrap;
+          flex: 1;
+          flex-direction: column;
+          .card-list-item {
+            height: 60px;
+            margin: 8px 0;
+            display: flex;
+            width: 100%;
+            justify-content: flex-start;
+            .card-info {
+              height: auto;
+              align-self: end;
+              max-width: 65%;
+            }
+            .card-action-area {
+              display: flex;
+              padding: 0.2rem;
+              justify-content: flex-start;
+              .card-thumbnail {
+                height: 100%;
+                min-width: 75px;
+                max-width: 75px;
+                margin-right: 10px;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

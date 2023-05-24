@@ -1,12 +1,13 @@
-import {
-  MrlSelect,
-  MrlSelectItem,
-  MrlSelectMenu,
-} from '@muraldevkit/ds-component-form-elements-react';
+// import {
+//   MrlSelect,
+//   MrlSelectItem,
+//   MrlSelectMenu,
+// } from '@muraldevkit/ds-component-form-elements-react';
 import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import { Workspace } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import './styles.scss';
+import { MenuItem, FormControl, Select } from '@material-ui/core';
 
 interface PropTypes {
   workspaces: Workspace[];
@@ -15,42 +16,54 @@ interface PropTypes {
 }
 
 export default class WorkspaceSelectSlots extends React.Component<PropTypes> {
-  handleChange = (newValue: any) => {
-    const newWorkspace = this.props.workspaces.find(
-      workspace => workspace.id == newValue,
+  handleChange = (event: any) => {
+    const currentWorkspace = this.props.workspaces.filter(
+      workspace => workspace.id === event.target.value,
     );
-    if (newWorkspace) {
-      this.props.onSelect(newWorkspace);
-    }
+    if (currentWorkspace) this.props.onSelect(currentWorkspace[0]);
   };
 
   render() {
     return (
-      <MrlSelect
-        attrs={{
-          'data-qa': 'workspace-select',
-        }}
-        hookChange={this.handleChange}
-        kind="inline"
-        labelId="workspace-select"
-      >
-        <MrlSelectMenu selected={this.props.workspace.id} slot="menu">
+      <FormControl variant="standard">
+        <Select
+          labelId="workspace-select"
+          value={this.props.workspace.id || this.props.workspaces[0].id}
+          onChange={this.handleChange}
+          label="workspace"
+        >
           {this.props.workspaces.map(workspace => (
-            <MrlSelectItem
-              key={workspace.id}
-              id={workspace.id}
-              state={
-                workspace.name === this.props.workspace?.name
-                  ? 'selected'
-                  : 'default'
-              }
-              value={workspace.id}
-            >
+            <MenuItem key={workspace.id} value={workspace.id}>
               {workspace.name}
-            </MrlSelectItem>
+            </MenuItem>
           ))}
-        </MrlSelectMenu>
-      </MrlSelect>
+        </Select>
+      </FormControl>
+      // <MrlSelect
+      //   attrs={{
+      //     'data-qa': 'workspace-select',
+      //   }}
+      //   hookChange={this.handleChange}
+      //   kind="inline"
+      //   labelId="workspace-select"
+      // >
+      //   <MrlSelectMenu selected={this.props.workspace.id} slot="menu">
+      //     {this.props.workspaces.map(workspace => (
+      //       <MrlSelectItem
+      //         key={workspace.id}
+      //         id={workspace.id}
+      //         state={
+      //           workspace.name === this.props.workspace?.name
+      //             ? 'selected'
+      //             : 'default'
+      //         }
+      //         value={workspace.id}
+      //       >
+      //         {workspace.name}
+      //       </MrlSelectItem>
+      //     ))}
+      //   </MrlSelectMenu>
+      // </MrlSelect>
     );
   }
 }
