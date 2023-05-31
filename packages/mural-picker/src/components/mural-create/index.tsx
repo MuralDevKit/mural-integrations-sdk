@@ -176,6 +176,7 @@ export default class MuralCreate extends React.Component<
             title,
             workspaceId: workspace.id,
             roomId: room.id,
+            infinite: true,
           });
         } else {
           eMural = await this.props.apiClient.createMuralFromTemplate({
