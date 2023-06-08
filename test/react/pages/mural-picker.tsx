@@ -19,10 +19,14 @@ const muralPicker: Page = {
   items: {
     'mural picker': 'mural-picker',
     'card title': 'card-title',
+    'default tab': 'recent-tab',
+    'starred tab': 'starred-tab',
+    'all tab': 'all-tab',
     'room select': 'room-select',
     'workspace select': 'workspace-select',
     'input room select': 'input-room-select',
     'mural picker control': 'mural-picker-control',
+    'create button': 'create-btn',
   },
 };
 export default muralPicker;

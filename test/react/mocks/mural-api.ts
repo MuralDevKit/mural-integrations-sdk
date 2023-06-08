@@ -15,9 +15,11 @@ export const ROUTES = {
   WORKSPACES_ROOMS: 'express:/api/public/v1/workspaces/:workspaceId/rooms',
   WORKSPACES_TEMPLATES:
     'express:/api/public/v1/workspaces/:workspaceId/templates',
-  TEMPLATES: 'experss:/api/public/v1/templates',
+  TEMPLATES: 'express:/api/public/v1/templates',
   TEMPLATES_MURALS: 'express:/api/public/v1/templates/:templateId/murals',
   SEARCH_ROOMS: 'express:/api/public/v1/search/:workspaceId/rooms',
+  RECENT_MURALS:
+    'express:/api/public/v1/murals/recently-opened-across-workspaces',
 
   // Internal API
   REALM: `glob:*/api/v0/user/realm`,
@@ -184,7 +186,9 @@ export const registerGlobalRoutes = () => {
     const workspaceId = parsedUrl.pathname.split('/')[5];
     const murals = await muralApiEntities.mural.findAllBy({ workspaceId });
 
-    return response(parsedUrl, { value: murals });
+    return response(parsedUrl, {
+      value: murals.sort((x, y) => y.updatedOn - x.updatedOn),
+    });
   });
 
   fetchMock.get(ROUTES.WORKSPACES_ROOMS, async (url: string) => {
@@ -237,6 +241,14 @@ export const registerGlobalRoutes = () => {
     const parsedUrl = new URL(ROUTES.TEMPLATES);
     const templates = await muralApiEntities.template.findAll();
     return response(parsedUrl, { value: templates });
+  });
+
+  fetchMock.get(ROUTES.RECENT_MURALS, async () => {
+    const parsedUrl = new URL(ROUTES.RECENT_MURALS);
+    const murals = await muralApiEntities.mural.findAll();
+    return response(parsedUrl, {
+      value: murals.sort((x, y) => x.updatedOn - y.updatedOn),
+    });
   });
 
   fetchMock.get(ROUTES.GLOBAL_TEMPLATES, () => {

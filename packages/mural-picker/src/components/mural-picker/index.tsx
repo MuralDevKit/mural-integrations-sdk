@@ -553,6 +553,7 @@ const MuralPicker = ({
           {showCreate ? (
             <MrlShadowButton
               text=""
+              data-qa="back-btn"
               kind="ghost"
               onClick={() => {
                 setTemplates([]);
@@ -591,6 +592,7 @@ const MuralPicker = ({
           'mural-search-type-selected': viewType === tab,
           'mural-search-type': true,
         })}
+        data-qa={`${tab.toLowerCase()}-tab`}
       >
         {tab}
       </button>
@@ -623,6 +625,7 @@ const MuralPicker = ({
                 <MrlShadowButton
                   text="New mural"
                   kind="ghost"
+                  data-qa="create-btn"
                   className="create-btn"
                   onClick={handleClickCreate}
                   icon-pos="before"

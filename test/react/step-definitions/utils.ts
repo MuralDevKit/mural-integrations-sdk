@@ -41,11 +41,10 @@ export const getSelectOption = async (
   clickOn?: boolean,
 ) => {
   const element = await getElement(descriptor);
-
   const isOurSelect = element?.classList.contains('ui-dropdown');
   const isMuiSelect = element?.classList.contains('MuiFormControl-root');
+  const isMuiSelect2 = element?.classList.contains('MuiInputBase-root');
   const isReactSelect = !!element?.querySelector('.Select');
-
   let selectOption: HTMLElement;
 
   if (isOurSelect) {
@@ -59,6 +58,11 @@ export const getSelectOption = async (
   } else if (isMuiSelect) {
     const autocomplete = await within(element).findByRole('combobox');
     fireEvent.keyDown(autocomplete, { key: 'ArrowDown', keyCode: 40 }); // Trigger the dropdown
+
+    selectOption = await screen.findByText(option);
+  } else if (isMuiSelect2) {
+    const select = await within(element).findByRole('button', { hidden: true });
+    fireEvent.keyDown(select, { key: 'ArrowDown', keyCode: 40 });
 
     selectOption = await screen.findByText(option);
   } else if (isReactSelect) {
@@ -80,7 +84,7 @@ export const getSelectOption = async (
       fail(`${descriptor} has no select option "${option}"`);
     }
 
-    if (isOurSelect || isMuiSelect) {
+    if (isOurSelect || isMuiSelect || isMuiSelect2) {
       fireEvent.click(selectOption);
     } else if (isReactSelect) {
       fireEvent.mouseDown(selectOption);
