@@ -1,6 +1,5 @@
 import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import * as React from 'react';
-import { CardSize } from '../card-list-item';
 import ActionCardItem, { ActionItemSource } from '../card-list-item/action';
 import CardItem, { CardItemSource } from '../card-list-item/generic';
 import './styles.scss';
@@ -10,7 +9,6 @@ interface PropTypes {
   onSelect: EventHandler<[idx: number, item: CardItemSource]>;
 
   actions?: ActionItemSource[];
-  cardSize?: CardSize;
   onAction?: EventHandler<[actionName: string]>;
   title?: string;
   selected?: number;
@@ -32,7 +30,6 @@ export class CardListSection extends React.Component<PropTypes> {
       key={item.name}
       isSelected={false}
       source={item}
-      cardSize={this.props.cardSize || 'normal'}
       onClick={this.handleAction(item.name)}
     />
   );
@@ -63,7 +60,6 @@ export class CardListSection extends React.Component<PropTypes> {
                 key={i}
                 source={item}
                 isSelected={this.props.selected === i}
-                cardSize={this.props.cardSize || 'normal'}
                 onClick={this.handleSelectFor(i)}
               />
             </div>

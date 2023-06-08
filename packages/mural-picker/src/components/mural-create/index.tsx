@@ -12,7 +12,6 @@ import cx from 'classnames';
 import * as React from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
-import { CardSize } from '../card-list-item';
 import { CardListSection } from '../card-list/card-list-section';
 import { ErrorHandler } from '../types';
 
@@ -32,7 +31,6 @@ export type PropTypes = {
   onCreate: EventHandler<[mural: Mural, room: Room, workspace: Workspace]>;
   onError: ErrorHandler;
 
-  cardSize?: CardSize;
   templates: Template[];
   // fetchTemplates: () => void;
 };
@@ -137,7 +135,6 @@ export default class MuralCreate extends React.Component<
             items={templateCardItems}
             onSelect={this.onSelectTemplate}
             selected={this.state.selected}
-            cardSize={this.props.cardSize}
           />
         </div>
       </div>

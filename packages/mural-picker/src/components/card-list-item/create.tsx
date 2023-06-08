@@ -2,14 +2,14 @@ import { Card, CardActionArea, CardContent } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import classnames from 'classnames';
 import * as React from 'react';
-import { PropTypes } from './types';
 import './styles.scss';
+import { PropTypes } from './types';
 
 export default function CreateCardItem(props: PropTypes) {
   return (
     <Card
       variant="outlined"
-      className={classnames('card-list-item', `${props.cardSize}-card`, {
+      className={classnames('card-list-item', {
         'selected-card': props.isSelected,
       })}
       id="create-a-mural"

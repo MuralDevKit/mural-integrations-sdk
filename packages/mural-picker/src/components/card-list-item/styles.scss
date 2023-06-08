@@ -86,47 +86,6 @@
     }
   }
 
-  &.small-card {
-    font-size: 0.675em;
-    width: 140px;
-
-    .card-action-area {
-      padding: 0.8em;
-    }
-
-    .card-thumbnail {
-      height: 74px;
-    }
-    .card-title {
-      margin-top: 0.675em;
-    }
-
-    .card-info {
-      display: none;
-    }
-  }
-
-  &.tiny-card {
-    font-size: 0.5em;
-    width: 100px;
-
-    .card-action-area {
-      padding: 0.6em;
-    }
-
-    .card-thumbnail {
-      height: 55px;
-    }
-
-    .card-title {
-      margin-top: 0.5em;
-    }
-
-    .card-info {
-      display: none;
-    }
-  }
-
   &.selected-card {
     border-color: #e02935;
     box-shadow: 0px 20px 12px rgba(0, 0, 0, 0.12);

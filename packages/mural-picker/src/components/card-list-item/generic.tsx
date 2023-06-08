@@ -15,12 +15,12 @@ export type CardItemSource = {
 export type PropTypes = { source: CardItemSource } & ItemPropTypes;
 
 export default (props: PropTypes) => {
-  const { source, isSelected, onClick, cardSize } = props;
+  const { source, isSelected, onClick } = props;
 
   return (
     <Card
       variant="outlined"
-      className={classnames('card-list-item', `${cardSize}-card`, {
+      className={classnames('card-list-item', {
         'selected-card': isSelected,
       })}
       onClick={onClick}
