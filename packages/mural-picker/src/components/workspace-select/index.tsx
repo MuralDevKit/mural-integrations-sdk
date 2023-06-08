@@ -3,11 +3,11 @@
 //   MrlSelectItem,
 //   MrlSelectMenu,
 // } from '@muraldevkit/ds-component-form-elements-react';
+import { MenuItem, FormControl, Select } from '@material-ui/core';
 import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import { Workspace } from '@muraldevkit/mural-integrations-mural-client';
 import * as React from 'react';
 import './styles.scss';
-import { MenuItem, FormControl, Select } from '@material-ui/core';
 
 interface PropTypes {
   workspaces: Workspace[];

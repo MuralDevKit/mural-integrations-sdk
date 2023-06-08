@@ -1,10 +1,7 @@
 $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
-@use '~@muraldevkit/ds-foundation/dist/foundation.min.css';
-@use '~@muraldevkit/ds-foundation/dist/fonts.min.css';
-@import '~@muraldevkit/ds-foundation/src/styles/index';
 
 .mural-picker-body {
-  margin: 1.5em;
+  margin: 1em;
   outline: 0;
   display: flex;
   flex-direction: column;
@@ -14,6 +11,34 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
 
   &.dark {
     color: white;
+
+    .back-btn {
+      color: white;
+    }
+
+    .create-btn {
+      color: white;
+    }
+
+    .mural-search-type {
+      color: white;
+    }
+
+    .card-title {
+      color: white;
+    }
+
+    .MuiInputBase-root {
+      color: white;
+    }
+
+    .MuiSvgIcon-root {
+      color: white;
+    }
+
+    .MuiList-root {
+      color: white;
+    }
   }
 
   .mural-header-row {
@@ -52,10 +77,11 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   .mural-search-type-container {
     border-bottom: 3px solid #eee;
     height: 1.79em;
+
     .mural-search-type {
-      font-family: 'Proxima Nova';
+      font-family: 'abc-social', sans-serif;
       border: none;
-      background-color: white;
+      background-color: unset;
       border-bottom: 3px solid #eee;
       cursor: pointer;
       font-weight: var(--mrl-font-weight-02);
@@ -63,6 +89,7 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
       margin-right: calc((16 / var(--mrl-baseline)) * 1rem);
       padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
       font-size: var(--mrl-font-size-03);
+
       &:hover {
         border-bottom: 3px solid var(--mrl-color-line-hover);
         padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
@@ -74,14 +101,17 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
       padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
       border-bottom: 3px solid rgb(var(--mrl-blue-70));
       color: rgb(var(--mrl-blue-70));
+
       &:hover {
         border-bottom: 3px solid rgb(var(--mrl-blue-70));
       }
     }
   }
+
   .search-results-text {
     padding: 0px 10px;
   }
+
   .mural-picker-selects {
     display: flex;
     align-items: end;
@@ -153,13 +183,6 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
     font-size: var(--mrl-font-size-03);
   }
 
-  @media (max-width: 800px) {
-    .mural-grid {
-      .card-list-item {
-        width: 172px;
-      }
-    }
-  }
   @media (min-width: 601px) {
     .mural-grid {
       justify-content: flex-start;
