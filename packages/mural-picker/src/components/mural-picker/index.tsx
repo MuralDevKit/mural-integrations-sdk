@@ -676,7 +676,7 @@ const MuralPicker = ({
           </div>
         )}
 
-        {search && (
+        {!!search && !isLoading && (
           <div className="search-results-text">{`${
             isCreateView ? templates.length : murals.length
           } results for "${search}"`}</div>
