@@ -233,40 +233,36 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
         width: unset;
       }
 
-      .murals-container {
-        width: 100%;
+      .mural-grid {
+        flex-wrap: nowrap;
+        flex: 1;
+        flex-direction: column;
 
-        .mural-grid {
-          flex-wrap: nowrap;
-          flex: 1;
-          flex-direction: column;
+        .card-list-item {
+          height: 84px;
+          display: flex;
+          justify-content: flex-start;
+          margin: 4px 0;
+          width: 100%;
+          border: none;
+          box-shadow: none;
 
-          .card-list-item {
-            height: 84px;
-            display: flex;
+          .card-info {
+            height: auto;
+            align-self: flex-start;
+            max-width: 60%;
+            margin-top: 10px;
+          }
+
+          .card-action-area {
             justify-content: flex-start;
-            margin: 4px 0;
-            width: 100%;
-            border: none;
-            box-shadow: none;
+            padding: 0.5rem !important;
+            display: flex;
 
-            .card-info {
-              height: auto;
-              align-self: flex-start;
-              max-width: 60%;
-              margin-top: 10px;
-            }
-
-            .card-action-area {
-              justify-content: flex-start;
-              padding: 0.5rem !important;
-              display: flex;
-
-              .card-thumbnail {
-                width: styles.$mini-card-thumbnail-width;
-                height: styles.$mini-card-thumbnail-height;
-                margin-right: 10px;
-              }
+            .card-thumbnail {
+              width: styles.$mini-card-thumbnail-width;
+              height: styles.$mini-card-thumbnail-height;
+              margin-right: 10px;
             }
           }
         }
@@ -288,38 +284,34 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
     .mural-selector-grid {
       width: 100%;
 
-      .murals-container {
-        width: 100%;
+      .mural-grid {
+        flex-wrap: nowrap;
+        flex: 1;
+        flex-direction: column;
 
-        .mural-grid {
-          flex-wrap: nowrap;
-          flex: 1;
-          flex-direction: column;
+        .card-list-item {
+          height: 60px;
+          display: flex;
+          width: 100%;
+          justify-content: flex-start;
+          margin: 4px 0;
+          border: none;
+          box-shadow: none;
 
-          .card-list-item {
-            height: 60px;
+          .card-info {
+            height: auto;
+            align-self: end;
+            max-width: 65%;
+          }
+
+          .card-action-area {
             display: flex;
-            width: 100%;
+            padding: 0.2rem;
             justify-content: flex-start;
-            margin: 4px 0;
-            border: none;
-            box-shadow: none;
 
-            .card-info {
-              height: auto;
-              align-self: end;
-              max-width: 65%;
-            }
-
-            .card-action-area {
-              display: flex;
-              padding: 0.2rem;
-              justify-content: flex-start;
-
-              .card-thumbnail {
-                width: styles.$micro-card-thumbnail-width;
-                height: styles.$micro-card-thumbnail-height;
-              }
+            .card-thumbnail {
+              width: styles.$micro-card-thumbnail-width;
+              height: styles.$micro-card-thumbnail-height;
             }
           }
         }

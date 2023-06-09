@@ -75,9 +75,7 @@ export default class MuralCardList extends React.Component<PropTypes> {
     return (
       <div className="mural-selector-container">
         <div className="mural-selector-grid">
-          <div className="murals-container">
-            {this.renderMurals(this.props.murals)}
-          </div>
+          {this.renderMurals(this.props.murals)}
         </div>
       </div>
     );
