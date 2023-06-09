@@ -124,6 +124,7 @@ export default class MuralCreate extends React.Component<
 
   renderTemplateCardItems = () => {
     const templateCardItems = this.props.templates.map(template => ({
+      details: template.description,
       title: template.name,
       thumbnailUrl: template.thumbUrl,
     }));

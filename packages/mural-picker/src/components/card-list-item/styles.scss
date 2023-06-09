@@ -55,6 +55,7 @@
     height: 80px;
     justify-content: space-between;
     margin-top: 0.675em;
+    gap: 8px;
 
     .card-details {
       color: rgba(var(--mrl-gray-60), 1);
@@ -64,9 +65,11 @@
       font-weight: var(--mrl-font-weight-03);
       line-height: var(--mrl-line-height-07);
 
-      text-overflow: ellipsis;
+      // multiline ellipsis
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      white-space: pre-line;
     }
 
     .card-avatar {

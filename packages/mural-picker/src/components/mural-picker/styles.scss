@@ -184,6 +184,10 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-between;
+
+    .mural-grid-item {
+      width: min-content;
+    }
   }
 
   .MuiInput-underline:after,
@@ -224,6 +228,10 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
 
     .mural-selector-grid {
       width: 100%;
+
+      .mural-grid-item {
+        width: unset;
+      }
 
       .murals-container {
         width: 100%;
