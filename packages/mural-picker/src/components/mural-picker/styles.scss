@@ -1,4 +1,5 @@
 @use '../styles.scss' as styles;
+
 $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
 
 .mural-picker-body {
@@ -43,34 +44,46 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   }
 
   .mural-header-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    column-gap: 20px;
-    justify-content: center;
-    padding: 10px 10px 10px 10px;
-    align-items: center;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
 
-    .mural-create-control {
-      justify-self: end;
-      min-width: 140px;
-    }
+    .header-side {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex: 0.25;
 
-    .start {
-      display: flex;
-    }
-    .middle {
-      grid-column-start: 2;
-      grid-column-end: 4;
-      display: flex;
-      > * {
-        flex: 1;
+      &.start {
+        justify-content: flex-start;
+      }
+
+      &.end {
+        justify-content: flex-end;
+      }
+
+      .start-container {
+        margin-right: 12px;
+      }
+
+      .end-container {
+        margin-left: 12px;
+
+        .mini-create-btn {
+          display: none;
+        }
       }
     }
-    .end {
+
+    .middle {
       display: flex;
-      justify-content: flex-end;
-      .mini-create-btn {
-        display: none;
+      flex-direction: row;
+      justify-content: center;
+      flex: 1;
+
+      .middle-container {
+        flex: 1;
+        max-width: 400px;
       }
     }
   }
@@ -177,9 +190,11 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   .MuiInput-underline:before {
     border-bottom: none;
   }
+
   .MuiInput-underline:hover:not(.Mui-disabled):before {
     border-bottom: none;
   }
+
   .MuiInput-input {
     font-size: var(--mrl-font-size-03);
   }
@@ -187,6 +202,7 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   @media (min-width: 601px) {
     .mural-grid {
       justify-content: flex-start;
+
       .mural-grid-item {
         padding: 0px 2px;
       }
@@ -194,11 +210,13 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   }
 
   @media (max-width: 600px) {
-    .middle {
-      grid-column-start: 1 !important;
+    .mural-header-row {
+      .header-side {
+        flex: 0;
+      }
     }
 
-    .end {
+    .end-container {
       .mini-create-btn {
         display: none;
       }
@@ -249,16 +267,11 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   }
 
   @media (max-width: 370px) {
-    .middle {
-      grid-column-start: 1 !important;
-    }
-
-    .end {
-      display: flex;
-      justify-content: flex-end;
+    .end-container {
       .create-btn {
         display: none;
       }
+
       .mini-create-btn {
         display: flex !important;
       }
