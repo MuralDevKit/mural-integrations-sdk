@@ -226,6 +226,13 @@ export interface ApiClient {
       title: string;
       workspaceId: string;
       roomId: number;
+      folderId?: string;
+      height?: number;
+      width?: number;
+      infinite?: boolean;
+      visitorsSettings?: {
+        expiresOn?: number;
+      };
     }
   >;
   createMuralFromTemplate: ResourceEndpoint<
