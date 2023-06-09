@@ -13,17 +13,13 @@ export type ActionItemSource = {
 export type PropTypes = { source: ActionItemSource } & ItemPropTypes;
 
 export default (props: PropTypes) => {
-  const { source, onClick, cardSize } = props;
+  const { source, onClick } = props;
 
   return (
     <Grid item component="li">
       <Card
         variant="outlined"
-        className={classnames(
-          'card-list-item',
-          `${cardSize}-card`,
-          'outline-dashed',
-        )}
+        className={classnames('card-list-item', 'outline-dashed')}
         onClick={onClick}
       >
         <CardActionArea className="card-action">

@@ -30,7 +30,6 @@ import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getAllRoomsByWorkspace, getAllWorkspaces } from '../../common/get-all';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import CardList from '../card-list';
-import { CardSize } from '../card-list-item';
 import MuralPickerError from '../error';
 import Loading from '../loading';
 import MuralCreate from '../mural-create';
@@ -44,7 +43,6 @@ import { useDebounce } from '../../common/hooks/useDebounce';
 
 export type ThemeOptions = {
   preset: Preset;
-  cardSize: CardSize;
   overrides?: MuiThemeOptions;
 };
 
@@ -90,7 +88,6 @@ interface StateTypes {
 
 const useThemeOptions = defaultBuilder<ThemeOptions>({
   preset: 'light',
-  cardSize: 'normal',
 });
 
 const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
@@ -547,6 +544,7 @@ const MuralPicker = ({
     const isCreateView = viewType === ViewType.CREATE;
     const title = isCreateView ? 'Search for templates' : 'Search for murals';
     const showCreate = isCreateView || search;
+    const middleClasses = showCreate ? 'middle-create' : 'middle';
     return (
       <>
         <div className="start">
@@ -570,7 +568,7 @@ const MuralPicker = ({
             <div></div>
           )}
         </div>
-        <div className="middle">
+        <div className={middleClasses}>
           <MrlTextInput
             persistIcon={{
               icon: searchIcon,
@@ -599,7 +597,7 @@ const MuralPicker = ({
     );
   };
 
-  const { preset, cardSize } = useThemeOptions(theme);
+  const { preset } = useThemeOptions(theme);
   const createdTheme = createTheme(preset);
   const isSearching = search;
   const isCreateView = viewType === ViewType.CREATE;
@@ -611,7 +609,7 @@ const MuralPicker = ({
     !isRecentView && !isStarredView && !(isAllView && isSearching);
   !(isRecentView && isSearching) && !(isStarredView && isSearching) && rooms;
   const showTabs = !isSearching && !isCreateView;
-  const showCreateBtn = !isCreateView && !disableCreate;
+  const showCreateBtn = !isCreateView && !disableCreate && !isSearching;
   const displayCreateView =
     (isCreateView || (isCreateView && isSearching)) && room && workspace;
   return (
@@ -687,7 +685,6 @@ const MuralPicker = ({
         {!isLoading && murals && !isCreateView && (
           <CardList
             murals={murals}
-            cardSize={cardSize}
             onSelect={handleMuralSelect}
             onCreate={handleClickCreate}
             onError={handleError}
@@ -697,9 +694,7 @@ const MuralPicker = ({
 
         {displayCreateView && (
           <MuralCreate
-            // fetchTemplates={handleFetchTemplates}
             apiClient={apiClientRef.current}
-            cardSize={cardSize}
             onError={handleError}
             onCreate={handleFinishCreation}
             room={isCreateView ? room : defaultRooms![0]}

@@ -2,7 +2,6 @@ import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import { Mural } from '@muraldevkit/mural-integrations-mural-client';
 import humanize from 'humanize-duration';
 import * as React from 'react';
-import { CardSize } from '../card-list-item';
 import { CardListSection } from './card-list-section';
 import './styles.scss';
 
@@ -23,20 +22,20 @@ export const muralCardItemSource = (mural: Mural) => {
 
 const dateMarkers = (mural: Mural) => {
   const now = Date.now();
-  const updated = humanize(now - mural.updatedOn, {
+  const update = now - mural.updatedOn;
+  const create = now - mural.createdOn;
+  // account for discrepancy between cross workspaces call and murals search
+  const updated = humanize(update > 0 ? update : create, {
     round: true,
     units: ['d', 'h'],
   });
-
   const firstName = mural.createdBy?.firstName;
   const lastName = mural.createdBy?.lastName;
-
   return [`${firstName || ''} ${lastName || ''}`, `${updated} ago`].join('\n');
 };
 
 interface PropTypes {
   murals: Mural[];
-  cardSize: CardSize;
 
   onSelect: EventHandler<[mural: Mural]>;
   onCreate: EventHandler;
@@ -64,7 +63,6 @@ export default class MuralCardList extends React.Component<PropTypes> {
       return (
         <CardListSection
           items={murals.map(muralCardItemSource)}
-          cardSize={this.props.cardSize}
           onSelect={this.handleSelectFor(murals)}
           onAction={this.handleAction}
           selected={selected}

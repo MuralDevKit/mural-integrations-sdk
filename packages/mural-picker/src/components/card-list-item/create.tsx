@@ -9,7 +9,7 @@ export default function CreateCardItem(props: PropTypes) {
   return (
     <Card
       variant="outlined"
-      className={classnames('card-list-item', `${props.cardSize}-card`, {
+      className={classnames('card-list-item', {
         'selected-card': props.isSelected,
       })}
       id="create-a-mural"
