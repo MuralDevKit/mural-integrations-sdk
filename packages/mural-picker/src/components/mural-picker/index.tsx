@@ -544,41 +544,44 @@ const MuralPicker = ({
     const isCreateView = viewType === ViewType.CREATE;
     const title = isCreateView ? 'Search for templates' : 'Search for murals';
     const showCreate = isCreateView || search;
-    const middleClasses = showCreate ? 'middle-create' : 'middle';
     return (
       <>
-        <div className="start">
-          {showCreate ? (
-            <MrlShadowButton
-              text=""
-              data-qa="back-btn"
-              kind="ghost"
-              className="back-btn"
-              onClick={() => {
-                setTemplates([]);
-                setSearch('');
-                setError('');
-                isCreateView && search
-                  ? handleViewCreate()
-                  : handleSwitchTabs(isCreateView ? ViewType.RECENT : viewType);
-              }}
-            >
-              <MrlSvg slot="icon" svg={arrowBack} />
-            </MrlShadowButton>
-          ) : (
-            <div></div>
+        <div className="header-side start">
+          {showCreate && (
+            <div className="start-container">
+              <MrlShadowButton
+                text=""
+                data-qa="back-btn"
+                kind="ghost"
+                className="back-btn"
+                onClick={() => {
+                  setTemplates([]);
+                  setSearch('');
+                  setError('');
+                  isCreateView && search
+                    ? handleViewCreate()
+                    : handleSwitchTabs(
+                        isCreateView ? ViewType.RECENT : viewType,
+                      );
+                }}
+              >
+                <MrlSvg slot="icon" svg={arrowBack} />
+              </MrlShadowButton>
+            </div>
           )}
         </div>
-        <div className={middleClasses}>
-          <MrlTextInput
-            persistIcon={{
-              icon: searchIcon,
-            }}
-            value={search}
-            placeholder={title}
-            attrs={{ onInput: handleSearchChange }}
-            inputId={'search-input'}
-          />
+        <div className="middle">
+          <div className="middle-container">
+            <MrlTextInput
+              persistIcon={{
+                icon: searchIcon,
+              }}
+              value={search}
+              placeholder={title}
+              attrs={{ onInput: handleSearchChange }}
+              inputId={'search-input'}
+            />
+          </div>
         </div>
       </>
     );
@@ -618,9 +621,9 @@ const MuralPicker = ({
       <Box className={`mural-picker-body ${preset}`} data-qa="mural-picker">
         <div className="mural-header-row">
           {renderPartialHeader()}
-          <div className="end">
+          <div className="header-side end">
             {showCreateBtn && (
-              <>
+              <div className="end-container">
                 <MrlShadowButton
                   text="New mural"
                   kind="ghost"
@@ -647,7 +650,7 @@ const MuralPicker = ({
                 >
                   <MrlSvg slot="icon" svg={plusAlt} />
                 </MrlShadowButton>
-              </>
+              </div>
             )}
           </div>
         </div>
