@@ -29,6 +29,7 @@ import { useState, useEffect, useRef } from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getAllRoomsByWorkspace, getAllWorkspaces } from '../../common/get-all';
 import { useDebounce } from '../../common/hooks/useDebounce';
+import { ReactSlot } from '../../common/react';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import CardList from '../card-list';
 import MuralPickerError from '../error';
@@ -48,6 +49,10 @@ export type ThemeOptions = {
   overrides?: MuiThemeOptions;
 };
 
+export type Slots = {
+  HeaderRightSide?: ReactSlot;
+};
+
 export interface PropTypes {
   apiClient: ApiClient;
   onError: EventHandler<[error: Error, message: string]>;
@@ -56,6 +61,7 @@ export interface PropTypes {
   >;
 
   theme?: DeepPartial<ThemeOptions>;
+  slots?: DeepPartial<Slots>;
   disableCreate?: boolean;
 }
 
@@ -108,11 +114,16 @@ const BLANK_TEMPLATE: Template = {
   viewLink: '',
 } as const;
 
+const useSlots = defaultBuilder<Slots>({
+  HeaderRightSide: null,
+});
+
 const MuralPicker = ({
   apiClient,
   onSelect,
   disableCreate = false,
   theme,
+  slots,
   onError,
 }: PropTypes) => {
   const [room, setRoom] = useState<StateTypes['room']>(null);
@@ -539,14 +550,48 @@ const MuralPicker = ({
     setSearch(event.target.value);
   };
 
-  const renderPartialHeader = () => {
+  const renderHeader = () => {
     // render search + back button
     const isCreateView = viewType === ViewType.CREATE;
     const title = isCreateView ? 'Search for templates' : 'Search for murals';
     const showCreate = isCreateView || search;
+    const showCreateBtn = !isCreateView && !disableCreate && !isSearching;
+
+    const slotElements = useSlots(slots);
+
     return (
       <>
         <div className="header-side start">
+          {showCreateBtn && (
+            <div className="start-container">
+              <MrlShadowButton
+                text="New mural"
+                kind="ghost"
+                data-qa="create-btn"
+                className="create-btn"
+                onClick={handleClickCreate}
+                icon-pos="before"
+                state={
+                  !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
+                }
+              >
+                <MrlSvg slot="icon" svg={plusAlt} />
+              </MrlShadowButton>
+              <MrlShadowButton
+                text=""
+                kind="ghost"
+                aria-label="New Mural"
+                className="mini-create-btn"
+                onClick={handleClickCreate}
+                icon-pos="before"
+                state={
+                  !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
+                }
+              >
+                <MrlSvg slot="icon" svg={plusAlt} />
+              </MrlShadowButton>
+            </div>
+          )}
           {showCreate && (
             <div className="start-container">
               <MrlShadowButton
@@ -583,6 +628,13 @@ const MuralPicker = ({
             />
           </div>
         </div>
+        <div className="header-side end">
+          {slotElements.HeaderRightSide && (
+            <div className="end-container">
+              <slotElements.HeaderRightSide />
+            </div>
+          )}
+        </div>
       </>
     );
   };
@@ -613,47 +665,13 @@ const MuralPicker = ({
     !isRecentView && !isStarredView && !(isAllView && isSearching);
   !(isRecentView && isSearching) && !(isStarredView && isSearching) && rooms;
   const showTabs = !isSearching && !isCreateView;
-  const showCreateBtn = !isCreateView && !disableCreate && !isSearching;
   const displayCreateView =
     (isCreateView || (isCreateView && isSearching)) && room && workspace;
+
   return (
     <ThemeProvider theme={createdTheme}>
       <Box className={`mural-picker-body ${preset}`} data-qa="mural-picker">
-        <div className="mural-header-row">
-          {renderPartialHeader()}
-          <div className="header-side end">
-            {showCreateBtn && (
-              <div className="end-container">
-                <MrlShadowButton
-                  text="New mural"
-                  kind="ghost"
-                  data-qa="create-btn"
-                  className="create-btn"
-                  onClick={handleClickCreate}
-                  icon-pos="before"
-                  state={
-                    !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
-                  }
-                >
-                  <MrlSvg slot="icon" svg={plusAlt} />
-                </MrlShadowButton>
-                <MrlShadowButton
-                  text=""
-                  kind="ghost"
-                  aria-label="New Mural"
-                  className="mini-create-btn"
-                  onClick={handleClickCreate}
-                  icon-pos="before"
-                  state={
-                    !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
-                  }
-                >
-                  <MrlSvg slot="icon" svg={plusAlt} />
-                </MrlShadowButton>
-              </div>
-            )}
-          </div>
-        </div>
+        <div className="mural-header-row">{renderHeader()}</div>
         {showTabs && (
           <div className="mural-search-type-container">
             {renderTabButton(ViewType.RECENT)}

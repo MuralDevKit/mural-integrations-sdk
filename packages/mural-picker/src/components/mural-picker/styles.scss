@@ -46,7 +46,7 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   .mural-header-row {
     display: flex;
     flex-direction: row;
-    padding: 10px;
+    padding: 10px 0;
 
     .header-side {
       display: flex;
@@ -64,14 +64,14 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
 
       .start-container {
         margin-right: 12px;
-      }
-
-      .end-container {
-        margin-left: 12px;
 
         .mini-create-btn {
           display: none;
         }
+      }
+
+      .end-container {
+        margin-left: 12px;
       }
     }
 
@@ -218,9 +218,15 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
       .header-side {
         flex: 0;
       }
+
+      .middle {
+        .middle-container {
+          max-width: unset;
+        }
+      }
     }
 
-    .end-container {
+    .start-container {
       .mini-create-btn {
         display: none;
       }
@@ -271,7 +277,7 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   }
 
   @media (max-width: 370px) {
-    .end-container {
+    .start-container {
       .create-btn {
         display: none;
       }
