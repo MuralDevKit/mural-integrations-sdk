@@ -179,7 +179,7 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
 
   .mural-grid {
     display: flex;
-    margin: 0;
+    margin: 4px;
     padding: 0;
     flex-wrap: wrap;
     flex-direction: row;
@@ -244,8 +244,8 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
           justify-content: flex-start;
           margin: 4px 0;
           width: 100%;
-          border: none;
           box-shadow: none;
+          transform: unset;
 
           .card-info {
             height: auto;
@@ -295,8 +295,8 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
           width: 100%;
           justify-content: flex-start;
           margin: 4px 0;
-          border: none;
           box-shadow: none;
+          transform: unset;
 
           .card-info {
             height: auto;

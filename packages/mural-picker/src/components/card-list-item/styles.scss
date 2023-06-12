@@ -91,7 +91,7 @@
   }
 
   &.selected-card {
-    border-color: #e02935;
+    outline: 2px solid #3770E4;
     box-shadow: 0px 20px 12px rgba(0, 0, 0, 0.12);
     transform: translate(0, -0.33em);
   }
@@ -119,6 +119,7 @@
   }
 
   &.selected-card {
-    border: 1px solid #e02935;
+    outline: 2px solid #3770E4;
+    border-radius: 12px;
   }
 }
