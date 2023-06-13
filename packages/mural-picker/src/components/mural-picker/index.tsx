@@ -115,7 +115,7 @@ const BLANK_TEMPLATE: Template = {
 } as const;
 
 const useSlots = defaultBuilder<Slots>({
-  HeaderRightSide: null,
+  HeaderRightSide: undefined,
 });
 
 const MuralPicker = ({
