@@ -35,14 +35,10 @@
 
   .card-title {
     font-weight: 600;
-
-    // ellipsis
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     overflow: hidden;
-
-    // making span display ...
-    display: block;
   }
 
   .card-info {
