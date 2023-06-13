@@ -245,7 +245,6 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
         flex-direction: column;
 
         .card-list-item {
-          height: 84px;
           display: flex;
           justify-content: flex-start;
           margin: 4px 0;
@@ -261,9 +260,9 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
           }
 
           .card-action-area {
-            justify-content: flex-start;
-            padding: 0.5rem !important;
             display: flex;
+            justify-content: flex-start;
+            padding: 0.5rem;
 
             .card-thumbnail {
               width: styles.$mini-card-thumbnail-width;
@@ -296,7 +295,6 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
         flex-direction: column;
 
         .card-list-item {
-          height: 60px;
           display: flex;
           width: 100%;
           justify-content: flex-start;
@@ -305,15 +303,13 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
           transform: unset;
 
           .card-info {
-            height: auto;
-            align-self: end;
             max-width: 65%;
           }
 
           .card-action-area {
             display: flex;
-            padding: 0.2rem;
             justify-content: flex-start;
+            padding: 0.2rem;
 
             .card-thumbnail {
               width: styles.$micro-card-thumbnail-width;
