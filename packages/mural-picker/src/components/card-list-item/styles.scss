@@ -52,7 +52,7 @@
     height: 80px;
     justify-content: space-between;
     margin-top: 0.675em;
-    gap: 8px;
+    gap: 6px;
 
     .card-details {
       color: rgba(var(--mrl-gray-60), 1);
@@ -64,7 +64,7 @@
 
       // multiline ellipsis
       display: -webkit-box;
-      -webkit-line-clamp: 4;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
