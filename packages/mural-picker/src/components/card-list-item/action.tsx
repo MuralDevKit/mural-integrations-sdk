@@ -1,8 +1,8 @@
 import { Card, CardActionArea, Grid } from '@material-ui/core';
 import classnames from 'classnames';
 import * as React from 'react';
-import { PropTypes as ItemPropTypes } from './types';
 import './styles.scss';
+import { PropTypes as ItemPropTypes } from './types';
 
 export type ActionItemSource = {
   content: React.ReactNode;

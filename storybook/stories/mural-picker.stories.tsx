@@ -116,7 +116,6 @@ export const CreateDisabled = () => (
       apiClient={apiClient}
       onSelect={onSelect}
       onError={onError}
-      theme={{ cardSize: 'normal' }}
       disableCreate={true}
     />
   </div>
@@ -129,12 +128,7 @@ export const Normal = () => (
       minHeight: '600px',
     }}
   >
-    <MuralPicker
-      apiClient={apiClient}
-      onSelect={onSelect}
-      onError={onError}
-      theme={{ cardSize: 'normal' }}
-    />
+    <MuralPicker apiClient={apiClient} onSelect={onSelect} onError={onError} />
   </div>
 );
 
@@ -145,12 +139,7 @@ export const Small = () => (
       minHeight: '600px',
     }}
   >
-    <MuralPicker
-      apiClient={apiClient}
-      onSelect={onSelect}
-      onError={onError}
-      theme={{ cardSize: 'small' }}
-    />
+    <MuralPicker apiClient={apiClient} onSelect={onSelect} onError={onError} />
   </div>
 );
 
@@ -161,12 +150,7 @@ export const Tiny = () => (
       minHeight: '600px',
     }}
   >
-    <MuralPicker
-      apiClient={apiClient}
-      onSelect={onSelect}
-      onError={onError}
-      theme={{ cardSize: 'tiny' }}
-    />
+    <MuralPicker apiClient={apiClient} onSelect={onSelect} onError={onError} />
   </div>
 );
 
@@ -178,11 +162,6 @@ export const PPTMinWidth320PX = () => (
       width: '320px',
     }}
   >
-    <MuralPicker
-      apiClient={apiClient}
-      onSelect={onSelect}
-      onError={onError}
-      theme={{ cardSize: 'small' }}
-    />
+    <MuralPicker apiClient={apiClient} onSelect={onSelect} onError={onError} />
   </div>
 );

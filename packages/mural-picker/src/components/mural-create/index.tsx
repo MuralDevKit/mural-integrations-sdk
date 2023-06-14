@@ -124,6 +124,7 @@ export default class MuralCreate extends React.Component<
 
   renderTemplateCardItems = () => {
     const templateCardItems = this.props.templates.map(template => ({
+      details: template.description,
       title: template.name,
       thumbnailUrl: template.thumbUrl,
     }));
@@ -131,13 +132,11 @@ export default class MuralCreate extends React.Component<
     return (
       <div className="mural-selector-container">
         <div className="mural-selector-grid">
-          <div className="murals-container">
-            <CardListSection
-              items={templateCardItems}
-              onSelect={this.onSelectTemplate}
-              selected={this.state.selected}
-            />
-          </div>
+          <CardListSection
+            items={templateCardItems}
+            onSelect={this.onSelectTemplate}
+            selected={this.state.selected}
+          />
         </div>
       </div>
     );

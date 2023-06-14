@@ -28,6 +28,8 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getAllRoomsByWorkspace, getAllWorkspaces } from '../../common/get-all';
+import { useDebounce } from '../../common/hooks/useDebounce';
+import { ReactSlot } from '../../common/react';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import CardList from '../card-list';
 import MuralPickerError from '../error';
@@ -36,14 +38,19 @@ import MuralCreate from '../mural-create';
 import RoomSelect from '../room-select';
 import createTheme, { Preset } from '../theme';
 import WorkspaceSelect from '../workspace-select';
-import './styles.scss';
 
+import '@muraldevkit/ds-foundation/dist/fonts.css';
+import '@muraldevkit/ds-foundation/dist/foundation.css';
 import '@muraldevkit/mural-integrations-common/styles/common.scss';
-import { useDebounce } from '../../common/hooks/useDebounce';
+import './styles.scss';
 
 export type ThemeOptions = {
   preset: Preset;
   overrides?: MuiThemeOptions;
+};
+
+export type Slots = {
+  HeaderRightSide?: ReactSlot;
 };
 
 export interface PropTypes {
@@ -54,6 +61,7 @@ export interface PropTypes {
   >;
 
   theme?: DeepPartial<ThemeOptions>;
+  slots?: DeepPartial<Slots>;
   disableCreate?: boolean;
 }
 
@@ -106,11 +114,16 @@ const BLANK_TEMPLATE: Template = {
   viewLink: '',
 } as const;
 
+const useSlots = defaultBuilder<Slots>({
+  HeaderRightSide: undefined,
+});
+
 const MuralPicker = ({
   apiClient,
   onSelect,
   disableCreate = false,
   theme,
+  slots,
   onError,
 }: PropTypes) => {
   const [room, setRoom] = useState<StateTypes['room']>(null);
@@ -129,8 +142,9 @@ const MuralPicker = ({
   const [mural, setMural] = useState<StateTypes['mural']>(null);
   const [workspaces, setWorkspaces] = useState<StateTypes['workspaces']>([]);
   const [workspace, setWorkspace] = useState<StateTypes['workspace']>(null);
-  const [defaultWorkspace, setDefaultWorkspace] =
-    useState<StateTypes['defaultWorkspace']>(null);
+  const [defaultWorkspace, setDefaultWorkspace] = useState<
+    StateTypes['defaultWorkspace']
+  >(null);
   const [error, setError] = useState<StateTypes['error']>('');
   const [search, setSearch] = useState<StateTypes['search']>('');
   const [isLoading, setIsLoading] = useState<StateTypes['isLoading']>(false);
@@ -313,8 +327,7 @@ const MuralPicker = ({
     switch (tab) {
       case 'Recent': {
         try {
-          const recentMuralsResult =
-            await apiClientRef.current.getCrossWorkspaceRecentMurals();
+          const recentMuralsResult = await apiClientRef.current.getCrossWorkspaceRecentMurals();
           setRecentMurals(recentMuralsResult?.value);
           setMurals(recentMuralsResult?.value);
           setIsLoading(false);
@@ -325,8 +338,7 @@ const MuralPicker = ({
       }
       case 'Starred': {
         try {
-          const starredMuralsResult =
-            await apiClientRef.current.getCrossWorkspaceStarredMurals();
+          const starredMuralsResult = await apiClientRef.current.getCrossWorkspaceStarredMurals();
           setStarredMurals(starredMuralsResult?.value);
           setMurals(starredMuralsResult?.value);
           setIsLoading(false);
@@ -339,13 +351,12 @@ const MuralPicker = ({
         try {
           if (defaultWorkspace) {
             // this call has known performance issues
-            const allMuralsResult =
-              await apiClientRef.current.getMuralsByWorkspace(
-                {
-                  workspaceId: defaultWorkspace.id,
-                },
-                { sortBy: 'lastCreated' },
-              );
+            const allMuralsResult = await apiClientRef.current.getMuralsByWorkspace(
+              {
+                workspaceId: defaultWorkspace.id,
+              },
+              { sortBy: 'lastCreated' },
+            );
             setRoom(null);
             setAllMurals(allMuralsResult?.value);
             setMurals(allMuralsResult?.value);
@@ -539,45 +550,90 @@ const MuralPicker = ({
     setSearch(event.target.value);
   };
 
-  const renderPartialHeader = () => {
+  const renderHeader = () => {
     // render search + back button
     const isCreateView = viewType === ViewType.CREATE;
     const title = isCreateView ? 'Search for templates' : 'Search for murals';
     const showCreate = isCreateView || search;
-    const middleClasses = showCreate ? 'middle-create' : 'middle';
+    const showCreateBtn = !isCreateView && !disableCreate && !isSearching;
+
+    const slotElements = useSlots(slots);
+
     return (
       <>
-        <div className="start">
-          {showCreate ? (
-            <MrlShadowButton
-              text=""
-              data-qa="back-btn"
-              kind="ghost"
-              onClick={() => {
-                setTemplates([]);
-                setSearch('');
-                setError('');
-                isCreateView && search
-                  ? handleViewCreate()
-                  : handleSwitchTabs(isCreateView ? ViewType.RECENT : viewType);
-              }}
-            >
-              <MrlSvg slot="icon" svg={arrowBack} />
-            </MrlShadowButton>
-          ) : (
-            <div></div>
+        <div className="header-side start">
+          {showCreateBtn && (
+            <div className="start-container">
+              <MrlShadowButton
+                text="New mural"
+                kind="ghost"
+                data-qa="create-btn"
+                className="create-btn"
+                onClick={handleClickCreate}
+                icon-pos="before"
+                state={
+                  !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
+                }
+              >
+                <MrlSvg slot="icon" svg={plusAlt} />
+              </MrlShadowButton>
+              <MrlShadowButton
+                text=""
+                kind="ghost"
+                aria-label="New Mural"
+                className="mini-create-btn"
+                onClick={handleClickCreate}
+                icon-pos="before"
+                state={
+                  !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
+                }
+              >
+                <MrlSvg slot="icon" svg={plusAlt} />
+              </MrlShadowButton>
+            </div>
+          )}
+          {showCreate && (
+            <div className="start-container">
+              <MrlShadowButton
+                text=""
+                data-qa="back-btn"
+                kind="ghost"
+                className="back-btn"
+                onClick={() => {
+                  setTemplates([]);
+                  setSearch('');
+                  setError('');
+                  isCreateView && search
+                    ? handleViewCreate()
+                    : handleSwitchTabs(
+                        isCreateView ? ViewType.RECENT : viewType,
+                      );
+                }}
+              >
+                <MrlSvg slot="icon" svg={arrowBack} />
+              </MrlShadowButton>
+            </div>
           )}
         </div>
-        <div className={middleClasses}>
-          <MrlTextInput
-            persistIcon={{
-              icon: searchIcon,
-            }}
-            value={search}
-            placeholder={title}
-            attrs={{ onInput: handleSearchChange }}
-            inputId={'search-input'}
-          />
+        <div className="middle">
+          <div className="middle-container">
+            <MrlTextInput
+              persistIcon={{
+                icon: searchIcon,
+              }}
+              value={search}
+              placeholder={title}
+              attrs={{ onInput: handleSearchChange }}
+              inputId={'search-input'}
+            />
+          </div>
+        </div>
+        <div className="header-side end">
+          {slotElements.HeaderRightSide && (
+            <div className="end-container">
+              <slotElements.HeaderRightSide />
+            </div>
+          )}
         </div>
       </>
     );
@@ -609,47 +665,13 @@ const MuralPicker = ({
     !isRecentView && !isStarredView && !(isAllView && isSearching);
   !(isRecentView && isSearching) && !(isStarredView && isSearching) && rooms;
   const showTabs = !isSearching && !isCreateView;
-  const showCreateBtn = !isCreateView && !disableCreate && !isSearching;
   const displayCreateView =
     (isCreateView || (isCreateView && isSearching)) && room && workspace;
+
   return (
     <ThemeProvider theme={createdTheme}>
       <Box className={`mural-picker-body ${preset}`} data-qa="mural-picker">
-        <div className="mural-header-row">
-          {renderPartialHeader()}
-          <div className="end">
-            {showCreateBtn && (
-              <>
-                <MrlShadowButton
-                  text="New mural"
-                  kind="ghost"
-                  data-qa="create-btn"
-                  className="create-btn"
-                  onClick={handleClickCreate}
-                  icon-pos="before"
-                  state={
-                    !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
-                  }
-                >
-                  <MrlSvg slot="icon" svg={plusAlt} />
-                </MrlShadowButton>
-                <MrlShadowButton
-                  text=""
-                  kind="ghost"
-                  aria-label="New Mural"
-                  className="mini-create-btn"
-                  onClick={handleClickCreate}
-                  icon-pos="before"
-                  state={
-                    !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
-                  }
-                >
-                  <MrlSvg slot="icon" svg={plusAlt} />
-                </MrlShadowButton>
-              </>
-            )}
-          </div>
-        </div>
+        <div className="mural-header-row">{renderHeader()}</div>
         {showTabs && (
           <div className="mural-search-type-container">
             {renderTabButton(ViewType.RECENT)}
@@ -675,7 +697,7 @@ const MuralPicker = ({
           </div>
         )}
 
-        {search && (
+        {!!search && !isLoading && (
           <div className="search-results-text">{`${
             isCreateView ? templates.length : murals.length
           } results for "${search}"`}</div>

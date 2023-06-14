@@ -1,10 +1,9 @@
+@use '../styles.scss' as styles;
+
 $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
-@use '~@muraldevkit/ds-foundation/dist/foundation.min.css';
-@use '~@muraldevkit/ds-foundation/dist/fonts.min.css';
-@import '~@muraldevkit/ds-foundation/src/styles/index';
 
 .mural-picker-body {
-  margin: 1.5em;
+  margin: 1em;
   outline: 0;
   display: flex;
   flex-direction: column;
@@ -14,45 +13,77 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
 
   &.dark {
     color: white;
+
+    .back-btn {
+      color: white;
+    }
+
+    .create-btn {
+      color: white;
+    }
+
+    .mural-search-type {
+      color: white;
+    }
+
+    .card-title {
+      color: white;
+    }
+
+    .MuiInputBase-root {
+      color: white;
+    }
+
+    .MuiSvgIcon-root {
+      color: white;
+    }
+
+    .MuiList-root {
+      color: white;
+    }
   }
 
   .mural-header-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    column-gap: 20px;
-    justify-content: center;
-    padding: 10px 10px 10px 10px;
-    align-items: center;
+    display: flex;
+    flex-direction: row;
+    padding: 10px 0;
 
-    .mural-create-control {
-      justify-self: end;
-      min-width: 140px;
-    }
-
-    .start {
+    .header-side {
       display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex: 0.25;
+
+      &.start {
+        justify-content: flex-start;
+      }
+
+      &.end {
+        justify-content: flex-end;
+      }
+
+      .start-container {
+        margin-right: 12px;
+
+        .mini-create-btn {
+          display: none;
+        }
+      }
+
+      .end-container {
+        margin-left: 12px;
+      }
     }
+
     .middle {
-      grid-column-start: 2;
-      grid-column-end: 4;
       display: flex;
-      > * {
+      flex-direction: row;
+      justify-content: center;
+      flex: 1;
+
+      .middle-container {
         flex: 1;
-      }
-    }
-    .middle-create {
-      grid-column-start: 2;
-      grid-column-end: 4;
-      display: flex;
-      > * {
-        flex: 1;
-      }
-    }
-    .end {
-      display: flex;
-      justify-content: flex-end;
-      .mini-create-btn {
-        display: none;
+        max-width: 400px;
       }
     }
   }
@@ -60,10 +91,11 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   .mural-search-type-container {
     border-bottom: 3px solid #eee;
     height: 1.79em;
+
     .mural-search-type {
-      font-family: 'Proxima Nova';
+      font-family: 'Proxima Nova', sans-serif;
       border: none;
-      background-color: white;
+      background-color: unset;
       border-bottom: 3px solid #eee;
       cursor: pointer;
       font-weight: var(--mrl-font-weight-02);
@@ -71,6 +103,7 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
       margin-right: calc((16 / var(--mrl-baseline)) * 1rem);
       padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
       font-size: var(--mrl-font-size-03);
+
       &:hover {
         border-bottom: 3px solid var(--mrl-color-line-hover);
         padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
@@ -82,14 +115,17 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
       padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
       border-bottom: 3px solid rgb(var(--mrl-blue-70));
       color: rgb(var(--mrl-blue-70));
+
       &:hover {
         border-bottom: 3px solid rgb(var(--mrl-blue-70));
       }
     }
   }
+
   .search-results-text {
     padding: 0px 10px;
   }
+
   .mural-picker-selects {
     display: flex;
     align-items: end;
@@ -143,82 +179,95 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
 
   .mural-grid {
     display: flex;
-    margin: 0;
+    margin: 4px;
     padding: 0;
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-between;
+
+    .mural-grid-item {
+      width: min-content;
+    }
   }
 
   .MuiInput-underline:after,
   .MuiInput-underline:before {
     border-bottom: none;
   }
+
   .MuiInput-underline:hover:not(.Mui-disabled):before {
     border-bottom: none;
   }
+
   .MuiInput-input {
     font-size: var(--mrl-font-size-03);
   }
 
-  @media (max-width: 800px) {
-    .mural-grid {
-      .card-list-item {
-        width: 172px;
-      }
-    }
-  }
   @media (min-width: 601px) {
     .mural-grid {
       justify-content: flex-start;
+
       .mural-grid-item {
         padding: 0px 2px;
       }
     }
   }
+
   @media (max-width: 600px) {
-    .middle {
-      grid-column-start: 1 !important;
+    .mural-header-row {
+      .header-side {
+        flex: 0;
+      }
+
+      .middle {
+        .middle-container {
+          max-width: unset;
+        }
+      }
     }
-    .middle-create {
-      grid-column-start: 2 !important;
-      grid-column-end: 5 !important;
-    }
-    .end {
+
+    .start-container {
       .mini-create-btn {
         display: none;
       }
     }
+
     .mural-selector-grid {
       width: 100%;
-      .murals-container {
-        width: 100%;
-        .mural-grid {
-          flex-wrap: nowrap;
-          flex: 1;
-          flex-direction: column;
-          .card-list-item {
-            height: 84px;
+
+      .mural-grid-item {
+        width: unset;
+      }
+
+      .mural-grid {
+        flex-wrap: nowrap;
+        flex: 1;
+        flex-direction: column;
+
+        .card-list-item {
+          display: flex;
+          justify-content: flex-start;
+          margin: 4px 0;
+          width: 100%;
+          box-shadow: none;
+          transform: unset;
+
+          .card-info {
+            height: auto;
+            align-self: flex-start;
+            max-width: 60%;
+            margin-top: unset;
+          }
+
+          .card-action-area {
             display: flex;
             justify-content: flex-start;
-            margin: 8px 0;
-            width: 100%;
-            .card-info {
-              height: auto;
-              align-self: flex-start;
-              max-width: 60%;
-              margin-top: 10px;
-            }
-            .card-action-area {
-              justify-content: flex-start;
-              padding: 0.5rem !important;
-              display: flex;
-              .card-thumbnail {
-                height: 100%;
-                min-width: 115px;
-                max-width: 115px;
-                margin-right: 10px;
-              }
+            padding: 0.5rem;
+
+            .card-thumbnail {
+              width: styles.$mini-card-thumbnail-width;
+              height: styles.$mini-card-thumbnail-height;
+              margin-right: 10px;
             }
           }
         }
@@ -227,52 +276,44 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   }
 
   @media (max-width: 370px) {
-    .middle {
-      grid-column-start: 1 !important;
-    }
-    .middle-create {
-      grid-column-start: 2 !important;
-      grid-column-end: 5 !important;
-    }
-    .end {
-      display: flex;
-      justify-content: flex-end;
+    .start-container {
       .create-btn {
         display: none;
       }
+
       .mini-create-btn {
         display: flex !important;
       }
     }
+
     .mural-selector-grid {
       width: 100%;
-      .murals-container {
-        width: 100%;
-        .mural-grid {
-          flex-wrap: nowrap;
-          flex: 1;
-          flex-direction: column;
-          .card-list-item {
-            height: 60px;
-            margin: 8px 0;
+
+      .mural-grid {
+        flex-wrap: nowrap;
+        flex: 1;
+        flex-direction: column;
+
+        .card-list-item {
+          display: flex;
+          width: 100%;
+          justify-content: flex-start;
+          margin: 4px 0;
+          box-shadow: none;
+          transform: unset;
+
+          .card-info {
+            max-width: 65%;
+          }
+
+          .card-action-area {
             display: flex;
-            width: 100%;
             justify-content: flex-start;
-            .card-info {
-              height: auto;
-              align-self: end;
-              max-width: 65%;
-            }
-            .card-action-area {
-              display: flex;
-              padding: 0.2rem;
-              justify-content: flex-start;
-              .card-thumbnail {
-                height: 100%;
-                min-width: 75px;
-                max-width: 75px;
-                margin-right: 10px;
-              }
+            padding: 0.2rem;
+
+            .card-thumbnail {
+              width: styles.$micro-card-thumbnail-width;
+              height: styles.$micro-card-thumbnail-height;
             }
           }
         }

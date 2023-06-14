@@ -1,10 +1,9 @@
-@use '../styles.scss' as _;
+@use '../styles.scss' as styles;
 
 .card-list-item {
-  width: _.$card-width;
   border-radius: 12px;
   border: 1px solid transparent;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.4);
   position: relative;
   transition: transform 0.3s ease;
 
@@ -26,8 +25,9 @@
 
   .card-thumbnail {
     border-radius: 8px;
-    width: 100%;
-    height: 130px;
+    width: styles.$card-thumbnail-width;
+    height: styles.$card-thumbnail-height;
+    background-color: white;
 
     // vignette effect
     box-shadow: inset 2px 2px 15px rgba(0, 0, 0, 0.06);
@@ -35,14 +35,10 @@
 
   .card-title {
     font-weight: 600;
-
-    // ellipsis
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     overflow: hidden;
-
-    // making span display ...
-    display: block;
   }
 
   .card-info {
@@ -56,6 +52,7 @@
     height: 80px;
     justify-content: space-between;
     margin-top: 0.675em;
+    gap: 6px;
 
     .card-details {
       color: rgba(var(--mrl-gray-60), 1);
@@ -65,9 +62,11 @@
       font-weight: var(--mrl-font-weight-03);
       line-height: var(--mrl-line-height-07);
 
-      text-overflow: ellipsis;
+      // multiline ellipsis
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      white-space: pre-line;
     }
 
     .card-avatar {
@@ -88,7 +87,7 @@
   }
 
   &.selected-card {
-    border-color: #e02935;
+    border: 1px solid #3770E4;
     box-shadow: 0px 20px 12px rgba(0, 0, 0, 0.12);
     transform: translate(0, -0.33em);
   }
@@ -116,6 +115,7 @@
   }
 
   &.selected-card {
-    border: 1px solid #e02935;
+    border: 1px solid #3770E4;
+    border-radius: 12px;
   }
 }
