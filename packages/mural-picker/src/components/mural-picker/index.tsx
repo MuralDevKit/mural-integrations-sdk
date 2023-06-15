@@ -185,18 +185,23 @@ const MuralPicker = ({
   };
 
   const getInitialWorkspaceData = async () => {
-    const [currentWorkspaces, currentUser] = await Promise.all([
-      getAllWorkspaces(apiClientRef.current),
-      apiClientRef.current.getCurrentUser(),
-    ]);
-    setWorkspaces(currentWorkspaces);
-    const lastActiveWorkspaceId = currentUser.value.lastActiveWorkspace;
-    if (currentWorkspaces.length) {
-      const currentWorkspace =
-        currentWorkspaces.find(w => w.id === lastActiveWorkspaceId) ||
-        currentWorkspaces[0];
-      setDefaultWorkspace(currentWorkspace);
-      setWorkspace(currentWorkspace);
+    try {
+      const [currentWorkspaces, currentUser] = await Promise.all([
+        getAllWorkspaces(apiClientRef.current),
+        apiClientRef.current.getCurrentUser(),
+      ]);
+      setWorkspaces(currentWorkspaces);
+      const lastActiveWorkspaceId = currentUser.value.lastActiveWorkspace;
+      if (currentWorkspaces.length) {
+        const currentWorkspace =
+          currentWorkspaces.find(w => w.id === lastActiveWorkspaceId) ||
+          currentWorkspaces[0];
+        setDefaultWorkspace(currentWorkspace);
+        setWorkspace(currentWorkspace);
+      }
+    } catch (e: any) {
+      handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_WORKSPACES);
+      setIsLoading(false);
     }
   };
 
