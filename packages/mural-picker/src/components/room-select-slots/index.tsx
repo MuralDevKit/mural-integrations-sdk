@@ -74,6 +74,11 @@ export default class RoomSelect extends React.Component<PropTypes, StateTypes> {
     this.props.onSearchQuery(false);
   };
 
+  getRoomGroup = (room?: Room) => {
+    if (!room) return '';
+    return room.type === 'private' ? 'PRIVATE ROOMS' : 'OPEN ROOMS';
+  };
+
   render() {
     const slots = useSlots(this.props.slots);
 
@@ -117,6 +122,7 @@ export default class RoomSelect extends React.Component<PropTypes, StateTypes> {
                 )}
                 value={this.props.room}
                 disabled={!this.props.workspace}
+                groupBy={this.getRoomGroup}
                 onChange={this.handleSelect}
                 onInputChange={debounce(
                   this.handleInputChange,
