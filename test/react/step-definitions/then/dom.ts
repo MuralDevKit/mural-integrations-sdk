@@ -122,21 +122,29 @@ export default function registerThen({ Then, compare }: SetupFnArgs) {
   // Then [${SOME_VAR}] has 3 options
   Then('{descriptor} has {int} options?', async (descriptor, choiceCount) => {
     const element = await getElement(descriptor);
+    const isMuiSelect = element?.classList.contains('MuiFormControl-root');
+    const isMuiSelect2 = element?.classList.contains('MuiInputBase-root');
+    let selectControlElement;
+    if (isMuiSelect) {
+      selectControlElement = await within(element).findByRole('combobox');
+    } else if (isMuiSelect2) {
+      selectControlElement = await within(element).findByRole('button', {
+        hidden: true,
+      });
+    }
 
-    const selectControlElement = await within(element).findByRole('combobox');
     if (!selectControlElement) {
       fail(`${descriptor} has no select element`);
     }
 
     // Trigger the dropdown - the dropdown need to be opened for the options to be rendered
     fireEvent.keyDown(selectControlElement, { key: 'ArrowDown', keyCode: 40 });
-
-    const selectOptions = screen.queryAllByRole('option');
+    const selectOptionsLength = screen.queryAllByRole('option').length;
 
     // Close the dropdown
     fireEvent.keyDown(selectControlElement, { key: 'Escape', keyCode: 27 });
 
-    compare('is', selectOptions.length, choiceCount);
+    compare('is', selectOptionsLength, choiceCount);
   });
 
   // USAGE:

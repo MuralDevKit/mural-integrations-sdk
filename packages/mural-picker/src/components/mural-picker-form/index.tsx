@@ -20,8 +20,8 @@ import MuralPickerError from '../error';
 import Header from '../header';
 import Loading from '../loading';
 import MuralSelect from '../mural-select';
-import RoomSelect from '../room-select';
-import WorkspaceSelect from '../workspace-select';
+import RoomSelect from '../room-select-slots';
+import WorkspaceSelectSlots from '../workspace-select-slots';
 
 import './styles.scss';
 
@@ -30,7 +30,7 @@ export type Slots = {
     Self: ReactSlot<Header>;
   };
 
-  WorkspaceSelect?: WorkspaceSelect['props']['slots'];
+  WorkspaceSelectSlots?: WorkspaceSelectSlots['props']['slots'];
   RoomSelect?: RoomSelect['props']['slots'];
 };
 
@@ -93,7 +93,7 @@ export default class MuralPickerForm extends React.Component<
       if (eWorkspaces.value.length) {
         const workspace = eWorkspaces.value[0];
         this.setState({ workspaces: eWorkspaces.value, workspace });
-        await this.handleWorkspaceSelect(workspace);
+        await this.handleWorkspaceSelectSlots(workspace);
       }
     } catch (e: any) {
       this.handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_WORKSPACES);
@@ -114,7 +114,7 @@ export default class MuralPickerForm extends React.Component<
     });
   };
 
-  handleWorkspaceSelect = async (workspace: Workspace | null) => {
+  handleWorkspaceSelectSlots = async (workspace: Workspace | null) => {
     if (!workspace) {
       // clear selections
       return this.setState({
@@ -224,11 +224,11 @@ export default class MuralPickerForm extends React.Component<
             Choose a mural
           </slots.Header.Self>
           <div className="select-row">
-            <WorkspaceSelect
+            <WorkspaceSelectSlots
               workspace={this.state.workspace}
               workspaces={this.state.workspaces}
-              onSelect={this.handleWorkspaceSelect}
-              slots={slots.WorkspaceSelect}
+              onSelect={this.handleWorkspaceSelectSlots}
+              slots={slots.WorkspaceSelectSlots}
             />
             <RoomSelect
               workspace={this.state.workspace}

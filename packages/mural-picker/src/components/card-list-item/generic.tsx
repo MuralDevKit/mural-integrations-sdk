@@ -15,12 +15,11 @@ export type CardItemSource = {
 export type PropTypes = { source: CardItemSource } & ItemPropTypes;
 
 export default (props: PropTypes) => {
-  const { source, isSelected, onClick, cardSize } = props;
-
+  const { source, isSelected, onClick } = props;
   return (
     <Card
       variant="outlined"
-      className={classnames('card-list-item', `${cardSize}-card`, {
+      className={classnames('card-list-item', {
         'selected-card': isSelected,
       })}
       onClick={onClick}
@@ -32,23 +31,14 @@ export default (props: PropTypes) => {
           className="card-thumbnail"
           title={`${source.title} thumbnail preview`}
         />
-        <span className="card-title" data-qa="card-title">
-          {source.title}
-        </span>
-        <span className="card-info">
-          {/* TECHDEBT fetch avatar info from the API? */}
-          {source.initials && (
-            <span
-              className="card-avatar card-avatar--initials"
-              data-qa="card-avatar"
-            >
-              {source.initials}
-            </span>
-          )}
+        <div className="card-info">
+          <span className="card-title" data-qa="card-title">
+            {source.title}
+          </span>
           <span className="card-details" data-qa="card-details">
             {source.details || ''}
           </span>
-        </span>
+        </div>
       </CardActionArea>
     </Card>
   );

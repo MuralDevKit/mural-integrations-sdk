@@ -1,9 +1,11 @@
 .mural-selector {
   &-grid {
+    display: flex;
     position: absolute;
   }
 
   &-container {
+    display: flex;
     position: relative;
     flex: 1;
     overflow-y: scroll;
@@ -21,10 +23,4 @@
       margin: 0.675em 0.375em;
     }
   }
-}
-
-ul.mural-grid {
-  margin: 0; 
-  padding: 0;
-  list-style-type: none;
 }

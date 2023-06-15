@@ -1,4 +1,9 @@
+@use '../styles.scss' as styles;
+
+$mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
+
 .mural-picker-body {
+  margin: 1em;
   outline: 0;
   display: flex;
   flex-direction: column;
@@ -8,6 +13,117 @@
 
   &.dark {
     color: white;
+
+    .back-btn {
+      color: white;
+    }
+
+    .create-btn {
+      color: white;
+    }
+
+    .mural-search-type {
+      color: white;
+    }
+
+    .card-title {
+      color: white;
+    }
+
+    .MuiInputBase-root {
+      color: white;
+    }
+
+    .MuiSvgIcon-root {
+      color: white;
+    }
+
+    .MuiList-root {
+      color: white;
+    }
+  }
+
+  .mural-header-row {
+    display: flex;
+    flex-direction: row;
+    padding: 10px 0;
+
+    .header-side {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex: 0.25;
+
+      &.start {
+        justify-content: flex-start;
+      }
+
+      &.end {
+        justify-content: flex-end;
+      }
+
+      .start-container {
+        margin-right: 12px;
+
+        .mini-create-btn {
+          display: none;
+        }
+      }
+
+      .end-container {
+        margin-left: 12px;
+      }
+    }
+
+    .middle {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      flex: 1;
+
+      .middle-container {
+        flex: 1;
+        max-width: 400px;
+      }
+    }
+  }
+
+  .mural-search-type-container {
+    border-bottom: 3px solid #eee;
+    height: 1.79em;
+
+    .mural-search-type {
+      font-family: 'Proxima Nova', sans-serif;
+      border: none;
+      background-color: unset;
+      border-bottom: 3px solid #eee;
+      cursor: pointer;
+      font-weight: var(--mrl-font-weight-02);
+      line-height: calc((26 / var(--mrl-baseline)) * 0.98rem);
+      margin-right: calc((16 / var(--mrl-baseline)) * 1rem);
+      padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
+      font-size: var(--mrl-font-size-03);
+
+      &:hover {
+        border-bottom: 3px solid var(--mrl-color-line-hover);
+        padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
+      }
+    }
+
+    .mural-search-type-selected {
+      font-weight: var(--mrl-font-weight-02);
+      padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
+      border-bottom: 3px solid rgb(var(--mrl-blue-70));
+      color: rgb(var(--mrl-blue-70));
+
+      &:hover {
+        border-bottom: 3px solid rgb(var(--mrl-blue-70));
+      }
+    }
+  }
+
+  .search-results-text {
+    padding: 0px 10px;
   }
 
   .mural-picker-selects {
@@ -27,12 +143,6 @@
     .room-select {
       flex-grow: 5;
     }
-
-    .mural-picker-control {
-      flex: 1 0 4rem;
-      min-width:140px;
-      padding-top:15px;
-    }
   }
 
   .mural-picker-select {
@@ -43,7 +153,8 @@
   .header {
     margin: 0.375rem 0;
 
-    &__logo, &__action {
+    &__logo,
+    &__action {
       margin-right: 0.375rem;
     }
 
@@ -64,5 +175,149 @@
   .card-list-spinner {
     padding-top: 2em;
     text-align: center;
+  }
+
+  .mural-grid {
+    display: flex;
+    margin: 4px;
+    padding: 0;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .mural-grid-item {
+      width: min-content;
+    }
+  }
+
+  .MuiInput-underline:after,
+  .MuiInput-underline:before {
+    border-bottom: none;
+  }
+
+  .MuiInput-underline:hover:not(.Mui-disabled):before {
+    border-bottom: none;
+  }
+
+  .MuiInput-input {
+    font-size: var(--mrl-font-size-03);
+  }
+
+  @media (min-width: 601px) {
+    .mural-grid {
+      justify-content: flex-start;
+
+      .mural-grid-item {
+        padding: 0px 2px;
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    .mural-header-row {
+      .header-side {
+        flex: 0;
+      }
+
+      .middle {
+        .middle-container {
+          max-width: unset;
+        }
+      }
+    }
+
+    .start-container {
+      .mini-create-btn {
+        display: none;
+      }
+    }
+
+    .mural-selector-grid {
+      width: 100%;
+
+      .mural-grid-item {
+        width: unset;
+      }
+
+      .mural-grid {
+        flex-wrap: nowrap;
+        flex: 1;
+        flex-direction: column;
+
+        .card-list-item {
+          display: flex;
+          justify-content: flex-start;
+          margin: 4px 0;
+          width: 100%;
+          box-shadow: none;
+          transform: unset;
+
+          .card-info {
+            height: auto;
+            align-self: flex-start;
+            max-width: 60%;
+            margin-top: unset;
+          }
+
+          .card-action-area {
+            display: flex;
+            justify-content: flex-start;
+            padding: 0.5rem;
+
+            .card-thumbnail {
+              width: styles.$mini-card-thumbnail-width;
+              height: styles.$mini-card-thumbnail-height;
+              margin-right: 10px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 370px) {
+    .start-container {
+      .create-btn {
+        display: none;
+      }
+
+      .mini-create-btn {
+        display: flex !important;
+      }
+    }
+
+    .mural-selector-grid {
+      width: 100%;
+
+      .mural-grid {
+        flex-wrap: nowrap;
+        flex: 1;
+        flex-direction: column;
+
+        .card-list-item {
+          display: flex;
+          width: 100%;
+          justify-content: flex-start;
+          margin: 4px 0;
+          box-shadow: none;
+          transform: unset;
+
+          .card-info {
+            max-width: 65%;
+          }
+
+          .card-action-area {
+            display: flex;
+            justify-content: flex-start;
+            padding: 0.2rem;
+
+            .card-thumbnail {
+              width: styles.$micro-card-thumbnail-width;
+              height: styles.$micro-card-thumbnail-height;
+            }
+          }
+        }
+      }
+    }
   }
 }

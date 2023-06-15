@@ -13,7 +13,7 @@ import * as React from 'react';
 import { getAllWorkspaces } from '../../common/get-all';
 import { PrimaryButton } from '../common';
 import createTheme, { Preset } from '../theme';
-import WorkspaceSelect from '../workspace-select';
+import WorkspaceSelectSlots from '../workspace-select-slots';
 import cx from 'classnames';
 import './styles.scss';
 
@@ -81,7 +81,7 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
     }
   };
 
-  onWorkspaceSelect = async (workspace: Workspace | null) => {
+  onWorkspaceSelectSlots = async (workspace: Workspace | null) => {
     this.setState({ workspace, error: '' });
   };
 
@@ -122,10 +122,10 @@ export default class WorkspacePicker extends React.Component<WorkspacePickerProp
           data-qa="workspace-picker"
         >
           <div className="select-row">
-            <WorkspaceSelect
+            <WorkspaceSelectSlots
               workspace={this.state.workspace}
               workspaces={this.state.workspaces}
-              onSelect={this.onWorkspaceSelect}
+              onSelect={this.onWorkspaceSelectSlots}
             />
             <FormControl
               className="workspace-picker-control"

@@ -6,7 +6,13 @@ import './index.css';
 import App from './app-basic';
 // import App from './app-automation';
 import reportWebVitals from './reportWebVitals';
+import { defineDSComponents } from '@muraldevkit/mural-integrations-mural-picker';
 
+import '@muraldevkit/ds-foundation/dist/foundation.min.css';
+import '@muraldevkit/ds-foundation/dist/fonts.min.css';
+
+// must be placed before render
+defineDSComponents();
 ReactDOM.render(
   <React.StrictMode>
     <Router>

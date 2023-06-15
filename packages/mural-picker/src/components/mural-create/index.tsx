@@ -1,5 +1,5 @@
-import { Box, CircularProgress, List, TextField } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { MrlButton } from '@muraldevkit/ds-component-button-react';
+import { MrlTextInput } from '@muraldevkit/ds-component-form-elements-react';
 import { EventHandler } from '@muraldevkit/mural-integrations-common';
 import {
   ApiClient,
@@ -7,23 +7,12 @@ import {
   Room,
   Template,
   Workspace,
-  getApiError,
 } from '@muraldevkit/mural-integrations-mural-client';
 import cx from 'classnames';
-import debounce from 'lodash/debounce';
 import * as React from 'react';
-import Measure from 'react-measure';
+import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
-import { CardSize } from '../card-list-item';
-import { ActionItemSource } from '../card-list-item/action';
 import { CardListSection } from '../card-list/card-list-section';
-import {
-  ListItem,
-  ListSubheader,
-  PrimaryButton,
-  SecondaryButton,
-  threshold,
-} from '../common';
 import { ErrorHandler } from '../types';
 
 import './styles.scss';
@@ -34,139 +23,49 @@ declare module '@material-ui/core/Box' {
   }
 }
 
-/*
- * Once we have the proper template lookup in the public API, we should showcase
- * all of the template categories to enable filtering.
- */
-const TEMPLATE_CATEGORIES = [
-  'Icebreaker',
-  'Understand',
-  'Empathize',
-  'Brainstorm',
-  'Design',
-  'Evaluate',
-  'Plan',
-  'Agile',
-] as const;
-
-const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
-const DEFAULT_BLANK_TEMPLATE_ID =
-  'gh&rishIOpNm-thON^43D-O&(8&hHjPle$-(kplP&Nm-ujlK8*0^';
-
-const BLANK_TEMPLATE: Template = {
-  id: DEFAULT_BLANK_TEMPLATE_ID,
-  description: '',
-  name: DEFAULT_BLANK_TEMPLATE_NAME,
-  publicHash: '',
-  thumbUrl: '',
-  type: 'default',
-  updatedOn: 0,
-  workspaceId: '',
-  viewLink: '',
-} as const;
-
 export type PropTypes = {
   apiClient: ApiClient;
   room: Room;
   workspace: Workspace;
 
-  onCancel: EventHandler;
-  onCreate: EventHandler<[mural: Mural]>;
+  onCreate: EventHandler<[mural: Mural, room: Room, workspace: Workspace]>;
   onError: ErrorHandler;
 
-  cardSize?: CardSize;
+  templates: Template[];
 };
 
 interface StateTypes {
   btnLoading: boolean;
-  error: string;
-  loading: boolean;
   nextToken: string | null;
   scrollHeight: number;
   selected: number;
-  templates: Template[];
   title: string;
 }
 
 const INITIAL_STATE: StateTypes = {
   btnLoading: false,
-  error: '',
-  loading: false,
   nextToken: null,
   scrollHeight: 620,
   selected: 0,
-  templates: [BLANK_TEMPLATE],
   title: '',
 };
-
-const LIMIT = 25;
-const THRESHOLD = 0.8;
 
 export default class MuralCreate extends React.Component<
   PropTypes,
   StateTypes
 > {
   state: StateTypes = INITIAL_STATE;
-  titleRef: React.RefObject<HTMLInputElement>;
-  scrollRef: React.RefObject<HTMLInputElement>;
 
   constructor(props: PropTypes) {
     super(props);
-
-    this.titleRef = React.createRef();
-    this.scrollRef = React.createRef();
   }
-
-  loadTemplates = async () => {
-    if (this.state.loading) {
-      return;
-    }
-
-    this.setState({ loading: true }, async () => {
-      try {
-        const eTemplates = await this.props.apiClient.getTemplatesByWorkspace(
-          {
-            workspaceId: this.props.workspace.id,
-          },
-          {
-            paginate: {
-              limit: LIMIT,
-              next: this.state.nextToken ?? undefined,
-            },
-          },
-        );
-
-        const templates = [
-          ...Array.from(this.state.templates),
-          ...(eTemplates.value || []),
-        ];
-        this.setState(
-          {
-            templates,
-            nextToken: eTemplates?.next || null,
-            loading: false,
-            error: '',
-          },
-          () => {
-            this.scrollRef.current?.addEventListener(
-              'scroll',
-              this.lazyLoadHandler,
-            );
-          },
-        );
-      } catch (exception) {
-        this.setState({ loading: false, error: 'Error getting templates.' });
-      }
-    });
-  };
 
   createMural = () => {
     let { title } = this.state;
     const { room, workspace } = this.props;
-    const template = this.state.templates[this.state.selected];
+    const template = this.props.templates[this.state.selected];
 
     title = title || 'Untitled mural';
-    if (!template) return this.setState({ error: 'Please select a template.' });
 
     this.setState({ btnLoading: true }, async () => {
       let eMural;
@@ -185,213 +84,87 @@ export default class MuralCreate extends React.Component<
             templateId: template.id,
           });
         }
-
-        this.props.onCreate(eMural.value);
+        this.props.onCreate(eMural.value, room, workspace);
         this.props.apiClient.track('Created mural from picker', {
           ...getCommonTrackingProperties(),
           clientAppId: this.props.apiClient.config.appId,
           template: template.name,
         });
       } catch (exception: any) {
-        let errorStr = 'Error creating a new mural.';
-
-        const apiError = await getApiError(exception);
-        if (apiError && apiError.status === 403) {
-          errorStr = apiError.message;
+        let errorStr = MURAL_PICKER_ERRORS.ERR_CREATE_MURAL;
+        if (exception && exception.response.status === 403) {
+          errorStr = MURAL_PICKER_ERRORS.ERR_CREATE_MURAL_PERMISSION;
         }
-
+        this.props.onError(exception, errorStr);
         this.setState({
-          error: errorStr,
           btnLoading: false,
         });
       }
     });
   };
 
-  lazyLoadHandler = debounce((event: Event) => {
-    if (!(event.target instanceof Element)) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = event.target;
-
-    // This computes the ratio of the current scroll bar position
-    // 0 ⇒ top, 1 ⇒ bottom
-    const ratio = scrollTop / (scrollHeight - clientHeight);
-
-    if (!this.state.error && this.state.nextToken && ratio >= THRESHOLD) {
-      this.loadTemplates();
-    }
-  }, 50);
-
-  componentDidMount() {
-    this.loadTemplates();
-  }
-
-  componentWillUnmount() {
-    this.scrollRef.current?.removeEventListener('scroll', this.lazyLoadHandler);
-  }
-
   onSelectTemplate = (index: number) => {
-    this.setState(
-      {
-        selected: index,
-        title: this.state.title ?? this.state.templates[index].name,
-      },
-      () => {
-        this.titleRef.current?.focus();
-      },
-    );
+    this.setState({
+      selected: index,
+      title: this.state.title ?? this.props.templates[index].name,
+    });
   };
 
-  handleAction = (name: string) => {
-    switch (name) {
-      case 'load-more':
-        return this.loadTemplates();
-    }
-  };
-
-  renderTemplateCategories = () => {
-    // TODO: enable this when the public API supports categories
-    return null;
-
-    return (
-      <div className="new-mural-categories">
-        <List component="nav" disablePadding>
-          <ListItem disableGutters button selected>
-            All templates
-          </ListItem>
-          <ListSubheader disableGutters>Browse by category</ListSubheader>
-          {[
-            `Current workspace (${this.props.workspace.name})`,
-            ...TEMPLATE_CATEGORIES,
-          ].map((category, index) => (
-            <ListItem key={index} disableGutters button>
-              {category}
-            </ListItem>
-          ))}
-        </List>
-      </div>
-    );
-  };
+  // for pagination
+  // handleAction = (name: string) => {
+  //   switch (name) {
+  //     case 'load-more':
+  //       return this.props.fetchTemplates();
+  //   }
+  // };
+  // const actions: ActionItemSource[] = [];
+  // if (this.state.nextToken) {
+  //   actions.push({ content: 'Load more…', name: 'load-more', sort: 'end' });
+  // }
 
   renderTemplateCardItems = () => {
-    const templateCardItems = this.state.templates.map(template => ({
+    const templateCardItems = this.props.templates.map(template => ({
+      details: template.description,
       title: template.name,
       thumbnailUrl: template.thumbUrl,
     }));
 
-    const actions: ActionItemSource[] = [];
-    if (this.state.nextToken) {
-      actions.push({ content: 'Load more…', name: 'load-more', sort: 'end' });
-    }
-
     return (
-      <>
-        {this.renderTemplateCategories()}
-
-        <div ref={this.scrollRef} className="mural-selector-container">
-          <div className="mural-selector-grid">
-            <CardListSection
-              title="Workspace templates"
-              actions={actions}
-              items={templateCardItems}
-              onSelect={this.onSelectTemplate}
-              onAction={this.handleAction}
-              selected={this.state.selected}
-              cardSize={this.props.cardSize}
-            />
-          </div>
+      <div className="mural-selector-container">
+        <div className="mural-selector-grid">
+          <CardListSection
+            items={templateCardItems}
+            onSelect={this.onSelectTemplate}
+            selected={this.state.selected}
+          />
         </div>
-      </>
+      </div>
     );
   };
 
   render() {
-    if (this.state.loading && this.state.templates.length <= 1) {
-      return (
-        <div className="card-list-spinner">
-          <CircularProgress />
-        </div>
-      );
-    }
-
     return (
       <>
-        {this.state.error && (
-          <div data-qa="mural-picker-error">
-            <Alert severity="error" className="mural-picker-error">
-              {this.state.error}
-            </Alert>
-          </div>
-        )}
+        {this.props.templates && this.renderTemplateCardItems()}
+        <div className={cx('new-mural-buttons-container')}>
+          <MrlTextInput
+            value={this.state.title}
+            placeholder={'Untitled Mural'}
+            className="create-input"
+            attrs={{
+              onInput: (event: React.ChangeEvent<HTMLInputElement>) =>
+                this.setState({ title: event.target.value }),
+            }}
+            inputId={'search-input'}
+          />
 
-        {this.renderTemplateCardItems()}
-
-        <Measure bounds>
-          {({ measureRef, contentRect }) => {
-            const sz = threshold(contentRect.bounds?.width, {
-              m: 384,
-            });
-
-            return (
-              <Box
-                ref={measureRef}
-                className={cx('new-mural-buttons-container')}
-              >
-                <SecondaryButton
-                  className="new-mural-create__cancel"
-                  variant="text"
-                  onClick={this.props.onCancel}
-                >
-                  Cancel
-                </SecondaryButton>
-
-                {sz.m && (
-                  <TextField
-                    className="new-mural-create__title"
-                    inputRef={this.titleRef}
-                    value={this.state.title}
-                    onChange={event =>
-                      this.setState({
-                        error: '',
-                        title: event.target.value,
-                      })
-                    }
-                    variant="standard"
-                    label="Mural title"
-                    placeholder="Untitled mural"
-                  />
-                )}
-
-                <Measure bounds>
-                  {({ measureRef, contentRect }) => {
-                    const sz = threshold(contentRect.bounds?.width, {
-                      l: 200,
-                    });
-
-                    return (
-                      <PrimaryButton
-                        ref={measureRef}
-                        className="new-mural-create__submit"
-                        onClick={this.createMural}
-                        variant="contained"
-                        disabled={this.state.btnLoading}
-                      >
-                        Create{sz.l && ' Mural'}{' '}
-                        {this.state.btnLoading && (
-                          <CircularProgress
-                            style={{ marginLeft: 10 }}
-                            size={18}
-                            color="inherit"
-                          />
-                        )}
-                      </PrimaryButton>
-                    );
-                  }}
-                </Measure>
-              </Box>
-            );
-          }}
-        </Measure>
+          <MrlButton
+            text="Create mural"
+            kind="primary"
+            onClick={this.createMural}
+            disabled={this.state.btnLoading}
+          ></MrlButton>
+        </div>
       </>
     );
   }
