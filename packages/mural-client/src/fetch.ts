@@ -88,16 +88,19 @@ const getSession = async (): Promise<Session | null> => {
   return handleTokenRefresh(session);
 };
 
-const handleTokenRefresh = memoize(
-  (session: Session) => {
-    if (isTokenExpiredOrWillSoon(session.accessToken)) {
-      return fetchConfig.refreshTokenFn({ store: true });
-    }
-    return Promise.resolve(session);
+const refreshToken = memoize(
+  (_session: Session) => {
+    return fetchConfig.refreshTokenFn({ store: true });
   },
   (session: Session) => session.accessToken,
 );
 
+const handleTokenRefresh = (session: Session) => {
+  if (isTokenExpiredOrWillSoon(session.accessToken)) {
+    return refreshToken(session);
+  }
+  return Promise.resolve(session);
+};
 /* Decode the given token to look at expiration
  * - Check if the token is expired
  * - Make sure the token is valid long enough to issue a request */
