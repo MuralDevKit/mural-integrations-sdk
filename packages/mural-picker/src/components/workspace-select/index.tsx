@@ -6,7 +6,7 @@ import './styles.scss';
 
 interface PropTypes {
   workspaces: Workspace[];
-  workspace: Workspace;
+  workspace: Workspace | null;
   onSelect: EventHandler<[workspace: Workspace | null]>;
 }
 
@@ -24,7 +24,7 @@ export default class WorkspaceSelectSlots extends React.Component<PropTypes> {
         <Select
           data-qa="workspace-select"
           labelId="workspace-select"
-          value={this.props.workspace.id || this.props.workspaces[0].id}
+          value={this.props.workspace?.id}
           onChange={this.handleChange}
           label="workspace"
         >

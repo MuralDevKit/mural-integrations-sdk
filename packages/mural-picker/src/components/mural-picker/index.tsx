@@ -576,9 +576,7 @@ const MuralPicker = ({
                 className="create-btn"
                 onClick={handleClickCreate}
                 icon-pos="before"
-                state={
-                  !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
-                }
+                state={loadingRooms ? 'disabled' : 'default'}
               >
                 <MrlSvg slot="icon" svg={plusAlt} />
               </MrlShadowButton>
@@ -589,9 +587,7 @@ const MuralPicker = ({
                 className="mini-create-btn"
                 onClick={handleClickCreate}
                 icon-pos="before"
-                state={
-                  !(defaultRooms && defaultRooms[0]) ? 'disabled' : 'default'
-                }
+                state={loadingRooms ? 'disabled' : 'default'}
               >
                 <MrlSvg slot="icon" svg={plusAlt} />
               </MrlShadowButton>
@@ -643,7 +639,7 @@ const MuralPicker = ({
       </>
     );
   };
-  const renderTabButton = (tab: ViewType) => {
+  const renderTabButton = (tab: ViewType, options?: { disabled?: boolean }) => {
     return (
       <button
         onClick={() => handleSwitchTabs(tab)}
@@ -652,7 +648,7 @@ const MuralPicker = ({
           'mural-search-type': true,
         })}
         data-qa={`${tab.toLowerCase()}-tab`}
-        disabled={isLoading}
+        disabled={isLoading || options?.disabled}
       >
         {tab}
       </button>
@@ -673,6 +669,7 @@ const MuralPicker = ({
   const showTabs = !isSearching && !isCreateView;
   const displayCreateView =
     (isCreateView || (isCreateView && isSearching)) && room && workspace;
+  const loadingRooms = !defaultRooms?.length;
 
   return (
     <ThemeProvider theme={createdTheme}>
@@ -682,14 +679,14 @@ const MuralPicker = ({
           <div className="mural-search-type-container">
             {renderTabButton(ViewType.RECENT)}
             {renderTabButton(ViewType.STARRED)}
-            {renderTabButton(ViewType.ALL)}
+            {renderTabButton(ViewType.ALL, { disabled: loadingRooms })}
           </div>
         )}
 
         {showFilters && (
           <div className={cx('mural-picker-selects')}>
             <WorkspaceSelect
-              workspace={workspace!}
+              workspace={workspace}
               workspaces={workspaces}
               onSelect={handleWorkspaceSelect}
             />
