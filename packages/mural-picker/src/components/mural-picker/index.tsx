@@ -652,6 +652,7 @@ const MuralPicker = ({
           'mural-search-type': true,
         })}
         data-qa={`${tab.toLowerCase()}-tab`}
+        disabled={isLoading}
       >
         {tab}
       </button>
