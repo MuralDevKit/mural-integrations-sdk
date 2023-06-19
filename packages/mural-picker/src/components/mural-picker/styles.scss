@@ -23,7 +23,9 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
     }
 
     .mural-search-type {
-      color: white;
+      &:not([disabled]) {
+        color: white;
+      }
     }
 
     .card-title {
@@ -104,9 +106,11 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
       padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
       font-size: var(--mrl-font-size-03);
 
-      &:hover {
-        border-bottom: 3px solid var(--mrl-color-line-hover);
-        padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
+      &:hover, &:active {
+        &:not([disabled]) {
+          border-bottom: 3px solid var(--mrl-color-line-hover);
+          padding: 0 var(--mrl-spacing-04) 0 var(--mrl-spacing-04);
+        }
       }
     }
 
