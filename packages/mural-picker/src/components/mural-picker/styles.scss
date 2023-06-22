@@ -212,7 +212,7 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
       justify-content: flex-start;
 
       .mural-grid-item {
-        padding: 0px 2px;
+        padding: 0 2px;
       }
     }
   }
@@ -249,17 +249,16 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
         flex-direction: column;
 
         .card-list-item {
+          box-shadow: none;
           display: flex;
           justify-content: flex-start;
           margin: 4px 0;
-          width: 100%;
-          box-shadow: none;
           transform: unset;
+          width: 100%;
 
           .card-info {
             height: auto;
             align-self: flex-start;
-            max-width: 60%;
             margin-top: unset;
           }
 
@@ -272,6 +271,7 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
               width: styles.$mini-card-thumbnail-width;
               height: styles.$mini-card-thumbnail-height;
               margin-right: 10px;
+              flex: none;
             }
           }
         }
@@ -291,29 +291,25 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
     }
 
     .mural-selector-grid {
-      width: 100%;
 
       .mural-grid {
-        flex-wrap: nowrap;
-        flex: 1;
-        flex-direction: column;
 
         .card-list-item {
-          display: flex;
-          width: 100%;
-          justify-content: flex-start;
-          margin: 4px 0;
-          box-shadow: none;
-          transform: unset;
-
-          .card-info {
-            max-width: 65%;
-          }
 
           .card-action-area {
-            display: flex;
-            justify-content: flex-start;
             padding: 0.2rem;
+
+            .card-info {
+              .card-title {
+                font-size: 0.75rem;
+                -webkit-line-clamp: 1;
+              }
+
+              .card-details {
+                font-size: 0.6875rem;
+                -webkit-line-clamp: 2;
+              }
+            }
 
             .card-thumbnail {
               width: styles.$micro-card-thumbnail-width;

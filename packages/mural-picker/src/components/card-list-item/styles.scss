@@ -34,6 +34,7 @@
   }
 
   .card-title {
+    font-size: 0.875rem;
     font-weight: 600;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -53,14 +54,12 @@
     flex-direction: column;
     height: 80px;
     justify-content: space-between;
-    margin-top: 0.675em;
+    margin-top: 0.675rem;
     gap: 6px;
 
     .card-details {
       color: rgba(var(--mrl-gray-60), 1);
-      font-size: 0.675em;
-      // not small enough?
-      // font-size: var(--mrl-font-size-14);
+      font-size: 0.75rem;
       font-weight: var(--mrl-font-weight-03);
       line-height: var(--mrl-line-height-07);
 
