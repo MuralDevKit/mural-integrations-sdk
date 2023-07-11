@@ -55,6 +55,10 @@ export type Mural = {
   workspaceId: string;
 
   _canvasLink: string;
+
+  sharingSettings?: {
+    link: string;
+  };
 };
 
 export type MuralSort = 'lastCreated' | 'lastModified' | 'oldest';
