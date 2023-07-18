@@ -14,6 +14,7 @@ interface CanvasEvents {
   onBack?: EventHandler;
   onError?: EventHandler;
   onGuestAccessDenied?: EventHandler;
+  onInvalidInvitation?: EventHandler;
   onMemberAccessDenied?: EventHandler;
   onMessage?: EventHandler<MessageEvent>;
   onMuralUnavailable?: EventHandler;
@@ -25,6 +26,7 @@ const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
   'mural.error': 'onError',
   'mural.guest_access_denied': 'onGuestAccessDenied',
   'mural.integrated_client.back_event': 'onBack',
+  'mural.invalid_invitation': 'onInvalidInvitation',
   'mural.member_access_denied': 'onMemberAccessDenied',
   'mural.mural_unavailable': 'onMuralUnavailable',
   'mural.ready': 'onReady',
