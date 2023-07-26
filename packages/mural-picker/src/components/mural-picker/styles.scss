@@ -11,40 +11,6 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
   align-items: stretch;
   min-height: 300px;
 
-  &.dark {
-    color: white;
-
-    .back-btn {
-      color: white;
-    }
-
-    .create-btn {
-      color: white;
-    }
-
-    .mural-search-type {
-      &:not([disabled]) {
-        color: white;
-      }
-    }
-
-    .card-title {
-      color: white;
-    }
-
-    .MuiInputBase-root {
-      color: white;
-    }
-
-    .MuiSvgIcon-root {
-      color: white;
-    }
-
-    .MuiList-root {
-      color: white;
-    }
-  }
-
   .mural-header-row {
     display: flex;
     flex-direction: row;
@@ -318,6 +284,54 @@ $mrl-font-dir: '@muraldevkit/ds-foundation/assets/fonts';
           }
         }
       }
+    }
+  }
+
+  &.dark {
+    color: white;
+
+    .back-btn {
+      color: white;
+    }
+
+    .create-btn {
+      color: white;
+    }
+
+    .mini-create-btn {
+      color: white;
+    }
+
+    .mural-search-type {
+      &:disabled {
+        color: gray;
+      }
+
+      &:not([disabled]) {
+        color: white;
+      }
+
+      &:hover, &:active {
+        &:not([disabled]) {
+          border-bottom: 3px solid gray;
+        }
+      }
+    }
+
+    .card-title {
+      color: white;
+    }
+
+    .MuiInputBase-root {
+      color: white;
+    }
+
+    .MuiSvgIcon-root {
+      color: white;
+    }
+
+    .MuiList-root {
+      color: white;
     }
   }
 }
