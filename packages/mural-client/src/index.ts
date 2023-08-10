@@ -281,7 +281,11 @@ export interface ApiClient {
     void,
     Paginated & Sorted
   >;
-  getMuralUsers: ResourceEndpoint<User[], { id: string }, Paginated & Sorted>;
+  getMuralUsers: ResourceEndpoint<
+    User[],
+    { muralId: string },
+    Paginated & Sorted
+  >;
   getMural: ResourceEndpoint<Mural, { id: string }, Integration>;
   getMuralWidgets: ResourceEndpoint<
     Widget[],
@@ -534,8 +538,8 @@ const buildApiClient = (
       return await response.json();
     },
     // https://developers.mural.co/public/reference/getmuralusers
-    getMuralUsers: async ({ id }) => {
-      const response = await fetchFn(api(`murals/${id}/users`), {
+    getMuralUsers: async ({ muralId }) => {
+      const response = await fetchFn(api(`murals/${muralId}/users`), {
         method: 'GET',
       });
 
