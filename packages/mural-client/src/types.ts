@@ -7,6 +7,7 @@ export type User = {
   lastName: string;
   type: string;
   lastActiveWorkspace: string;
+  permissions: Permissions;
 };
 
 export type Workspace = {
@@ -203,6 +204,11 @@ export type CreateStickyNotePayload = {
   text?: string;
   title?: string;
 } & BaseWidgetPayload;
+
+export type Permissions = {
+  owner: boolean;
+  facilitator: boolean;
+};
 
 export interface UpdateStickyNotePayload
   extends Partial<CreateStickyNotePayload> {}
