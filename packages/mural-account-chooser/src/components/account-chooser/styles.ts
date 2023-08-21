@@ -12,7 +12,7 @@ export const Loading = styled.div`
 
 export const AccountChooserContainer = styled.div`
   display: flex;
-  height: 100vh;
+  min-height: 100%;
   flex-direction: column;
   align-items: center;
   color: ${({ theme }) => theme.primaryTextColor};
@@ -123,7 +123,7 @@ export const AdditionalOptionContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 30px;
+  margin: 30px 0;
 `;
 
 export const AdditionalOptionText = styled.div`
