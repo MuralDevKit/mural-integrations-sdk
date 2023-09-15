@@ -117,7 +117,7 @@ type TResolvedOptions<TResource, TOptions> = Partial<
 export type ResourceEndpoint<
   TResource,
   TParams = void,
-  TOptions = null,
+  TOptions = null
 > = TParams extends void
   ? (
       options?: TResolvedOptions<TResource, TOptions>,
@@ -287,6 +287,11 @@ export interface ApiClient {
     { muralId: string },
     Paginated & Sorted
   >;
+  getMuralUsers: ResourceEndpoint<
+    User[],
+    { muralId: string },
+    Paginated & Sorted
+  >;
   getMuralsByRoom: ResourceEndpoint<
     Mural[],
     { roomId: number },
@@ -303,6 +308,7 @@ export interface ApiClient {
     void,
     Paginated & { category: string[] }
   >;
+  getRoom: ResourceEndpoint<Room, { id: number }>;
   getRoomsByWorkspace: ResourceEndpoint<
     Room[],
     { workspaceId: string },
@@ -363,12 +369,10 @@ const buildApiClient = (
 ): ApiClient => {
   const clientConfig = { ...DEFAULT_CONFIG, ...config };
 
-  const urlBuilderFor =
-    (host: string) =>
-    (path: string): URL => {
-      const protocol = clientConfig.secure ? 'https' : 'http';
-      return new URL(path, `${protocol}://${host}`);
-    };
+  const urlBuilderFor = (host: string) => (path: string): URL => {
+    const protocol = clientConfig.secure ? 'https' : 'http';
+    return new URL(path, `${protocol}://${host}`);
+  };
 
   const muralUrl = urlBuilderFor(clientConfig.muralHost);
   const integrationsUrl = urlBuilderFor(clientConfig.integrationsHost);
@@ -555,6 +559,16 @@ const buildApiClient = (
 
       return await response.json();
     },
+    // https://developers.mural.co/public/reference/getmuralusers
+    getMuralUsers: async ({ muralId }, options) => {
+      const params = optionsParams(options);
+
+      const response = await fetchFn(api(`murals/${muralId}/users?${params}`), {
+        method: 'GET',
+      });
+
+      return await response.json();
+    },
     getCrossWorkspaceStarredMurals: async options => {
       const params = optionsParams(options);
 
@@ -677,6 +691,15 @@ const buildApiClient = (
           method: 'GET',
         },
       );
+
+      return await response.json();
+    },
+    // https://developers.mural.co/public/reference/getroominfobyid
+    getRoom: async ({ id }, options) => {
+      const params = optionsParams(options);
+      const response = await fetchFn(api(`rooms/${id}?${params}`), {
+        method: 'GET',
+      });
 
       return await response.json();
     },
