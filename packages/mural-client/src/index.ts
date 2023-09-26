@@ -321,15 +321,20 @@ export interface ApiClient {
     { workspaceId: string },
     Paginated & { category: string[]; withoutDefault: boolean }
   >;
+  searchDefaultTemplates: ResourceEndpoint<
+    Template[],
+    { q: string },
+    Paginated
+  >;
   searchCrossWorkspaceTemplates: ResourceEndpoint<
     Template[],
     { q: string },
-    Paginated & Sorted
+    Paginated
   >;
   searchCrossWorkspaceMurals: ResourceEndpoint<
     Mural[],
     { q: string },
-    Paginated & Sorted
+    Paginated
   >;
   searchMuralsByWorkspace: ResourceEndpoint<
     Mural[],
@@ -646,6 +651,16 @@ const buildApiClient = (
       const response = await fetchFn(api(`workspaces?${params}`), {
         method: 'GET',
       });
+      return await response.json();
+    },
+    searchDefaultTemplates: async ({ q }, options) => {
+      const params = optionsParams(options);
+      const response = await fetchFn(
+        api(`search/template/default?q=${q}${params}`),
+        {
+          method: 'GET',
+        },
+      );
       return await response.json();
     },
     searchCrossWorkspaceTemplates: async ({ q }, options) => {
