@@ -261,29 +261,43 @@ const MuralPicker = ({
     }
   }, [rooms]);
 
-  const templateSearch = (q?: string) => {
-    if (q) {
-      const qEncoded = encodeURIComponent(q);
-      return apiClientRef.current.searchCrossWorkspaceTemplates({
-        q: qEncoded,
+  const fetchWorkspaceTemplates = (workspaceId: string) => {
+      return apiClientRef.current.getTemplatesByWorkspace({
+          workspaceId,
       });
-    } else {
-      if (workspace) {
-        return apiClientRef.current.getTemplatesByWorkspace({
-          workspaceId: workspace?.id,
-        });
-      }
-    }
+  }
+
+  const templateSearch = async (q: string) => {
+    const qEncoded = encodeURIComponent(q);
+
+    const [customTemplates, globalTemplates] = await Promise.all([
+      apiClientRef.current.searchCrossWorkspaceTemplates({
+        q: qEncoded,
+      }),
+      apiClientRef.current.searchDefaultTemplates({
+        q: qEncoded
+      })
+    ]);
+
+    return [
+      ...customTemplates?.value,
+      ...globalTemplates?.value
+    ]
   };
 
-  const muralSearch = (q: string) => {
+  const muralSearch = async (q: string) => {
     const qEncoded = encodeURIComponent(q);
-    return apiClientRef.current.searchCrossWorkspaceMurals({ q: qEncoded });
+    const { value: murals } = await apiClientRef.current.searchCrossWorkspaceMurals({ q: qEncoded });
+
+    return murals;
   };
 
   const handleFetchTemplates = async () => {
+    if (!workspace) return
+    
     try {
-      const templatesResult = await templateSearch();
+      const templatesResult = await fetchWorkspaceTemplates(workspace.id);
+
       // do not append to prev state for search
       if (!search) {
         setTemplates(prevState => [
@@ -449,13 +463,17 @@ const MuralPicker = ({
     setSearch('');
     setViewType(ViewType.CREATE);
     setRoom(defaultRooms![0]);
+
+    const workspaceId = workspace?.id || defaultWorkspace?.id;
+    if (!workspaceId) return;
+    
     try {
       if (defaultTemplates.length > 0) {
         setTemplates(defaultTemplates);
-      } else {
+      } else if (workspace) {
         // get first time defaults
         setIsLoading(true);
-        const templatesResult = await templateSearch();
+        const templatesResult = await fetchWorkspaceTemplates(workspaceId);
         // ensuring only 1 blank template
         const defaultTemps = [
           ...new Set([...[BLANK_TEMPLATE], ...(templatesResult?.value || [])]),
@@ -464,9 +482,10 @@ const MuralPicker = ({
         setTemplates(defaultTemps);
         setIsLoading(false);
       }
+
       if (fromSearch) {
         // use existing rooms
-        const templatesResult = await templateSearch();
+        const templatesResult = await fetchWorkspaceTemplates(workspaceId);
         // ensuring only 1 blank template
         setTemplates([
           ...new Set([...[BLANK_TEMPLATE], ...(templatesResult?.value || [])]),
@@ -513,14 +532,15 @@ const MuralPicker = ({
         setError('Please enter at least 3 characters to search');
         return;
       }
+
       try {
         if (viewType === ViewType.CREATE) {
-          const eTemplates = await templateSearch(debouncedSearch);
-          setTemplates(eTemplates?.value.length ? eTemplates?.value : []);
+          const templates = await templateSearch(debouncedSearch);
+          setTemplates(templates.length ? templates : []);
           setIsLoading(false);
         } else {
-          const eMurals = await muralSearch(debouncedSearch);
-          setMurals(eMurals?.value.length ? eMurals?.value : []);
+          const murals = await muralSearch(debouncedSearch);
+          setMurals(murals.length ? murals : []);
           setIsLoading(false);
         }
       } catch (e: any) {
@@ -533,6 +553,7 @@ const MuralPicker = ({
         setIsLoading(false);
       }
     };
+
     if (debouncedSearch !== '') {
       setIsLoading(true);
       loadSearchResults();
