@@ -328,7 +328,14 @@ export interface ApiClient {
   >;
   searchCrossWorkspaceMurals: ResourceEndpoint<
     Mural[],
-    { q: string },
+    { q: string;
+      createdSince?: number;
+      createdUntil?: number;
+      createdFilterStrict?: boolean;
+      updatedSince?: number;
+      updatedUntil?: number;
+      updatedFilterStrict?: boolean;
+    },
     Paginated & Sorted
   >;
   searchMuralsByWorkspace: ResourceEndpoint<
