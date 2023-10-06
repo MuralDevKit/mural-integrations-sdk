@@ -167,7 +167,35 @@ const optionsParams = (
   return params;
 };
 
-// ====
+const addCrossWorkspaceParams = (params: URLSearchParams, q:string, createdSince?: number, createdUntil?: number, createdFilterStrict?: boolean, updatedSince?: number, updatedUntil?: number, updatedFilterStrict?: boolean) => {
+  params.set('q', q);
+
+  if(createdSince){
+    params.set('createdSince', createdSince.toString())
+  }
+
+  if(createdUntil){
+    params.set('createdUntil', createdUntil.toString())
+  }
+
+  if(createdFilterStrict){
+    params.set('createdFilterStrict', createdFilterStrict.toString())
+  }
+
+  if(updatedSince){
+    params.set('updatedSince', updatedSince.toString())
+  }
+
+  if(updatedUntil){
+    params.set('updatedUntil', updatedUntil.toString())
+  }
+
+  if(updatedFilterStrict){
+    params.set('updatedFilterStrict', updatedFilterStrict.toString())
+  }
+
+  return params;
+}
 
 export interface ApiClient {
   authenticated: () => boolean;
@@ -328,7 +356,14 @@ export interface ApiClient {
   >;
   searchCrossWorkspaceMurals: ResourceEndpoint<
     Mural[],
-    { q: string },
+    { q: string;
+      createdSince?: number;
+      createdUntil?: number;
+      createdFilterStrict?: boolean;
+      updatedSince?: number;
+      updatedUntil?: number;
+      updatedFilterStrict?: boolean;
+    },
     Paginated & Sorted
   >;
   searchMuralsByWorkspace: ResourceEndpoint<
@@ -667,9 +702,17 @@ const buildApiClient = (
 
       return await response.json();
     },
-    searchCrossWorkspaceMurals: async ({ q }, options) => {
+    searchCrossWorkspaceMurals: async ({
+      q,
+      createdSince,
+      createdUntil,
+      createdFilterStrict,
+      updatedSince,
+      updatedUntil,
+      updatedFilterStrict }, options) => {
       const params = optionsParams(options);
-      const response = await fetchFn(api(`search/mural?q=${q}${params}`), {
+      const crossWorkspaceParams = addCrossWorkspaceParams(params, q, createdSince, createdUntil, createdFilterStrict, updatedSince, updatedUntil, updatedFilterStrict);
+      const response = await fetchFn(api(`search/mural?${crossWorkspaceParams}`), {
         method: 'GET',
       });
       return await response.json();
