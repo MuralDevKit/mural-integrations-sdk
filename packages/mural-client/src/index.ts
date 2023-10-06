@@ -167,13 +167,7 @@ const optionsParams = (
   return params;
 };
 
-const buildCrossWorkspaceParams = (q:string, createdSince?: number, createdUntil?: number, createdFilterStrict?: boolean, updatedSince?: number, updatedUntil?: number, updatedFilterStrict?: boolean, additionalParams: URLSearchParams) => {
-  let params = new URLSearchParams();
-
-  if(additionalParams){
-    params = new URLSearchParams(additionalParams);
-  }
-
+const addCrossWorkspaceParams = (params: URLSearchParams, q:string, createdSince?: number, createdUntil?: number, createdFilterStrict?: boolean, updatedSince?: number, updatedUntil?: number, updatedFilterStrict?: boolean) => {
   params.set('q', q);
 
   if(createdSince){
@@ -200,7 +194,7 @@ const buildCrossWorkspaceParams = (q:string, createdSince?: number, createdUntil
     params.set('updatedFilterStrict', updatedFilterStrict.toString())
   }
 
-  return params.toString();
+  return params;
 }
 
 export interface ApiClient {
@@ -717,7 +711,7 @@ const buildApiClient = (
       updatedUntil,
       updatedFilterStrict }, options) => {
       const params = optionsParams(options);
-      const crossWorkspaceParams = buildCrossWorkspaceParams(q, createdSince, createdUntil, createdFilterStrict, updatedSince, updatedUntil, updatedFilterStrict, params);
+      const crossWorkspaceParams = addCrossWorkspaceParams(params, q, createdSince, createdUntil, createdFilterStrict, updatedSince, updatedUntil, updatedFilterStrict);
       const response = await fetchFn(api(`search/mural?${crossWorkspaceParams}`), {
         method: 'GET',
       });
