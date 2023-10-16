@@ -167,7 +167,7 @@ const optionsParams = (
   return params;
 };
 
-const addCrossWorkspaceParams = (params: URLSearchParams, q:string, createdSince?: number, createdUntil?: number, createdFilterStrict?: boolean, updatedSince?: number, updatedUntil?: number, updatedFilterStrict?: boolean) => {
+const addCrossWorkspaceParams = (params: URLSearchParams, q:string, createdSince?: number, createdUntil?: number, createdFilterStrict?: boolean, updatedSince?: number, updatedUntil?: number, updatedFilterStrict?: boolean, createdBy?:string, members?:string) => {
   params.set('q', q);
 
   if(createdSince){
@@ -192,6 +192,14 @@ const addCrossWorkspaceParams = (params: URLSearchParams, q:string, createdSince
 
   if(updatedFilterStrict){
     params.set('updatedFilterStrict', updatedFilterStrict.toString())
+  }
+
+  if(createdBy){
+    params.set('createdBy', createdBy)
+  }
+
+  if(members){
+    params.set('members', members)
   }
 
   return params;
@@ -363,6 +371,8 @@ export interface ApiClient {
       updatedSince?: number;
       updatedUntil?: number;
       updatedFilterStrict?: boolean;
+      createdBy?: string;
+      members?: string;
     },
     Paginated & Sorted
   >;
@@ -709,9 +719,11 @@ const buildApiClient = (
       createdFilterStrict,
       updatedSince,
       updatedUntil,
-      updatedFilterStrict }, options) => {
+      updatedFilterStrict,
+      createdBy,
+      members }, options) => {
       const params = optionsParams(options);
-      const crossWorkspaceParams = addCrossWorkspaceParams(params, q, createdSince, createdUntil, createdFilterStrict, updatedSince, updatedUntil, updatedFilterStrict);
+      const crossWorkspaceParams = addCrossWorkspaceParams(params, q, createdSince, createdUntil, createdFilterStrict, updatedSince, updatedUntil, updatedFilterStrict, createdBy, members);
       const response = await fetchFn(api(`search/mural?${crossWorkspaceParams}`), {
         method: 'GET',
       });
