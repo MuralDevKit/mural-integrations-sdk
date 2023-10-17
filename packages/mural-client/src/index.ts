@@ -15,6 +15,7 @@ import {
   CreateImagePayload,
   Image,
   Widget,
+  TemplateSummary,
 } from './types';
 
 export * from './fetch';
@@ -167,43 +168,54 @@ const optionsParams = (
   return params;
 };
 
-const addCrossWorkspaceParams = (params: URLSearchParams, q:string, createdSince?: number, createdUntil?: number, createdFilterStrict?: boolean, updatedSince?: number, updatedUntil?: number, updatedFilterStrict?: boolean, createdBy?:string, members?:string) => {
+const addCrossWorkspaceParams = (
+  params: URLSearchParams,
+  q: string,
+  createdSince?: number,
+  createdUntil?: number,
+  createdFilterStrict?: boolean,
+  updatedSince?: number,
+  updatedUntil?: number,
+  updatedFilterStrict?: boolean,
+  createdBy?: string,
+  members?: string,
+) => {
   params.set('q', q);
 
-  if(createdSince){
-    params.set('createdSince', createdSince.toString())
+  if (createdSince) {
+    params.set('createdSince', createdSince.toString());
   }
 
-  if(createdUntil){
-    params.set('createdUntil', createdUntil.toString())
+  if (createdUntil) {
+    params.set('createdUntil', createdUntil.toString());
   }
 
-  if(createdFilterStrict){
-    params.set('createdFilterStrict', createdFilterStrict.toString())
+  if (createdFilterStrict) {
+    params.set('createdFilterStrict', createdFilterStrict.toString());
   }
 
-  if(updatedSince){
-    params.set('updatedSince', updatedSince.toString())
+  if (updatedSince) {
+    params.set('updatedSince', updatedSince.toString());
   }
 
-  if(updatedUntil){
-    params.set('updatedUntil', updatedUntil.toString())
+  if (updatedUntil) {
+    params.set('updatedUntil', updatedUntil.toString());
   }
 
-  if(updatedFilterStrict){
-    params.set('updatedFilterStrict', updatedFilterStrict.toString())
+  if (updatedFilterStrict) {
+    params.set('updatedFilterStrict', updatedFilterStrict.toString());
   }
 
-  if(createdBy){
-    params.set('createdBy', createdBy)
+  if (createdBy) {
+    params.set('createdBy', createdBy);
   }
 
-  if(members){
-    params.set('members', members)
+  if (members) {
+    params.set('members', members);
   }
 
   return params;
-}
+};
 
 export interface ApiClient {
   authenticated: () => boolean;
@@ -358,13 +370,14 @@ export interface ApiClient {
     Paginated & { category: string[]; withoutDefault: boolean }
   >;
   searchCrossWorkspaceTemplates: ResourceEndpoint<
-    Template[],
+    TemplateSummary[],
     { q: string },
     Paginated & Sorted
   >;
   searchCrossWorkspaceMurals: ResourceEndpoint<
     Mural[],
-    { q: string;
+    {
+      q: string;
       createdSince?: number;
       createdUntil?: number;
       createdFilterStrict?: boolean;
@@ -712,21 +725,39 @@ const buildApiClient = (
 
       return await response.json();
     },
-    searchCrossWorkspaceMurals: async ({
-      q,
-      createdSince,
-      createdUntil,
-      createdFilterStrict,
-      updatedSince,
-      updatedUntil,
-      updatedFilterStrict,
-      createdBy,
-      members }, options) => {
+    searchCrossWorkspaceMurals: async (
+      {
+        q,
+        createdSince,
+        createdUntil,
+        createdFilterStrict,
+        updatedSince,
+        updatedUntil,
+        updatedFilterStrict,
+        createdBy,
+        members,
+      },
+      options,
+    ) => {
       const params = optionsParams(options);
-      const crossWorkspaceParams = addCrossWorkspaceParams(params, q, createdSince, createdUntil, createdFilterStrict, updatedSince, updatedUntil, updatedFilterStrict, createdBy, members);
-      const response = await fetchFn(api(`search/mural?${crossWorkspaceParams}`), {
-        method: 'GET',
-      });
+      const crossWorkspaceParams = addCrossWorkspaceParams(
+        params,
+        q,
+        createdSince,
+        createdUntil,
+        createdFilterStrict,
+        updatedSince,
+        updatedUntil,
+        updatedFilterStrict,
+        createdBy,
+        members,
+      );
+      const response = await fetchFn(
+        api(`search/mural?${crossWorkspaceParams}`),
+        {
+          method: 'GET',
+        },
+      );
       return await response.json();
     },
     // https://developers.mural.co/public/reference/searchmurals
