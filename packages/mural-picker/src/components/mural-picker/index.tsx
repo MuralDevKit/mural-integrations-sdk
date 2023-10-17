@@ -22,6 +22,7 @@ import {
   Room,
   Workspace,
   Template,
+  TemplateSummary,
 } from '@muraldevkit/mural-integrations-mural-client';
 import cx from 'classnames';
 import * as React from 'react';
@@ -82,7 +83,7 @@ interface StateTypes {
   /** Currently selected mural */
   mural: Mural | null;
   murals: Mural[];
-  templates: Template[];
+  templates: (Template | TemplateSummary)[];
 
   defaultRooms: Room[] | null;
   /** Currently selected room */

@@ -6,6 +6,7 @@ import {
   Mural,
   Room,
   Template,
+  TemplateSummary,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
 import cx from 'classnames';
@@ -31,7 +32,7 @@ export type PropTypes = {
   onCreate: EventHandler<[mural: Mural, room: Room, workspace: Workspace]>;
   onError: ErrorHandler;
 
-  templates: Template[];
+  templates: (Template | TemplateSummary)[];
 };
 
 interface StateTypes {
@@ -124,7 +125,7 @@ export default class MuralCreate extends React.Component<
 
   renderTemplateCardItems = () => {
     const templateCardItems = this.props.templates.map(template => ({
-      details: template.description,
+      details: 'description' in template ? template.description : '',
       title: template.name,
       thumbnailUrl: template.thumbUrl,
     }));
