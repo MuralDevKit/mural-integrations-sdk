@@ -87,6 +87,15 @@ export type Template = {
   viewLink: string;
 };
 
+export type TemplateSummary = {
+  createdOn: number;
+  id: string;
+  name: string;
+  thumbUrl: string;
+  type: 'default' | 'custom';
+  workspaceId: string;
+};
+
 export type Asset = {
   name: string;
   url: string;
