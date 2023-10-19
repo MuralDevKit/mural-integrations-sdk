@@ -1,6 +1,7 @@
 import { Button, Modal } from '@material-ui/core';
 import {
   Mural,
+  MuralSummary,
   Room,
   Workspace,
 } from '@muraldevkit/mural-integrations-mural-client';
@@ -14,7 +15,7 @@ const MuralPickerModal: React.FC<PropTypes> = ({ onSelect, ...props }) => {
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
 
   const handleSelect = (
-    mural: Mural,
+    mural: Mural | MuralSummary,
     room: Room | null,
     workspace: Workspace,
   ) => {

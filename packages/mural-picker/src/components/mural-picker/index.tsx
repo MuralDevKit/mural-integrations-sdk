@@ -19,6 +19,7 @@ import {
 import {
   ApiClient,
   Mural,
+  MuralSummary,
   Room,
   Workspace,
   Template,
@@ -58,7 +59,7 @@ export interface PropTypes {
   apiClient: ApiClient;
   onError: EventHandler<[error: Error, message: string]>;
   onSelect: EventHandler<
-    [mural: Mural, room: Room | null, workspace: Workspace]
+    [mural: Mural | MuralSummary, room: Room | null, workspace: Workspace]
   >;
 
   theme?: DeepPartial<ThemeOptions>;
@@ -81,8 +82,8 @@ interface StateTypes {
   workspaces: Workspace[];
 
   /** Currently selected mural */
-  mural: Mural | null;
-  murals: Mural[];
+  mural: Mural | MuralSummary | null;
+  murals: (Mural | MuralSummary)[];
   templates: (Template | TemplateSummary)[];
 
   defaultRooms: Room[] | null;
@@ -154,7 +155,7 @@ const MuralPicker = ({
   );
 
   const muralType: {
-    [x: string]: Mural[];
+    [x: string]: (Mural | MuralSummary)[];
   } = {
     Recent: recentMurals,
     Starred: starredMurals,
@@ -436,7 +437,7 @@ const MuralPicker = ({
     }
   };
 
-  const handleMuralSelect = (selectedMural: Mural) => {
+  const handleMuralSelect = (selectedMural: Mural | MuralSummary) => {
     try {
       setError('');
       setMural(selectedMural);
