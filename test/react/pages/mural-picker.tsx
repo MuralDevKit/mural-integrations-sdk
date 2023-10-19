@@ -1,4 +1,9 @@
-import { Mural } from '@muraldevkit/mural-integrations-mural-client';
+import {
+  Mural,
+  MuralSummary,
+  Room,
+  Workspace,
+} from '@muraldevkit/mural-integrations-mural-client';
 import { MuralPicker } from '@muraldevkit/mural-integrations-mural-picker';
 import { getCtxItem } from 'pickled-cucumber/context';
 import * as React from 'react';
@@ -10,7 +15,11 @@ const muralPicker: Page = {
     return (
       <MuralPicker
         apiClient={apiClient}
-        onSelect={(_: Mural) => {}}
+        onSelect={(
+          _mural: Mural | MuralSummary,
+          _room: Room | null,
+          _workspace: Workspace,
+        ): void | Promise<void> => {}}
         onError={(_: Error, __: string) => {}}
         disableCreate={getCtxItem('$mural-picker-create-disabled')}
       />
