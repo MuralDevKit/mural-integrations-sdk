@@ -15,7 +15,7 @@ import {
   CreateImagePayload,
   Image,
   Widget,
-  TemplateSummary,
+  TemplateSummary, MuralSummary,
 } from './types';
 
 export * from './fetch';
@@ -375,7 +375,7 @@ export interface ApiClient {
     Paginated & Sorted
   >;
   searchCrossWorkspaceMurals: ResourceEndpoint<
-    Mural[],
+    MuralSummary[],
     {
       q: string;
       createdSince?: number;
