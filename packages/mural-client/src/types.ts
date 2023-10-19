@@ -53,6 +53,7 @@ export type Mural = {
     workspaceMembers: string;
   };
   workspaceId: string;
+  workspaceName?: string;
 
   _canvasLink: string;
 
