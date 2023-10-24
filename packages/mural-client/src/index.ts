@@ -15,7 +15,8 @@ import {
   CreateImagePayload,
   Image,
   Widget,
-  TemplateSummary, MuralSummary,
+  TemplateSummary,
+  MuralSummary,
 } from './types';
 
 export * from './fetch';
@@ -398,6 +399,11 @@ export interface ApiClient {
     Room[],
     { workspaceId: string; title: string },
     Paginated
+  >;
+  searchDefaultTemplates: ResourceEndpoint<
+    TemplateSummary[],
+    { q: string },
+    Paginated & Sorted
   >;
 
   /**
@@ -807,6 +813,16 @@ const buildApiClient = (
         },
       );
 
+      return await response.json();
+    },
+    searchDefaultTemplates: async ({ q }, options) => {
+      const params = optionsParams(options);
+      const response = await fetchFn(
+        api(`search/template/default?q=${q}${params}`),
+        {
+          method: 'GET',
+        },
+      );
       return await response.json();
     },
     /**
