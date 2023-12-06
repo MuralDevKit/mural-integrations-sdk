@@ -94,26 +94,19 @@ type Paginated<_TResource = null> = {
   };
 };
 
-type Integration<_TResource = null> = { integration: boolean };
-
 const isSorted = (
-  options: Sorted | Paginated | Integration | Record<string, any>,
+  options: Sorted | Paginated | Record<string, any>,
 ): options is Sorted => 'sortBy' in options;
 
 const isPaginated = (
-  options: Sorted | Paginated | Integration | Record<string, any>,
+  options: Sorted | Paginated | Record<string, any>,
 ): options is Paginated => 'paginate' in options;
-
-const isIntegration = (
-  options: Sorted | Paginated | Integration | Record<string, any>,
-): options is Integration => 'integration' in options;
 
 type Primitive = number | string | boolean | bigint;
 
 type TResolvedOptions<TResource, TOptions> = Partial<
   (TOptions extends Sorted ? Sorted<TResource> : {}) &
-    (TOptions extends Paginated ? Paginated<TResource> : {}) &
-    (TOptions extends Integration ? Integration<TResource> : {})
+    (TOptions extends Paginated ? Paginated<TResource> : {})
 >;
 
 export type ResourceEndpoint<
@@ -131,7 +124,7 @@ export type ResourceEndpoint<
 
 const optionsParams = (
   options:
-    | Partial<Sorted<any> | Paginated<any> | Integration<any>>
+    | Partial<Sorted<any> | Paginated<any>>
     | { [key: string]: Primitive }
     | undefined,
 ) => {
@@ -153,14 +146,9 @@ const optionsParams = (
     }
   }
 
-  if (isIntegration(options)) {
-    if (options.integration)
-      params.set('integration', options.integration.toString());
-  }
-
   // spread the rest as-is
   for (const [key, val] of Object.entries(options)) {
-    if (key === 'sortBy' || key === 'paginate' || key === 'integration') {
+    if (key === 'sortBy' || key === 'paginate') {
       continue;
     }
     params.set(key, val.toString());
@@ -330,7 +318,7 @@ export interface ApiClient {
     void,
     Paginated & Sorted
   >;
-  getMural: ResourceEndpoint<Mural, { id: string }, Integration>;
+  getMural: ResourceEndpoint<Mural, { id: string }>;
   getMuralWidgets: ResourceEndpoint<
     Widget[],
     { muralId: string },
@@ -344,12 +332,12 @@ export interface ApiClient {
   getMuralsByRoom: ResourceEndpoint<
     Mural[],
     { roomId: number },
-    Paginated & Sorted & Integration
+    Paginated & Sorted
   >;
   getMuralsByWorkspace: ResourceEndpoint<
     Mural[],
     { workspaceId: string },
-    Paginated & Sorted & Integration
+    Paginated & Sorted
   >;
   getMuralTags: ResourceEndpoint<Tag[], { muralId: string }>;
   getDefaultTemplates: ResourceEndpoint<
@@ -393,7 +381,7 @@ export interface ApiClient {
   searchMuralsByWorkspace: ResourceEndpoint<
     Mural[],
     { workspaceId: string; title: string },
-    Paginated & Integration
+    Paginated
   >;
   searchRoomsByWorkspace: ResourceEndpoint<
     Room[],
