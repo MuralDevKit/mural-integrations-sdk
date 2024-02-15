@@ -16,7 +16,7 @@ import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import { CardListSection } from '../card-list/card-list-section';
 import { ErrorHandler } from '../types';
 
-import { getApiError } from '../../../../mural-client/src';
+import { getApiError } from '@muraldevkit/mural-integrations-mural-client';
 import './styles.scss';
 
 declare module '@material-ui/core/Box' {
