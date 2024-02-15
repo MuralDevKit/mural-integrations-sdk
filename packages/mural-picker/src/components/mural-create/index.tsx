@@ -8,6 +8,7 @@ import {
   Template,
   TemplateSummary,
   Workspace,
+  getApiError,
 } from '@muraldevkit/mural-integrations-mural-client';
 import cx from 'classnames';
 import * as React from 'react';
@@ -15,8 +16,6 @@ import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import { CardListSection } from '../card-list/card-list-section';
 import { ErrorHandler } from '../types';
-
-import { getApiError } from '../../../../mural-client/src';
 import './styles.scss';
 
 declare module '@material-ui/core/Box' {
