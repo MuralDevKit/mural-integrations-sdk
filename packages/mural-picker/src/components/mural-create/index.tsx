@@ -8,6 +8,7 @@ import {
   Template,
   TemplateSummary,
   Workspace,
+  getApiError,
 } from '@muraldevkit/mural-integrations-mural-client';
 import cx from 'classnames';
 import * as React from 'react';
@@ -15,7 +16,6 @@ import { MURAL_PICKER_ERRORS } from '../../common/errors';
 import { getCommonTrackingProperties } from '../../common/tracking-properties';
 import { CardListSection } from '../card-list/card-list-section';
 import { ErrorHandler } from '../types';
-
 import './styles.scss';
 
 declare module '@material-ui/core/Box' {
@@ -92,9 +92,11 @@ export default class MuralCreate extends React.Component<
           template: template.name,
         });
       } catch (exception: any) {
-        let errorStr = MURAL_PICKER_ERRORS.ERR_CREATE_MURAL;
+        let errorStr: string = MURAL_PICKER_ERRORS.ERR_CREATE_MURAL;
         if (exception && exception.response.status === 403) {
-          errorStr = MURAL_PICKER_ERRORS.ERR_CREATE_MURAL_PERMISSION;
+          const apiError = await getApiError(exception);
+          if (apiError) errorStr = apiError.message;
+          else errorStr = MURAL_PICKER_ERRORS.ERR_CREATE_MURAL_PERMISSION;
         }
         this.props.onError(exception, errorStr);
         this.setState({
