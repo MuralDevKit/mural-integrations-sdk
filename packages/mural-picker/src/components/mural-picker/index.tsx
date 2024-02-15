@@ -144,9 +144,8 @@ const MuralPicker = ({
   const [mural, setMural] = useState<StateTypes['mural']>(null);
   const [workspaces, setWorkspaces] = useState<StateTypes['workspaces']>([]);
   const [workspace, setWorkspace] = useState<StateTypes['workspace']>(null);
-  const [defaultWorkspace, setDefaultWorkspace] = useState<
-    StateTypes['defaultWorkspace']
-  >(null);
+  const [defaultWorkspace, setDefaultWorkspace] =
+    useState<StateTypes['defaultWorkspace']>(null);
   const [error, setError] = useState<StateTypes['error']>('');
   const [search, setSearch] = useState<StateTypes['search']>('');
   const [isLoading, setIsLoading] = useState<StateTypes['isLoading']>(false);
@@ -307,34 +306,34 @@ const MuralPicker = ({
     setError('');
     setRoom(null);
     setViewType(tab);
+    // add mural to Recent murals and select it
+    if (newMural) {
+      // recent tab to display new mural first and select it
+      setRecentMurals([newMural.mural, ...muralType[tab]]);
+      setMurals([newMural.mural, ...muralType[tab]]);
+      setMural(newMural.mural);
+      onSelect(newMural.mural, newMural.room, newMural.workspace!);
+    }
     // mural tab data exists
-    if (muralType[tab].length > 0) {
-      // add mural to Recent murals and select it
-      if (newMural) {
-        // recent tab to display new mural first and select it
-        setRecentMurals([newMural.mural, ...muralType[tab]]);
-        setMurals([newMural.mural, ...muralType[tab]]);
-        setMural(newMural.mural);
-        onSelect(newMural.mural, newMural.room, newMural.workspace!);
-      } else {
-        setMurals(muralType[tab]);
-        if (tab === ViewType.ALL) {
-          setWorkspace(defaultWorkspace);
-        }
+    else if (muralType[tab].length > 0) {
+      setMurals(muralType[tab]);
+      if (tab === ViewType.ALL) {
+        setWorkspace(defaultWorkspace);
       }
-      setIsLoading(false);
       // need to fetch mural tab data
     } else {
       setMurals([]);
       getMuralsByTab(tab);
     }
+    setIsLoading(false);
   };
 
   const getMuralsByTab = async (tab: string) => {
     switch (tab) {
       case 'Recent': {
         try {
-          const recentMuralsResult = await apiClientRef.current.getCrossWorkspaceRecentMurals();
+          const recentMuralsResult =
+            await apiClientRef.current.getCrossWorkspaceRecentMurals();
           setRecentMurals(recentMuralsResult?.value);
           setMurals(recentMuralsResult?.value);
           setIsLoading(false);
@@ -345,7 +344,8 @@ const MuralPicker = ({
       }
       case 'Starred': {
         try {
-          const starredMuralsResult = await apiClientRef.current.getCrossWorkspaceStarredMurals();
+          const starredMuralsResult =
+            await apiClientRef.current.getCrossWorkspaceStarredMurals();
           setStarredMurals(starredMuralsResult?.value);
           setMurals(starredMuralsResult?.value);
           setIsLoading(false);
@@ -358,12 +358,13 @@ const MuralPicker = ({
         try {
           if (defaultWorkspace) {
             // this call has known performance issues
-            const allMuralsResult = await apiClientRef.current.getMuralsByWorkspace(
-              {
-                workspaceId: defaultWorkspace.id,
-              },
-              { sortBy: 'lastCreated' },
-            );
+            const allMuralsResult =
+              await apiClientRef.current.getMuralsByWorkspace(
+                {
+                  workspaceId: defaultWorkspace.id,
+                },
+                { sortBy: 'lastCreated' },
+              );
             setRoom(null);
             setAllMurals(allMuralsResult?.value);
             setMurals(allMuralsResult?.value);
