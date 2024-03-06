@@ -152,7 +152,7 @@ export default class MuralCreate extends React.Component<
         <div className={cx('new-mural-buttons-container')}>
           <MrlTextInput
             value={this.state.title}
-            placeholder={'Untitled Mural'}
+            placeholder={'Untitled mural'}
             className="create-input"
             attrs={{
               onInput: (event: React.ChangeEvent<HTMLInputElement>) =>
