@@ -100,7 +100,7 @@ const useThemeOptions = defaultBuilder<ThemeOptions>({
   preset: 'light',
 });
 
-const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank Template';
+const DEFAULT_BLANK_TEMPLATE_NAME = 'Blank template';
 const DEFAULT_BLANK_TEMPLATE_ID =
   'gh&rishIOpNm-thON^43D-O&(8&hHjPle$-(kplP&Nm-ujlK8*0^';
 
