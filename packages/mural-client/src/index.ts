@@ -763,7 +763,7 @@ const buildApiClient = (
         throw new Error('title argument must be at least 3 characters.');
       }
 
-      params.set('title', title);
+      params.set('q', title);
 
       const response = await fetchFn(
         api(`search/${workspaceId}/murals?${params}`),
@@ -792,7 +792,7 @@ const buildApiClient = (
         throw new Error('title argument must be at least 3 characters.');
       }
 
-      params.set('title', title);
+      params.set('q', title);
 
       const response = await fetchFn(
         api(`search/${workspaceId}/rooms?${params}`),
