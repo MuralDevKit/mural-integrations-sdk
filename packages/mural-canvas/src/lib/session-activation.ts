@@ -20,6 +20,7 @@ export function muralSessionActivationUrl(
   activateURL.searchParams.set('clientId', apiClient.config.appId);
   activateURL.searchParams.set('flow', 'redirect');
   activateURL.searchParams.set('t', new Date().getTime().toString()); // disable any caching
+  activateURL.searchParams.set('freshcfg', 'true'); // disable config cache
 
   return activateURL;
 }
@@ -40,6 +41,7 @@ export function muralSessionActivationUrlRpc(
   activateURL.searchParams.set('clientId', apiClient.config.appId);
   activateURL.searchParams.set('flow', 'rpc');
   activateURL.searchParams.set('t', new Date().getTime().toString()); // disable any caching
+  activateURL.searchParams.set('freshcfg', 'true'); // disable config cache
 
   return activateURL;
 }
