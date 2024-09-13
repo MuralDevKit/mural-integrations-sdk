@@ -1,6 +1,6 @@
 {
   "name": "@muraldevkit/mural-integrations-mural-client",
-  "version": "3.2.0",
+  "version": "4.0.0",
   "description": "",
   "main": "dist/mural-client.bundle.js",
   "module": "dist/mural-client.esm.js",
