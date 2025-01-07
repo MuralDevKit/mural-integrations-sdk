@@ -287,9 +287,11 @@ export const requestTokenHandler =
     // validate that the state hasn't been tampered
     if (!validateState(state)) throw new Error('INVALID_STATE');
 
-    const url = `${config.requestTokenUri}?code=${code}${
-      opts.redirectUri ? `&redirect_uri=${opts.redirectUri}` : ''
-    }`;
+    const params = new URLSearchParams();
+    params.set('code', code);
+    if (opts.redirectUri) params.set('redirect_uri', opts.redirectUri);
+
+    const url = `${config.requestTokenUri}?${params.toString()}`;
 
     const session = await fetch(url, { method: 'GET' })
       .then(checkStatus)
