@@ -227,5 +227,10 @@ export type CreateStickyNotePayload = {
   title?: string;
 } & BaseWidgetPayload;
 
+export type RequestTokenHandlerOptions = {
+  store: boolean;
+  redirectUri?: string;
+};
+
 export interface UpdateStickyNotePayload
   extends Partial<CreateStickyNotePayload> {}

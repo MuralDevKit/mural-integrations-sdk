@@ -8,6 +8,7 @@ import {
   storeState,
   validateState,
 } from './session';
+import { RequestTokenHandlerOptions } from './types';
 
 const MINIMUM_TIME_FOR_REQUEST = 5000; // In milliseconds
 
@@ -224,38 +225,40 @@ export interface AuthorizeHandlerOptions {
  *
  * @returns Authorization URL
  */
-export const authorizeHandler = (config: TokenHandlerConfig) => async (
-  redirectUri?: string,
-  opts: AuthorizeHandlerOptions = { storeState: false },
-): Promise<string> => {
-  const stateToUse = opts.state || generateState();
+export const authorizeHandler =
+  (config: TokenHandlerConfig) =>
+  async (
+    redirectUri?: string,
+    opts: AuthorizeHandlerOptions = { storeState: false },
+  ): Promise<string> => {
+    const stateToUse = opts.state || generateState();
 
-  const params = qs.stringify(
-    {
-      auto: opts.authorizeParams?.auto
-        ? encodeAutoParam(opts.authorizeParams.auto)
-        : undefined,
-      reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
-      redirectUri,
-      signup: opts.authorizeParams?.signup || undefined,
-      state: stateToUse,
-      ...opts.authorizeParams?.forward,
-    },
-    { encode: true },
-  );
+    const params = qs.stringify(
+      {
+        auto: opts.authorizeParams?.auto
+          ? encodeAutoParam(opts.authorizeParams.auto)
+          : undefined,
+        reauthenticate: opts.authorizeParams?.reauthenticate || undefined,
+        redirectUri,
+        signup: opts.authorizeParams?.signup || undefined,
+        state: stateToUse,
+        ...opts.authorizeParams?.forward,
+      },
+      { encode: true },
+    );
 
-  const url = `${config.authorizeUri}?${params}`;
+    const url = `${config.authorizeUri}?${params}`;
 
-  const authorizeUrl = await fetch(url, { method: 'GET' })
-    .then(checkStatus)
-    .then(res => res.text());
+    const authorizeUrl = await fetch(url, { method: 'GET' })
+      .then(checkStatus)
+      .then(res => res.text());
 
-  if (opts.storeState) {
-    storeState(stateToUse);
-  }
+    if (opts.storeState) {
+      storeState(stateToUse);
+    }
 
-  return authorizeUrl;
-};
+    return authorizeUrl;
+  };
 
 /**
  * Exchange the `authorization_code` via the configured Auth service.
@@ -269,27 +272,37 @@ export const authorizeHandler = (config: TokenHandlerConfig) => async (
  * @param opts.store Whether the tokens should automatically be persisted in the provided
  * storage. This is pretty handy unless you want to manage the tokens on your own.
  *
+ * @param opts.redirectUri Set a custom redirectUri as query parameter redirect_uri
+ * to be handled by your application's redirect uri handler.
+ *
  * @returns The token pair issued from the MURAL OAuth service
  */
-export const requestTokenHandler = (config: TokenHandlerConfig) => async (
-  code: string,
-  state: string,
-  opts = { store: false },
-): Promise<Session> => {
-  // validate that the state hasn't been tampered
-  if (!validateState(state)) throw new Error('INVALID_STATE');
+export const requestTokenHandler =
+  (config: TokenHandlerConfig) =>
+  async (
+    code: string,
+    state: string,
+    opts: RequestTokenHandlerOptions = { store: false },
+  ): Promise<Session> => {
+    // validate that the state hasn't been tampered
+    if (!validateState(state)) throw new Error('INVALID_STATE');
 
-  const url = `${config.requestTokenUri}?code=${code}`;
-  const session = await fetch(url, { method: 'GET' })
-    .then(checkStatus)
-    .then(res => res.json());
+    const params = new URLSearchParams();
+    params.set('code', code);
+    if (opts.redirectUri) params.set('redirect_uri', opts.redirectUri);
 
-  if (opts.store) {
-    fetchConfig.sessionStore.set(session);
-  }
+    const url = `${config.requestTokenUri}?${params.toString()}`;
 
-  return session;
-};
+    const session = await fetch(url, { method: 'GET' })
+      .then(checkStatus)
+      .then(res => res.json());
+
+    if (opts.store) {
+      fetchConfig.sessionStore.set(session);
+    }
+
+    return session;
+  };
 
 /**
  * Exchange the MURAL `refreshToken` via the configured Auth service.
@@ -299,41 +312,41 @@ export const requestTokenHandler = (config: TokenHandlerConfig) => async (
  *
  * @returns The token pair issued from the MURAL OAuth service
  */
-export const refreshTokenHandler = (config: TokenHandlerConfig) => async (
-  opts = { store: false },
-): Promise<Session> => {
-  const staleSession = fetchConfig.sessionStore.get();
-  const options = {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    body: JSON.stringify({
-      refreshToken: staleSession && staleSession.refreshToken,
-    }),
-  };
+export const refreshTokenHandler =
+  (config: TokenHandlerConfig) =>
+  async (opts = { store: false }): Promise<Session> => {
+    const staleSession = fetchConfig.sessionStore.get();
+    const options = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      body: JSON.stringify({
+        refreshToken: staleSession && staleSession.refreshToken,
+      }),
+    };
 
-  try {
-    const freshSession: Session = await fetch(config.refreshTokenUri, options)
-      .then(checkStatus)
-      .then(res => res.json());
+    try {
+      const freshSession: Session = await fetch(config.refreshTokenUri, options)
+        .then(checkStatus)
+        .then(res => res.json());
 
-    if (opts.store) {
-      fetchConfig.sessionStore.set(freshSession);
+      if (opts.store) {
+        fetchConfig.sessionStore.set(freshSession);
+      }
+
+      return freshSession;
+    } catch (e) {
+      if (
+        e instanceof FetchError &&
+        e.response.status >= 400 &&
+        e.response.status < 500
+      )
+        throw InvalidSessionError.fromError(e);
+      throw e;
     }
-
-    return freshSession;
-  } catch (e) {
-    if (
-      e instanceof FetchError &&
-      e.response.status >= 400 &&
-      e.response.status < 500
-    )
-      throw InvalidSessionError.fromError(e);
-    throw e;
-  }
-};
+  };
 
 // This is a shortcut as this file as multiple dependencies
 // we'll ensure we require the call to `setup` or anyways
