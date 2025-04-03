@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "jsonwebtoken": "9.0.0",
-    "qs": "6.9.4"
+    "qs": "6.9.7"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^22.0.1",
