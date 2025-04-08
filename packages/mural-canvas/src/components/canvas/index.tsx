@@ -20,6 +20,7 @@ interface CanvasEvents {
   onMuralUnavailable?: EventHandler;
   onReady?: EventHandler;
   onVisitorAccessDenied?: EventHandler;
+  onPasswordRequired?: EventHandler;
 }
 
 const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
@@ -31,6 +32,7 @@ const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
   'mural.mural_unavailable': 'onMuralUnavailable',
   'mural.ready': 'onReady',
   'mural.visitor_access_denied': 'onVisitorAccessDenied',
+  'mural.password_required': 'onPasswordRequired',
 };
 
 export interface CanvasParams {
