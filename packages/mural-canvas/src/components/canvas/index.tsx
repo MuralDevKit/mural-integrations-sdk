@@ -70,7 +70,11 @@ export class CanvasHost extends React.Component<PropTypes> {
   private iframeRef = React.createRef<HTMLIFrameElement>();
 
   handleMessage = async (evt: MessageEvent) => {
-    console.log('Received message from iframe', evt.data.context.errorType);
+    console.log(
+      'Received error type message from iframe',
+      evt.data.context.errorType,
+    );
+    console.log('Received context message from iframe', evt.data.context);
     const eventHandlerKey = MESSAGE_EVENT[evt.data.type];
     const eventHandler = this.props[eventHandlerKey] as EventHandler;
 
