@@ -20,7 +20,6 @@ interface CanvasEvents {
   onMuralUnavailable?: EventHandler;
   onReady?: EventHandler;
   onVisitorAccessDenied?: EventHandler;
-  onPasswordRequired?: EventHandler;
 }
 
 const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
@@ -32,7 +31,6 @@ const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
   'mural.mural_unavailable': 'onMuralUnavailable',
   'mural.ready': 'onReady',
   'mural.visitor_access_denied': 'onVisitorAccessDenied',
-  'mural.password_required': 'onPasswordRequired',
 };
 
 export interface CanvasParams {
@@ -72,6 +70,7 @@ export class CanvasHost extends React.Component<PropTypes> {
   private iframeRef = React.createRef<HTMLIFrameElement>();
 
   handleMessage = async (evt: MessageEvent) => {
+    console.log('Received message from iframe', evt.data);
     const eventHandlerKey = MESSAGE_EVENT[evt.data.type];
     const eventHandler = this.props[eventHandlerKey] as EventHandler;
 
