@@ -139,7 +139,7 @@ export class CanvasHost extends React.Component<PropTypes> {
     window.removeEventListener('message', this.handleMessage);
   }
 
-  getIframePermissionsPolicy() {
+  getIframeCrossOriginPermissionsPolicy() {
     // Assumes single level parent domain from top-level domain. Ex: a.example.com -> *.example.com
     return `clipboard-write self *.${window.location.hostname.split('.').slice(-2).join('.')};`
   }
@@ -165,7 +165,7 @@ export class CanvasHost extends React.Component<PropTypes> {
     canvasUrl.searchParams.set('utm_source', 'mural-canvas');
     canvasUrl.searchParams.set('utm_content', apiClient.config.appId);
 
-    const iframePermissionPolicy = this.getIframePermissionsPolicy();
+    const iframeCrossOriginPermissionsPolicy = this.getIframeCrossOriginPermissionsPolicy();
 
     // Convert the url to the session activation link if supported
     if (apiClient.authenticated()) {
@@ -187,7 +187,7 @@ export class CanvasHost extends React.Component<PropTypes> {
         src={canvasUrl.href}
         referrerPolicy="origin"
         seamless
-        allow={iframePermissionPolicy}
+        allow={iframeCrossOriginPermissionsPolicy}
       />
     );
   }
