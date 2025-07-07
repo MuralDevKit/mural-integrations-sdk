@@ -139,10 +139,16 @@ export class CanvasHost extends React.Component<PropTypes> {
     window.removeEventListener('message', this.handleMessage);
   }
 
+  getIframeCrossOriginPermissionsPolicy() {
+    // Assumes single level parent domain from top-level domain. Ex: a.example.com -> *.example.com
+    return `clipboard-write self *.${window.location.hostname.split('.').slice(-2).join('.')};`
+  }
+
   render() {
     const { apiClient, authUrl, canvasLink, canvasParams, onBack } = this.props;
-    if (!canvasLink)
+    if (!canvasLink) {
       throw new Error(`Cannot render the supplied 'canvasLink': ${canvasLink}`);
+    }
 
     // Add the canvasParams to the URL
     let canvasUrl = new URL(canvasLink.toString());
@@ -159,11 +165,14 @@ export class CanvasHost extends React.Component<PropTypes> {
     canvasUrl.searchParams.set('utm_source', 'mural-canvas');
     canvasUrl.searchParams.set('utm_content', apiClient.config.appId);
 
+    const iframeCrossOriginPermissionsPolicy = this.getIframeCrossOriginPermissionsPolicy();
+
     // Convert the url to the session activation link if supported
     if (apiClient.authenticated()) {
       if (authUrl) {
         // Redirect flow
         canvasUrl = muralSessionActivationUrl(apiClient, authUrl, canvasUrl);
+
       } else if (this.props.rpcClient) {
         // RPC flow
         canvasUrl = muralSessionActivationUrlRpc(apiClient, canvasUrl);
@@ -178,6 +187,7 @@ export class CanvasHost extends React.Component<PropTypes> {
         src={canvasUrl.href}
         referrerPolicy="origin"
         seamless
+        allow={iframeCrossOriginPermissionsPolicy}
       />
     );
   }
