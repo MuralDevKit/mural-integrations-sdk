@@ -140,8 +140,11 @@ export class CanvasHost extends React.Component<PropTypes> {
   }
 
   getIframeCrossOriginPermissionsPolicy() {
-    // Assumes single level parent domain from top-level domain. Ex: a.example.com -> *.example.com
-    return `clipboard-write self *.${window.location.hostname.split('.').slice(-2).join('.')};`
+    /*
+     * Available features requested by the container _if_ these are allowed by the Permissions-Policy header.
+     * The Permissions-Policy header is set by the API.
+     */
+    return `clipboard-write;`
   }
 
   render() {
