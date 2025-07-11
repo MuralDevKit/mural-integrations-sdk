@@ -130,9 +130,8 @@ const MuralPicker = ({
 }: PropTypes) => {
   const [room, setRoom] = useState<StateTypes['room']>(null);
   const [rooms, setRooms] = useState<StateTypes['rooms']>([]);
-  const [defaultRooms, setDefaultRooms] = useState<StateTypes['defaultRooms']>(
-    [],
-  );
+  const [defaultRooms, setDefaultRooms] =
+    useState<StateTypes['defaultRooms']>(null);
   const [allMurals, setAllMurals] = useState<StateTypes['murals']>([]);
   const [recentMurals, setRecentMurals] = useState<StateTypes['murals']>([]);
   const [starredMurals, setStarredMurals] = useState<StateTypes['murals']>([]);
@@ -152,6 +151,8 @@ const MuralPicker = ({
   const [viewType, setViewType] = useState<StateTypes['viewType']>(
     ViewType.RECENT,
   );
+
+  const [pendingCreateAction, setPendingCreateAction] = useState(false);
 
   const muralType: {
     [x: string]: (Mural | MuralSummary)[];
@@ -199,6 +200,9 @@ const MuralPicker = ({
           currentWorkspaces[0];
         setDefaultWorkspace(currentWorkspace);
         setWorkspace(currentWorkspace);
+      } else {
+        // No workspaces available, set empty rooms to avoid loading state
+        setDefaultRooms([]);
       }
     } catch (e: any) {
       handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_WORKSPACES);
@@ -261,6 +265,18 @@ const MuralPicker = ({
       handleFetchTemplates();
     }
   }, [rooms]);
+
+  useEffect(() => {
+    if (pendingCreateAction && !loadingRooms) {
+      setPendingCreateAction(false);
+      setIsLoading(false);
+
+      // Check if rooms and workspaces are available and proceed with create
+      if (!hasNoRooms && !hasNoWorkspaces) {
+        handleViewCreate();
+      }
+    }
+  }, [defaultRooms, pendingCreateAction]);
 
   const templateSearch = async (searchKeyword?: string) => {
     if (searchKeyword) {
@@ -454,6 +470,15 @@ const MuralPicker = ({
   };
 
   const handleViewCreate = async (fromSearch?: boolean) => {
+    if (hasNoRooms || hasNoWorkspaces) {
+      return;
+    }
+
+    // If rooms are still loading, we shouldn't proceed
+    if (loadingRooms) {
+      return;
+    }
+
     setSearch('');
     setViewType(ViewType.CREATE);
     setRoom(defaultRooms![0]);
@@ -495,6 +520,18 @@ const MuralPicker = ({
   };
 
   const handleClickCreate = async () => {
+    // Don't create if we know there are no rooms or workspaces available
+    if (hasNoRooms || hasNoWorkspaces) {
+      return;
+    }
+
+    // If rooms are still loading, set a flag and proceed with loading state
+    if (loadingRooms) {
+      setPendingCreateAction(true);
+      setIsLoading(true);
+      return; // The useEffect will handle this when rooms load
+    }
+
     handleViewCreate();
   };
 
@@ -584,7 +621,7 @@ const MuralPicker = ({
                 className="create-btn"
                 onClick={handleClickCreate}
                 icon-pos="before"
-                state={loadingRooms ? 'disabled' : 'default'}
+                state={canCreateMural ? 'default' : 'disabled'}
               >
                 <MrlSvg slot="icon" svg={plusAlt} />
               </MrlShadowButton>
@@ -595,7 +632,7 @@ const MuralPicker = ({
                 className="mini-create-btn"
                 onClick={handleClickCreate}
                 icon-pos="before"
-                state={loadingRooms ? 'disabled' : 'default'}
+                state={canCreateMural ? 'default' : 'disabled'}
               >
                 <MrlSvg slot="icon" svg={plusAlt} />
               </MrlShadowButton>
@@ -677,7 +714,10 @@ const MuralPicker = ({
   const showTabs = !isSearching && !isCreateView;
   const displayCreateView =
     (isCreateView || (isCreateView && isSearching)) && room && workspace;
-  const loadingRooms = !defaultRooms?.length;
+  const loadingRooms = defaultRooms === null;
+  const hasNoRooms = defaultRooms !== null && defaultRooms.length === 0;
+  const hasNoWorkspaces = workspaces.length === 0;
+  const canCreateMural = !hasNoRooms && !hasNoWorkspaces; // Button enabled unless we know there are no rooms or workspaces
 
   return (
     <ThemeProvider theme={createdTheme}>
