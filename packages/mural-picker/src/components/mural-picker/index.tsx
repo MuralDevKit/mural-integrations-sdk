@@ -152,6 +152,8 @@ const MuralPicker = ({
     ViewType.RECENT,
   );
 
+  const [pendingCreateAction, setPendingCreateAction] = useState(false);
+
   const muralType: {
     [x: string]: (Mural | MuralSummary)[];
   } = {
@@ -260,6 +262,18 @@ const MuralPicker = ({
       handleFetchTemplates();
     }
   }, [rooms]);
+
+  useEffect(() => {
+    if (pendingCreateAction && !loadingRooms) {
+      setPendingCreateAction(false);
+      setIsLoading(false);
+
+      // Check if rooms are available and proceed with create
+      if (!hasNoRooms) {
+        handleViewCreate();
+      }
+    }
+  }, [defaultRooms, pendingCreateAction]);
 
   const templateSearch = async (searchKeyword?: string) => {
     if (searchKeyword) {
@@ -453,11 +467,15 @@ const MuralPicker = ({
   };
 
   const handleViewCreate = async (fromSearch?: boolean) => {
-    // Early return if no rooms are available
     if (hasNoRooms) {
       return;
     }
-    
+
+    // If rooms are still loading, we shouldn't proceed
+    if (loadingRooms) {
+      return;
+    }
+
     setSearch('');
     setViewType(ViewType.CREATE);
     setRoom(defaultRooms![0]);
@@ -499,10 +517,18 @@ const MuralPicker = ({
   };
 
   const handleClickCreate = async () => {
-    // Don't create if no rooms are available
+    // Don't create if we know there are no rooms available
     if (hasNoRooms) {
       return;
     }
+
+    // If rooms are still loading, set a flag and proceed with loading state
+    if (loadingRooms) {
+      setPendingCreateAction(true);
+      setIsLoading(true);
+      return; // The useEffect will handle this when rooms load
+    }
+
     handleViewCreate();
   };
 
@@ -592,7 +618,7 @@ const MuralPicker = ({
                 className="create-btn"
                 onClick={handleClickCreate}
                 icon-pos="before"
-                state={loadingRooms || hasNoRooms ? 'disabled' : 'default'}
+                state={canCreateMural ? 'default' : 'disabled'}
               >
                 <MrlSvg slot="icon" svg={plusAlt} />
               </MrlShadowButton>
@@ -603,7 +629,7 @@ const MuralPicker = ({
                 className="mini-create-btn"
                 onClick={handleClickCreate}
                 icon-pos="before"
-                state={loadingRooms || hasNoRooms ? 'disabled' : 'default'}
+                state={canCreateMural ? 'default' : 'disabled'}
               >
                 <MrlSvg slot="icon" svg={plusAlt} />
               </MrlShadowButton>
@@ -687,6 +713,7 @@ const MuralPicker = ({
     (isCreateView || (isCreateView && isSearching)) && room && workspace;
   const loadingRooms = defaultRooms === null;
   const hasNoRooms = defaultRooms !== null && defaultRooms.length === 0;
+  const canCreateMural = !hasNoRooms; // Button enabled unless we know there are no rooms
 
   return (
     <ThemeProvider theme={createdTheme}>
