@@ -130,9 +130,8 @@ const MuralPicker = ({
 }: PropTypes) => {
   const [room, setRoom] = useState<StateTypes['room']>(null);
   const [rooms, setRooms] = useState<StateTypes['rooms']>([]);
-  const [defaultRooms, setDefaultRooms] = useState<StateTypes['defaultRooms']>(
-    [],
-  );
+  const [defaultRooms, setDefaultRooms] =
+    useState<StateTypes['defaultRooms']>(null);
   const [allMurals, setAllMurals] = useState<StateTypes['murals']>([]);
   const [recentMurals, setRecentMurals] = useState<StateTypes['murals']>([]);
   const [starredMurals, setStarredMurals] = useState<StateTypes['murals']>([]);
@@ -454,7 +453,11 @@ const MuralPicker = ({
   };
 
   const handleViewCreate = async (fromSearch?: boolean) => {
-    setIsLoading(true);
+    // Early return if no rooms are available
+    if (hasNoRooms) {
+      return;
+    }
+    
     setSearch('');
     setViewType(ViewType.CREATE);
     setRoom(defaultRooms![0]);
@@ -496,6 +499,10 @@ const MuralPicker = ({
   };
 
   const handleClickCreate = async () => {
+    // Don't create if no rooms are available
+    if (hasNoRooms) {
+      return;
+    }
     handleViewCreate();
   };
 
@@ -585,6 +592,7 @@ const MuralPicker = ({
                 className="create-btn"
                 onClick={handleClickCreate}
                 icon-pos="before"
+                state={loadingRooms || hasNoRooms ? 'disabled' : 'default'}
               >
                 <MrlSvg slot="icon" svg={plusAlt} />
               </MrlShadowButton>
@@ -595,6 +603,7 @@ const MuralPicker = ({
                 className="mini-create-btn"
                 onClick={handleClickCreate}
                 icon-pos="before"
+                state={loadingRooms || hasNoRooms ? 'disabled' : 'default'}
               >
                 <MrlSvg slot="icon" svg={plusAlt} />
               </MrlShadowButton>
@@ -676,7 +685,8 @@ const MuralPicker = ({
   const showTabs = !isSearching && !isCreateView;
   const displayCreateView =
     (isCreateView || (isCreateView && isSearching)) && room && workspace;
-  const loadingRooms = !defaultRooms?.length;
+  const loadingRooms = defaultRooms === null;
+  const hasNoRooms = defaultRooms !== null && defaultRooms.length === 0;
 
   return (
     <ThemeProvider theme={createdTheme}>
