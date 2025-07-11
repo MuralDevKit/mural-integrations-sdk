@@ -454,6 +454,7 @@ const MuralPicker = ({
   };
 
   const handleViewCreate = async (fromSearch?: boolean) => {
+    setIsLoading(true);
     setSearch('');
     setViewType(ViewType.CREATE);
     setRoom(defaultRooms![0]);
@@ -584,7 +585,6 @@ const MuralPicker = ({
                 className="create-btn"
                 onClick={handleClickCreate}
                 icon-pos="before"
-                state={loadingRooms ? 'disabled' : 'default'}
               >
                 <MrlSvg slot="icon" svg={plusAlt} />
               </MrlShadowButton>
@@ -595,7 +595,6 @@ const MuralPicker = ({
                 className="mini-create-btn"
                 onClick={handleClickCreate}
                 icon-pos="before"
-                state={loadingRooms ? 'disabled' : 'default'}
               >
                 <MrlSvg slot="icon" svg={plusAlt} />
               </MrlShadowButton>
