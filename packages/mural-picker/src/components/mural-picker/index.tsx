@@ -200,6 +200,9 @@ const MuralPicker = ({
           currentWorkspaces[0];
         setDefaultWorkspace(currentWorkspace);
         setWorkspace(currentWorkspace);
+      } else {
+        // No workspaces available, set empty rooms to avoid loading state
+        setDefaultRooms([]);
       }
     } catch (e: any) {
       handleError(e, MURAL_PICKER_ERRORS.ERR_RETRIEVING_WORKSPACES);
@@ -268,8 +271,8 @@ const MuralPicker = ({
       setPendingCreateAction(false);
       setIsLoading(false);
 
-      // Check if rooms are available and proceed with create
-      if (!hasNoRooms) {
+      // Check if rooms and workspaces are available and proceed with create
+      if (!hasNoRooms && !hasNoWorkspaces) {
         handleViewCreate();
       }
     }
@@ -467,7 +470,7 @@ const MuralPicker = ({
   };
 
   const handleViewCreate = async (fromSearch?: boolean) => {
-    if (hasNoRooms) {
+    if (hasNoRooms || hasNoWorkspaces) {
       return;
     }
 
@@ -517,8 +520,8 @@ const MuralPicker = ({
   };
 
   const handleClickCreate = async () => {
-    // Don't create if we know there are no rooms available
-    if (hasNoRooms) {
+    // Don't create if we know there are no rooms or workspaces available
+    if (hasNoRooms || hasNoWorkspaces) {
       return;
     }
 
@@ -713,7 +716,8 @@ const MuralPicker = ({
     (isCreateView || (isCreateView && isSearching)) && room && workspace;
   const loadingRooms = defaultRooms === null;
   const hasNoRooms = defaultRooms !== null && defaultRooms.length === 0;
-  const canCreateMural = !hasNoRooms; // Button enabled unless we know there are no rooms
+  const hasNoWorkspaces = workspaces.length === 0;
+  const canCreateMural = !hasNoRooms && !hasNoWorkspaces; // Button enabled unless we know there are no rooms or workspaces
 
   return (
     <ThemeProvider theme={createdTheme}>
