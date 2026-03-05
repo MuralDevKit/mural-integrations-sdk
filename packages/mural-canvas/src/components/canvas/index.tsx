@@ -18,6 +18,7 @@ interface CanvasEvents {
   onMemberAccessDenied?: EventHandler;
   onMessage?: EventHandler<MessageEvent>;
   onMuralUnavailable?: EventHandler;
+  onNoAccessToMural?: EventHandler;
   onReady?: EventHandler;
   onVisitorAccessDenied?: EventHandler;
 }
@@ -29,6 +30,7 @@ const MESSAGE_EVENT: Record<string, keyof CanvasEvents> = {
   'mural.invalid_invitation': 'onInvalidInvitation',
   'mural.member_access_denied': 'onMemberAccessDenied',
   'mural.mural_unavailable': 'onMuralUnavailable',
+  'mural.no_access_to_mural': 'onNoAccessToMural',
   'mural.ready': 'onReady',
   'mural.visitor_access_denied': 'onVisitorAccessDenied',
 };

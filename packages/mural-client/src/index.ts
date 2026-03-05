@@ -394,6 +394,8 @@ export interface ApiClient {
     Paginated & Sorted
   >;
 
+  requestAccessToMural: (query: { muralId: string }) => Promise<void>;
+
   /**
    * @deprecated Use `getCurrentUser` instead.
    */
@@ -812,6 +814,11 @@ const buildApiClient = (
         },
       );
       return await response.json();
+    },
+    requestAccessToMural: async ({ muralId }) => {
+      await fetchFn(api(`murals/${muralId}/send-request-access`), {
+        method: 'POST',
+      });
     },
     /**
      * @deprecated
