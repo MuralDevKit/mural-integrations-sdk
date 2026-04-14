@@ -45,5 +45,10 @@
   },
   "dependencies": {
     "runtime": "file:runtimes/16.13.1"
+  },
+  "overrides": {
+    "axios": "1.15.0",
+    "@types/react": "17.0.75",
+    "@types/react-dom": "17.0.25"
   }
 }
